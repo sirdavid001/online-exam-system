@@ -80,13 +80,16 @@ TEMPLATES = [
 WSGI_APPLICATION = "onlinexam.wsgi.application"
 
 # Database
-database_url = os.getenv("DATABASE_URL")
+database_url = os.getenv("DATABASE_URL", "").strip()
 if database_url:
+    parse_kwargs = {"conn_max_age": 600}
+    if database_url.startswith(("postgres://", "postgresql://", "postgis://")):
+        parse_kwargs["ssl_require"] = not DEBUG
+
     DATABASES = {
         "default": dj_database_url.parse(
             database_url,
-            conn_max_age=600,
-            ssl_require=not DEBUG,
+            **parse_kwargs,
         )
     }
 else:
