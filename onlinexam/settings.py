@@ -125,11 +125,16 @@ STATICFILES_DIRS = [STATIC_DIR]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 # WhiteNoise static serving for production (Render/gunicorn).
-# `WHITENOISE_USE_FINDERS=True` allows serving from STATICFILES_DIRS
-# when collectstatic has not been executed yet.
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# Default to non-manifest storage so deployments still work even if
+# collectstatic was not run yet.
+USE_MANIFEST_STATICFILES = os.getenv("USE_MANIFEST_STATICFILES", "False").lower() == "true"
+if USE_MANIFEST_STATICFILES:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    WHITENOISE_MANIFEST_STRICT = False
+else:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+
 WHITENOISE_USE_FINDERS = True
-WHITENOISE_MANIFEST_STRICT = False
 
 LOGIN_REDIRECT_URL = "/afterlogin"
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
