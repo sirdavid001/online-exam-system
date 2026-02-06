@@ -1,54 +1,49 @@
 {% extends 'student/studentbase.html' %}
+
 {% block content %}
-{%load static%}
+<section class="page-head reveal">
+  <h2>Exam Details</h2>
+  <p class="page-lead">Review course rules and constraints before beginning your attempt.</p>
+</section>
 
-<head>
-  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<div class="stack-card reveal">
+  <article class="form-card">
+    <h3>{{ course.course_name }}</h3>
 
+    <ul class="summary-list">
+      <li>Total Questions: {{ total_questions }}</li>
+      <li>Total Marks: {{ total_marks }}</li>
+      <li>Duration: {{ course.duration_minutes }} minutes</li>
+      <li>Pass Mark: {{ course.pass_mark }}%</li>
+      <li>Max Attempts: {{ course.max_attempts }}</li>
+      <li>Attempts Used: {{ attempts_taken }}</li>
+      <li>Attempts Remaining: {{ remaining_attempts }}</li>
+      <li>Negative Mark Per Wrong Answer: {{ course.negative_mark_per_wrong }}</li>
+      <li>Question Order: {% if course.shuffle_questions %}Shuffled{% else %}Fixed{% endif %}</li>
+    </ul>
 
-</head>
-<br><br>
-<div class="container my-4">
-    <div class="jumbotron">
+    {% if course.instructions %}
+    <h4>Course Instructions</h4>
+    <p>{{ course.instructions|linebreaksbr }}</p>
+    {% endif %}
 
-        <div class="row">
+    <h4>General Rules</h4>
+    <ul class="rules-list">
+      <li>All questions are multiple-choice and only one option is correct.</li>
+      <li>Answer within the configured duration; timer starts when exam begins.</li>
+      <li>Avoid refreshing or leaving the page during an active attempt.</li>
+      <li>You can review detailed result analytics after submission.</li>
+    </ul>
 
-            <div class="card border-primary mx-4 my-4">
-                <div class="card-body text-default">
-
-                    <h4 class="card-title">Exam Details :</h4>
-                    <p class="card-text">
-                        </p><ul style="list-style:decimal;">
-                            <li>Course : {{course.course_name}}</li>
-                            <li>Total Question : {{total_questions}}</li>
-                            <li>Total Marks : {{total_marks}}</li>
-                        </ul>
-                    <p></p>
-
-
-
-                    <h4 class="card-title">Rules :</h4>
-                    <p class="card-text">
-                        </p><ul style="list-style:decimal;">
-                            <li>All questions are MCQ (multiple choice question)</li>
-                            <li><span class="text-danger">Only one choice is correct among the given.</span></li>
-                            <li>Every question carry different marks.</li>
-                            <li>Try to answer ASAP.</li>
-                            <li>If you PRESS refresh or go back to the previous page, there will be a new question for you and the question you were on will be counted as number of attempts.</li>
-                            <li>Questions are presented randomly.</li>
-                            <li>You will be able to view marks immediately once after you submit the answer.</li>
-                        </ul>
-                    <p></p>
-                    <a href="{% url 'start-exam' course.id  %}" class="btn btn-primary btn-lg" style="border-radius:0px;">Enter Examination</a>
-                </div>  
-                <div class="card-footer">Best Of Luck, Students!</div>  
-            </div>  
-        </div>  
-
-    </div>
+    {% if remaining_attempts > 0 %}
+    <a href="{% url 'start-exam' course.id %}" class="btn btn-primary btn-lg">
+      <i class="fas fa-play"></i> Start Exam
+    </a>
+    {% else %}
+    <button class="btn btn-secondary btn-lg" type="button" disabled>
+      <i class="fas fa-lock"></i> Attempt Limit Reached
+    </button>
+    {% endif %}
+  </article>
 </div>
-
-<br><br><br><br><br><br>
 {% endblock content %}

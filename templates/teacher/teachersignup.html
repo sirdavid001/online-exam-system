@@ -1,76 +1,94 @@
-<!DOCTYPE html>
+{% extends 'exam/base_public.html' %}
 {% load widget_tweaks %}
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <style>
 
-        form{
-           margin: 50px; 
-          
-        }
+{% block title %}Teacher Signup{% endblock %}
 
-    </style>
-  </head>
-  <body>
-    {% include "exam/navbar.html" %}
- 
+{% block content %}
+<section class="auth-shell auth-shell-wide">
+  <article class="form-card">
+    <h1>Create Teacher Account</h1>
+    <p>Use official university records. Staff ID and institutional email are required for verification.</p>
 
+    {% if userForm.errors or teacherForm.errors %}
+    <div class="alert alert-danger">
+      <strong>Unable to submit:</strong> Please correct the highlighted form errors.
+    </div>
+    {% endif %}
 
-<br><br><br>
-<div class="container">
-  <h3 style="text-align: center;">Teacher Signup Form</h3>
-<form method="POST" autocomplete="off" enctype="multipart/form-data">
-    {% csrf_token %}
-    
-    <div class="form-row">
-        <div class="form-group col-md-6">
+    <form method="POST" autocomplete="off" enctype="multipart/form-data" class="stack-form">
+      {% csrf_token %}
+
+      <div class="form-grid">
+        <div class="form-group">
           <label for="first_name">First Name</label>
-          {% render_field userForm.first_name|attr:'required:true'  class="form-control form-control-sm rounded-0"  placeholder="First Name" %}
+          {% render_field userForm.first_name|attr:'required:true' class="form-control" placeholder="First name" %}
+          {{ userForm.first_name.errors }}
         </div>
-        <div class="form-group col-md-6">
+        <div class="form-group">
           <label for="last_name">Last Name</label>
-          {% render_field userForm.last_name|attr:'required:true'  class="form-control form-control-sm rounded-0" placeholder="Last Name" %}
+          {% render_field userForm.last_name|attr:'required:true' class="form-control" placeholder="Last name" %}
+          {{ userForm.last_name.errors }}
         </div>
-      </div>
 
-      <div class="form-row">
-        <div class="form-group col-md-6">
-          <label for="mobile">Contact</label>
-          {% render_field teacherForm.mobile|attr:'required:true'  class="form-control form-control-sm rounded-0" placeholder="Contact Number" %}
+        <div class="form-group">
+          <label for="staff_id">Staff ID / Employee Number</label>
+          {% render_field teacherForm.staff_id|attr:'required:true' class="form-control" placeholder="Example: OAU/CSE/2025/014" %}
+          {{ teacherForm.staff_id.errors }}
         </div>
-        <div class="form-group col-md-6">
-          <label for="address">Address</label>
-          {% render_field teacherForm.address|attr:'required:true'  class="form-control form-control-sm rounded-0" placeholder="Address" %}
+        <div class="form-group">
+          <label for="official_email">Official University Email</label>
+          {% render_field teacherForm.official_email|attr:'required:true' class="form-control" placeholder="example@university.edu.ng" %}
+          {{ teacherForm.official_email.errors }}
         </div>
-      </div>
 
-      <div class="form-row">
-        <div class="form-group col-md-6">
-          <label for="username">Username</label>
-          {% render_field userForm.username|attr:'required:true'  class="form-control form-control-sm rounded-0" placeholder="username" %}
+        <div class="form-group">
+          <label for="faculty">Faculty / College</label>
+          {% render_field teacherForm.faculty|attr:'required:true' class="form-control" placeholder="Example: Faculty of Science" %}
+          {{ teacherForm.faculty.errors }}
         </div>
-        <div class="form-group col-md-6">
+        <div class="form-group">
+          <label for="department">Department</label>
+          {% render_field teacherForm.department|attr:'required:true' class="form-control" placeholder="Example: Computer Science" %}
+          {{ teacherForm.department.errors }}
+        </div>
+
+        <div class="form-group">
+          <label for="designation">Academic Designation</label>
+          {% render_field teacherForm.designation|attr:'required:true' class="form-control" %}
+          {{ teacherForm.designation.errors }}
+        </div>
+        <div class="form-group">
+          <label for="mobile">Official Phone Number</label>
+          {% render_field teacherForm.mobile|attr:'required:true' class="form-control" placeholder="08031234567" %}
+          {{ teacherForm.mobile.errors }}
+        </div>
+
+        <div class="form-group span-2">
+          <label for="address">Office Address</label>
+          {% render_field teacherForm.address|attr:'required:true' class="form-control" placeholder="Example: Room 212, ICT Building, Main Campus" %}
+          {{ teacherForm.address.errors }}
+        </div>
+
+        <div class="form-group">
+          <label for="username">Portal Username</label>
+          {% render_field userForm.username|attr:'required:true' class="form-control" placeholder="Choose username" %}
+          {{ userForm.username.errors }}
+        </div>
+        <div class="form-group">
           <label for="inputPassword4">Password</label>
-          {% render_field userForm.password|attr:'required:true'  class="form-control form-control-sm rounded-0" placeholder="password" %}
+          {% render_field userForm.password|attr:'required:true' class="form-control" placeholder="Password" %}
+          {{ userForm.password.errors }}
         </div>
-      </div>
 
-      <div class="form-row">
-        <div class="form-group col-md-12">
+        <div class="form-group span-2">
           <label for="profile_pic">Profile Picture</label>
-          {% render_field teacherForm.profile_pic|attr:'required:true' class="form-control form-control-sm rounded-0" placeholder="" %}
+          {% render_field teacherForm.profile_pic class="form-control" %}
+          {{ teacherForm.profile_pic.errors }}
         </div>
-        
       </div>
 
-
-    <button type="submit" class="btn btn-primary btn-lg rounded-0">Sign Up</button>
-  </form>
-</div>
-
-
-<br><br>
-{% include "exam/footer.html" %}
-  </body>
-</html>
+      <button type="submit" class="btn btn-brand btn-lg">Create Account</button>
+    </form>
+  </article>
+</section>
+{% endblock %}

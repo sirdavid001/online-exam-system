@@ -1,0 +1,57 @@
+{% extends 'exam/adminbase.html' %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="container">
+  <article class="form-card">
+    <h2>Update Course</h2>
+    <p>Edit exam rules and course instructions for <strong>{{ course.course_name }}</strong>.</p>
+
+    <form method="POST" autocomplete="off" class="stack-form">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="course_name">Course Name</label>
+        {% render_field courseForm.course_name class="form-control" placeholder="Example: Engineering Mathematics I" %}
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="duration_minutes">Duration (Minutes)</label>
+          {% render_field courseForm.duration_minutes class="form-control" placeholder="Example: 90" %}
+        </div>
+
+        <div class="form-group">
+          <label for="pass_mark">Pass Mark (%)</label>
+          {% render_field courseForm.pass_mark class="form-control" placeholder="Example: 50" %}
+        </div>
+
+        <div class="form-group">
+          <label for="max_attempts">Max Attempts</label>
+          {% render_field courseForm.max_attempts class="form-control" placeholder="Example: 3" %}
+        </div>
+
+        <div class="form-group">
+          <label for="negative_mark_per_wrong">Negative Mark Per Wrong Answer</label>
+          {% render_field courseForm.negative_mark_per_wrong class="form-control" placeholder="Example: 0.25" %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="shuffle_questions">Shuffle Questions</label>
+        {% render_field courseForm.shuffle_questions class="form-control" %}
+      </div>
+
+      <div class="form-group">
+        <label for="instructions">Instructions</label>
+        {% render_field courseForm.instructions class="form-control" placeholder="Provide exam instructions shown to students before the exam starts." %}
+      </div>
+
+      <div class="d-flex inline-actions">
+        <button type="submit" class="btn btn-primary btn-lg">Update Course</button>
+        <a href="{% url 'admin-view-course' %}" class="btn btn-secondary btn-lg">Cancel</a>
+      </div>
+    </form>
+  </article>
+</div>
+
+{% endblock content %}

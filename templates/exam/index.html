@@ -1,31 +1,45 @@
-<!DOCTYPE html>
-{% load static %}
-<html lang="en" dir="ltr">
+{% extends 'exam/base_public.html' %}
 
-<style>
-  .jumbotron{
-    margin-bottom: 0px;
-  }
-</style>
-<body>
-  {% include "exam/navbar.html" %}
-<br>
-<section id="section-jumbotron" class="jumbotron jumbotron-fluid d-flex justify-content-center align-items-center">
-  <div class="container text-center">
-    <h2 class="display-3 text-info">Online Examination System</h2>
-    <p class="display-4 d-none d-sm-block">Attend your examinations online!</p>
-    <p class="lead">Sign Up now to start your first online examination</p>
+{% block title %}Online Examination System{% endblock %}
 
-  
-    <p><strong> Start Your Journey Here:</strong></p>
-    <a href="/student/studentsignup" class="btn btn-lg btn-info" style="padding-right: 35px; border-radius: 0%;"><i class="fa fa-graduation-cap" aria-hidden="true"></i> Sign Up as Student</a>
-    
-    <br><br><br>
-  </div>  
+{% block content %}
+<section class="hero-shell">
+  <article class="hero-content">
+    <p class="eyebrow">Fast. Transparent. Structured.</p>
+    <h1>Professional Online Examination Platform</h1>
+    <p>
+      Manage assessments, track results, and keep exam workflows organized for students,
+      teachers, and administrators in one place.
+    </p>
+
+    <div class="hero-actions">
+      <a href="/student/studentsignup" class="btn btn-brand btn-lg">
+        <i class="fas fa-user-graduate"></i> Start as Student
+      </a>
+      <a href="/teacher/teachersignup" class="btn btn-outline-brand btn-lg">
+        <i class="fas fa-chalkboard-teacher"></i> Register as Teacher
+      </a>
+    </div>
+  </article>
+
+  <div class="hero-grid">
+    <article class="hero-card">
+      <h3>Student Workflow</h3>
+      <p>Join exams, follow clear instructions, and view marks instantly.</p>
+      <a href="/student/studentclick" class="btn btn-primary btn-sm">Student Access</a>
+    </article>
+
+    <article class="hero-card">
+      <h3>Teacher Workspace</h3>
+      <p>Create courses, add questions, and manage exam content efficiently.</p>
+      <a href="/teacher/teacherclick" class="btn btn-primary btn-sm">Teacher Access</a>
+    </article>
+
+    <article class="hero-card">
+      <h3>Admin Console</h3>
+      <p>Approve teachers, monitor students, and control the whole system.</p>
+      <a href="/adminclick" class="btn btn-primary btn-sm">Admin Access</a>
+    </article>
+  </div>
 </section>
-  {% include "exam/footer.html" %}
-
-
-</body>
-
-</html>
+{% endblock %}

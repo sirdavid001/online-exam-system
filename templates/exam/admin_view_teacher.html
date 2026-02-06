@@ -1,59 +1,64 @@
 {% extends 'exam/adminbase.html' %}
+{% load static %}
+
 {% block content %}
-{%load static%}
+<section class="page-head reveal">
+  <h2>Teachers</h2>
+  <p class="page-lead">Review approved lecturers and maintain institutional profile details.</p>
+</section>
 
-<head>
-  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-
-  <style media="screen">
-    a:link {
-      text-decoration: none;
-    }
-
-    h6 {
-      text-align: center;
-    }
-
-    .row {
-      margin: 100px;
-    }
-  </style>
-</head>
-<br><br>
-<div class="container">
-  <div class="panel panel-primary rounded-0">
-    <div class="panel-heading rounded-0">
-      <h6 class="panel-title">Teachers</h6>
-    </div>
-    <table class="table table-hover table-bordered" id="dev-table">
-      <thead>
-        <tr>
-
-          <th>Name</th>
-          <th>Photo</th>
-          <th>Contact</th>
-          <th>Address</th>
-         
-          <th>Action</th>
-        </tr>
-      </thead>
+<div class="table-card reveal">
+  <div class="table-head">
+    <h6>Approved Teachers</h6>
+  </div>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Staff ID</th>
+        <th>Faculty</th>
+        <th>Department</th>
+        <th>Designation</th>
+        <th>Official Email</th>
+        <th>Phone</th>
+        <th>Photo</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
       {% for t in teachers %}
       <tr>
-
-        <td> {{t.get_name}}</td>
-        <td> <img src="{% static t.profile_pic.url %}" alt="Profile Pic" height="40px" width="40px" /></td>
-        <td>{{t.mobile}}</td>
-        <td>{{t.address}}</td>
-        
-        <td class='text-center'><a class="btn btn-primary btn-xs" style="border-radius: 0%;" href="{% url 'update-teacher' t.id  %}"><span class="glyphicon glyphicon-edit"></span></a>
-        <a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'delete-teacher' t.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
+        <td>{{ t.get_name }}</td>
+        <td>{{ t.staff_id|default:"-" }}</td>
+        <td>{{ t.faculty|default:"-" }}</td>
+        <td>{{ t.department|default:"-" }}</td>
+        <td>{{ t.get_designation_display }}</td>
+        <td>{{ t.official_email|default:"-" }}</td>
+        <td>{{ t.mobile }}</td>
+        <td>
+          {% if t.profile_pic %}
+          <img class="thumb-sm" src="{% static t.profile_pic.url %}" alt="{{ t.get_name }}" />
+          {% else %}
+          <span class="text-muted">No photo</span>
+          {% endif %}
+        </td>
+        <td class="text-center">
+          <div class="action-group">
+            <a class="btn btn-primary btn-sm" href="{% url 'update-teacher' t.id %}">
+              <i class="fas fa-edit"></i> Edit
+            </a>
+            <a class="btn btn-danger btn-sm" href="{% url 'delete-teacher' t.id %}">
+              <i class="fas fa-trash"></i> Delete
+            </a>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td class="text-center text-muted" colspan="9">No teachers found.</td>
       </tr>
       {% endfor %}
-    </table>
-  </div>
+    </tbody>
+  </table>
 </div>
-
-<br><br><br><br><br><br>
 {% endblock content %}

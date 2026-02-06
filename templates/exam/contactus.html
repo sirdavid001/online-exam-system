@@ -1,37 +1,31 @@
-<!DOCTYPE html>
-{% load static %}
-<html lang="en" dir="ltr">
+{% extends 'exam/base_public.html' %}
+{% load widget_tweaks %}
 
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{% block title %}Contact Us{% endblock %}
 
+{% block content %}
+<section class="auth-shell">
+  <article class="form-card">
+    <h1>Contact the Team</h1>
+    <p>Send your question and we will get back to you.</p>
 
-
-
-</head>
-
-<body>
-
-  {% include "exam/navbar.html" %}
-  <br><br>
-
-  <center>
-    <h3 class='alert alert-success'>Please fillup the form in order to contact us</h3>
-
-    <form method="POST" autocomplete="off">
-      <!-- Very Important csrf Token -->
+    <form method="post" class="stack-form" autocomplete="off">
       {% csrf_token %}
       <div class="form-group">
-        <p>
-        <h3>{{ form.as_p }}</h3>
-        </p>
-        <br>
-        <input type="submit" value="Submit" class='btn btn-primary' style="border-radius: 0%;">
+        <label for="id_Name">Full Name</label>
+        {% render_field form.Name class="form-control" placeholder="Your full name" %}
       </div>
+      <div class="form-group">
+        <label for="id_Email">Email</label>
+        {% render_field form.Email class="form-control" placeholder="you@example.com" %}
+      </div>
+      <div class="form-group">
+        <label for="id_Message">Message</label>
+        {% render_field form.Message class="form-control" placeholder="Write your message" %}
+      </div>
+
+      <button type="submit" class="btn btn-brand btn-lg">Send Message</button>
     </form>
-  </center>
-
-  {% include "exam/footer.html" %}
-</body>
-
-</html>
+  </article>
+</section>
+{% endblock %}

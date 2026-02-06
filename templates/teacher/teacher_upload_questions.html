@@ -1,0 +1,48 @@
+{% extends 'teacher/teacherbase.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<section class="page-head reveal">
+  <h2>Bulk Question Upload</h2>
+  <p class="page-lead">Upload a CSV file and let the system map answers, difficulty, and explanations automatically.</p>
+</section>
+
+<div class="stack-card reveal">
+  <article class="form-card">
+    <h3>Upload File</h3>
+    <p>Supported format: <strong>.csv</strong>. Header columns (recommended): <code>{{ sample_columns }}</code>.</p>
+
+    <form method="POST" enctype="multipart/form-data" class="stack-form">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="courseID">Course</label>
+        {% render_field uploadForm.courseID class="form-control" %}
+      </div>
+
+      <div class="form-group">
+        <label for="questions_file">Question File</label>
+        {% render_field uploadForm.questions_file class="form-control" %}
+      </div>
+
+      <div class="form-group">
+        <label>
+          {% render_field uploadForm.has_header %}
+          File contains a header row
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg">Import Questions</button>
+    </form>
+
+    <hr />
+    <h4>Answer Mapping Rules</h4>
+    <ul class="rules-list">
+      <li>You can provide answer as <code>Option1</code>-<code>Option4</code>.</li>
+      <li>Or use <code>A</code>-<code>D</code>, <code>1</code>-<code>4</code>, or exact option text.</li>
+      <li>Difficulty values supported: <code>Beginner</code>, <code>Intermediate</code>, <code>Advanced</code>.</li>
+      <li>For equations, use LaTeX syntax in question/options, for example <code>\(E=mc^2\)</code>.</li>
+    </ul>
+  </article>
+</div>
+{% endblock content %}

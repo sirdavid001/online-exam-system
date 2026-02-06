@@ -1,51 +1,81 @@
 {% extends 'exam/adminbase.html' %}
 {% load widget_tweaks %}
+
 {% block content %}
-<head>
-  <style media="screen">
-    input[type=text], select,input[type=number] ,input[type=password], textarea{
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
+<section class="page-head reveal">
+  <h2>Update Teacher</h2>
+  <p class="page-lead">Edit verified professional details for this lecturer profile.</p>
+</section>
 
-
-
-  </style>
-
-
-</head>
-
-<br><br>
-<h2 style="text-align:center;">Update Teacher</h2>
-<div>
-  <form method="post"  autocomplete="off" enctype="multipart/form-data" style="margin-left:200px;margin-right:200px;">
+<div class="stack-card reveal">
+  <article class="form-card">
+    <form method="post" autocomplete="off" enctype="multipart/form-data" class="stack-form">
       {% csrf_token %}
-        <label for="first_name">First Name</label>
-        {% render_field userForm.first_name class="form-control form-control-sm rounded-0" placeholder="First Name" %}
-        <label for="last_name">Last Name</label>
-        {% render_field userForm.last_name class="form-control form-control-sm rounded-0" placeholder="Last Name" %}
-          <label for="mobile">Contact</label>
-          {% render_field teacherForm.mobile class="form-control form-control-sm rounded-0" placeholder="Mobile" %}
-            <label for="address">Address</label>
-          {% render_field teacherForm.address class="form-control form-control-sm rounded-0" placeholder="Address" %}
-          
-        <label for="username">Username</label>
-        {% render_field userForm.username class="form-control form-control-sm rounded-0" placeholder="Username" %}
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="first_name">First Name</label>
+          {% render_field userForm.first_name class="form-control" placeholder="First Name" %}
+        </div>
+
+        <div class="form-group">
+          <label for="last_name">Last Name</label>
+          {% render_field userForm.last_name class="form-control" placeholder="Last Name" %}
+        </div>
+
+        <div class="form-group">
+          <label for="staff_id">Staff ID / Employee Number</label>
+          {% render_field teacherForm.staff_id class="form-control" placeholder="Staff ID" %}
+        </div>
+
+        <div class="form-group">
+          <label for="official_email">Official University Email</label>
+          {% render_field teacherForm.official_email class="form-control" placeholder="email@university.edu.ng" %}
+        </div>
+
+        <div class="form-group">
+          <label for="faculty">Faculty / College</label>
+          {% render_field teacherForm.faculty class="form-control" placeholder="Faculty" %}
+        </div>
+
+        <div class="form-group">
+          <label for="department">Department</label>
+          {% render_field teacherForm.department class="form-control" placeholder="Department" %}
+        </div>
+
+        <div class="form-group">
+          <label for="designation">Academic Designation</label>
+          {% render_field teacherForm.designation class="form-control" %}
+        </div>
+
+        <div class="form-group">
+          <label for="mobile">Official Phone Number</label>
+          {% render_field teacherForm.mobile class="form-control" placeholder="08031234567" %}
+        </div>
+
+        <div class="form-group span-2">
+          <label for="address">Office Address</label>
+          {% render_field teacherForm.address class="form-control" placeholder="Office Address" %}
+        </div>
+
+        <div class="form-group">
+          <label for="username">Username</label>
+          {% render_field userForm.username class="form-control" placeholder="Username" %}
+        </div>
+
+        <div class="form-group">
           <label for="password">Password</label>
-        {% render_field userForm.password class="form-control form-control-sm rounded-0" placeholder="Password" %} <br><br>
-        <label for="profile_pic">Profile Picture</label>
-          {% render_field teacherForm.profile_pic class="form-control form-control-sm rounded-0" placeholder="Profile Picture" %}
-<br><br>
-    <input type="submit" class="btn btn-gl btn-primary rounded-" value="Update" style="border-radius:0px;">
-  </form>
+          {% render_field userForm.password class="form-control" placeholder="Password" %}
+        </div>
+
+        <div class="form-group span-2">
+          <label for="profile_pic">Profile Picture</label>
+          {% render_field teacherForm.profile_pic class="form-control" %}
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+    </form>
+  </article>
 </div>
-
-
-
-<br><br><br><br><br><br><br><br>
 {% endblock content %}

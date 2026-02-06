@@ -1,52 +1,44 @@
 {% extends 'student/studentbase.html' %}
+
 {% block content %}
-{%load static%}
+<section class="page-head reveal">
+  <h2>Available Exams</h2>
+  <p class="page-lead">Review exam settings before starting your attempt.</p>
+</section>
 
-<head>
-  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-
-  <style media="screen">
-    a:link {
-      text-decoration: none;
-    }
-
-    h6 {
-      text-align: center;
-    }
-
-    .row {
-      margin: 100px;
-    }
-  </style>
-</head>
-<br><br>
-<div class="container">
-  <div class="panel panel-primary rounded-0">
-    <div class="panel-heading rounded-0">
-      <h6 class="panel-title">Available Courses</h6>
-    </div>
-    <table class="table table-hover table-bordered" id="dev-table">
-      <thead>
-        <tr>
-
-          <th>Exam Name</th>
-          
-          <th>Action</th>
-        </tr>
-      </thead>
+<div class="table-card reveal">
+  <div class="table-head">
+    <h6>Exam Courses</h6>
+  </div>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Exam Name</th>
+        <th>Duration</th>
+        <th>Pass Mark</th>
+        <th>Max Attempts</th>
+        <th class="text-center">Action</th>
+      </tr>
+    </thead>
+    <tbody>
       {% for t in courses %}
       <tr>
-
-        <td> {{t.course_name}}</td>
-        
-        <td class="text-center"><a class="btn btn-primary btn-sm" style="border-radius:0px;" href="{% url 'take-exam' t.id  %}"><span class="glyphicon glyphicon-check"></span> Attend Exam</a></td>
+        <td>{{ t.course_name }}</td>
+        <td>{{ t.duration_minutes }} mins</td>
+        <td>{{ t.pass_mark }}%</td>
+        <td>{{ t.max_attempts }}</td>
+        <td class="text-center">
+          <a class="btn btn-primary btn-sm" href="{% url 'take-exam' t.id %}">
+            <i class="fas fa-play-circle"></i> Take Exam
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td class="text-center text-muted" colspan="5">No exams are available right now.</td>
       </tr>
       {% endfor %}
-    </table>
-  </div>
+    </tbody>
+  </table>
 </div>
-
-<br><br><br><br><br><br>
 {% endblock content %}

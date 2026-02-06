@@ -1,54 +1,64 @@
 {% extends 'exam/adminbase.html' %}
+{% load static %}
+
 {% block content %}
-{%load static%}
+<section class="page-head reveal">
+  <h2>Students</h2>
+  <p class="page-lead">Manage student profiles and institutional records.</p>
+</section>
 
-<head>
-  <style media="screen">
-    a:link {
-      text-decoration: none;
-    }
-
-    h6 {
-      text-align: center;
-    }
-
-    .row {
-      margin: 100px;
-    }
-  </style>
-</head>
-<br><br>
-<div class="container">
-  <div class="panel panel-primary rounded-0">
-    <div class="panel-heading rounded-0">
-      <h6 class="panel-title">Students</h6>
-    </div>
-    <table class="table table-hover table-bordered" id="dev-table">
-      <thead>
-        <tr>
-
-          <th>Name</th>
-          <th>Photo</th>
-          <th>Contact</th>
-          <th>Address</th>
-         
-          <th>Actions</th>
-        </tr>
-      </thead>
+<div class="table-card reveal">
+  <div class="table-head">
+    <h6>Registered Students</h6>
+  </div>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Matric/Reg No.</th>
+        <th>Faculty</th>
+        <th>Department</th>
+        <th>Level</th>
+        <th>Institutional Email</th>
+        <th>Phone</th>
+        <th>Photo</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
       {% for t in students %}
       <tr>
-
-        <td> {{t.get_name}}</td>
-        <td> <img src="{% static t.profile_pic.url %}" alt="Profile Pic" height="40px" width="40px" /></td>
-        <td>{{t.mobile}}</td>
-        <td>{{t.address}}</td>
-        
-        <td class="text-center"><a class="btn btn-primary btn-xs" style="border-radius: 0%;" href="{% url 'update-student' t.id  %}"><small class="fas fa-edit"></small></a>
-        <a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'delete-student' t.id  %}"><small class="fas fa-trash"></small></a></td>
+        <td>{{ t.get_name }}</td>
+        <td>{{ t.matric_number|default:"-" }}</td>
+        <td>{{ t.faculty|default:"-" }}</td>
+        <td>{{ t.department|default:"-" }}</td>
+        <td>{{ t.get_current_level_display }}</td>
+        <td>{{ t.institutional_email|default:"-" }}</td>
+        <td>{{ t.mobile }}</td>
+        <td>
+          {% if t.profile_pic %}
+          <img class="thumb-sm" src="{% static t.profile_pic.url %}" alt="{{ t.get_name }}" />
+          {% else %}
+          <span class="text-muted">No photo</span>
+          {% endif %}
+        </td>
+        <td class="text-center">
+          <div class="action-group">
+            <a class="btn btn-primary btn-sm" href="{% url 'update-student' t.id %}">
+              <i class="fas fa-edit"></i> Edit
+            </a>
+            <a class="btn btn-danger btn-sm" href="{% url 'delete-student' t.id %}">
+              <i class="fas fa-trash"></i> Delete
+            </a>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td class="text-center text-muted" colspan="9">No students found.</td>
       </tr>
       {% endfor %}
-    </table>
-  </div>
+    </tbody>
+  </table>
 </div>
-
 {% endblock content %}
