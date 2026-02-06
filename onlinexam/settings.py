@@ -124,6 +124,13 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [STATIC_DIR]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
+# WhiteNoise static serving for production (Render/gunicorn).
+# `WHITENOISE_USE_FINDERS=True` allows serving from STATICFILES_DIRS
+# when collectstatic has not been executed yet.
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+WHITENOISE_USE_FINDERS = True
+WHITENOISE_MANIFEST_STRICT = False
+
 LOGIN_REDIRECT_URL = "/afterlogin"
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
