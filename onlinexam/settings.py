@@ -18,11 +18,18 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-change-me")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = [
-    host.strip()
-    for host in os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost,testserver").split(",")
-    if host.strip()
-]
+def _split_csv_env(name, default=""):
+    return [value.strip() for value in os.getenv(name, default).split(",") if value.strip()]
+
+
+ALLOWED_HOSTS = _split_csv_env("ALLOWED_HOSTS", "127.0.0.1,localhost,testserver")
+
+render_external_host = os.getenv("RENDER_EXTERNAL_HOSTNAME", "").strip()
+if render_external_host and render_external_host not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(render_external_host)
+
+if os.getenv("RENDER_SERVICE_ID") and ".onrender.com" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(".onrender.com")
 
 # Application definition
 INSTALLED_APPS = [
