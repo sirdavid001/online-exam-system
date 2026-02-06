@@ -1,55 +1,55 @@
 {% extends 'exam/adminbase.html' %}
+
 {% block content %}
-{%load static%}
+<section class="page-head reveal">
+  <h2>Questions</h2>
+  <p class="page-lead">{{ course.course_name }} question bank with full edit and delete controls.</p>
+</section>
 
-<head>
-  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-
-  <style media="screen">
-    a:link {
-      text-decoration: none;
-    }
-
-    h6 {
-      text-align: center;
-    }
-
-    .row {
-      margin: 100px;
-    }
-  </style>
-</head>
-<br><br>
-<div class="container">
-  <div class="panel panel-primary rounded-0">
-    <div class="panel-heading rounded-0">
-      <h6 class="panel-title">Questions</h6>
-    </div>
-    <table class="table table-hover table-bordered" id="dev-table">
-      <thead>
-        <tr>
-
-          <th>Questions</th>
-         
-          <th>Marks</th>
-          <th>Action</th>
-        </tr>
-      </thead>
+<div class="table-card reveal">
+  <div class="table-head">
+    <h6>Question List</h6>
+  </div>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Question</th>
+        <th>Difficulty</th>
+        <th>Marks</th>
+        <th>Explanation</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
       {% for c in questions %}
       <tr>
-
-        <td> {{c.question}}</td>
-        
-        <td>{{c.marks}}</td>
-        <td><a class="btn btn-danger btn-xs" style="border-radius: 0%;" href="{% url 'delete-question' c.id  %}"><span class="glyphicon glyphicon-trash"></span></a></td>
-        
+        <td>{{ c.question|linebreaksbr }}</td>
+        <td>{{ c.get_difficulty_display }}</td>
+        <td>{{ c.marks }}</td>
+        <td>
+          {% if c.explanation %}
+          {{ c.explanation|linebreaksbr }}
+          {% else %}
+          <span class="text-muted">Not provided</span>
+          {% endif %}
+        </td>
+        <td class="text-center">
+          <div class="action-group">
+            <a class="btn btn-primary btn-sm" href="{% url 'update-question' c.id %}">
+              <i class="fas fa-edit"></i> Edit
+            </a>
+            <a class="btn btn-danger btn-sm" href="{% url 'delete-question' c.id %}?next={{ request.path|urlencode }}">
+              <i class="fas fa-trash"></i> Delete
+            </a>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td class="text-center text-muted" colspan="5">No questions found for this course.</td>
       </tr>
       {% endfor %}
-    </table>
-  </div>
+    </tbody>
+  </table>
 </div>
-
-<br><br><br><br><br><br>
 {% endblock content %}

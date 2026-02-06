@@ -2,38 +2,68 @@
 {% load widget_tweaks %}
 {% block content %}
 
-<h2 style="text-align:center;">Add Question</h2>
-<form method="POST" autocomplete="off" style="margin:100px;margin-top: 0px;">
-    {%csrf_token%}
-    <div class="form-group">
+<div class="container">
+  <article class="form-card">
+    <h2>Add Question</h2>
+    <p>Add an MCQ item with explanation and difficulty. For equations, use LaTeX like <code>\(x^2 + y^2 = z^2\)</code>.</p>
+
+    <form method="POST" autocomplete="off" class="stack-form">
+      {% csrf_token %}
+
+      <div class="form-group">
         <label for="question">Course</label>
-      {% render_field questionForm.courseID|attr:'required:true' class="form-control form-control-sm rounded-0"  %}
-        <br>
+        {% render_field questionForm.courseID|attr:'required:true' class="form-control" %}
+      </div>
 
-      <label for="question">Question</label>
-      {% render_field questionForm.question|attr:'required:true' class="form-control form-control-sm rounded-0" placeholder="Example: What is the relation calculus?" %}
-        <br>
-      <label for="question_number">Marks</label>
-      {% render_field questionForm.marks|attr:'required:true' class="form-control form-control-sm rounded-0" placeholder="Example: 5" %}
-        <br>
-      <label for="option1">Option 1</label>
-      {% render_field questionForm.option1|attr:'required:true' class="form-control form-control-sm rounded-0" placeholder="Example: It is a kind of procedural language" %}
-        <br>
-      <label for="option2">Option 2</label>
-      {% render_field questionForm.option2|attr:'required:true' class="form-control form-control-sm rounded-0" placeholder="Example: It is a non-procedural language" %}
-        <br>
-      <label for="option3">Option 3</label>
-      {% render_field questionForm.option3|attr:'required:true' class="form-control form-control-sm rounded-0" placeholder="Example: It is a high-level language" %}
-        <br>
-      <label for="option4">Option 4</label>
-      {% render_field questionForm.option4|attr:'required:true' class="form-control form-control-sm rounded-0" placeholder="Example: It is Data Definition language" %}
-        <br>
-      <label for="answer">Correct Answer</label>
-      {% render_field questionForm.answer|attr:'required:true' class="form-control form-control-sm rounded-0" %}
-    </div>
-    
+      <div class="form-group">
+        <label for="question">Question</label>
+        {% render_field questionForm.question|attr:'required:true' class="form-control" placeholder="Example: Solve \(\int_0^1 x^2 dx\)" %}
+      </div>
 
-    <button type="submit" class="btn btn-success" style="border-radius: 0%;">Submit Question</button>
-  </form>
-<br><br><br>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="question_number">Marks</label>
+          {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="Example: 5" %}
+        </div>
+
+        <div class="form-group">
+          <label for="difficulty">Difficulty</label>
+          {% render_field questionForm.difficulty|attr:'required:true' class="form-control" %}
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="option1">Option 1</label>
+          {% render_field questionForm.option1|attr:'required:true' class="form-control" placeholder="Example: 1/2" %}
+        </div>
+        <div class="form-group">
+          <label for="option2">Option 2</label>
+          {% render_field questionForm.option2|attr:'required:true' class="form-control" placeholder="Example: 1/3" %}
+        </div>
+        <div class="form-group">
+          <label for="option3">Option 3</label>
+          {% render_field questionForm.option3|attr:'required:true' class="form-control" placeholder="Example: 2/3" %}
+        </div>
+        <div class="form-group">
+          <label for="option4">Option 4</label>
+          {% render_field questionForm.option4|attr:'required:true' class="form-control" placeholder="Example: 1/4" %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="answer">Correct Answer</label>
+        {% render_field questionForm.answer|attr:'required:true' class="form-control" %}
+      </div>
+
+      <div class="form-group">
+        <label for="explanation">Solution/Explanation (Optional)</label>
+        {% render_field questionForm.explanation class="form-control" placeholder="Explain the solution logic for review and moderation." %}
+      </div>
+
+      <button type="submit" class="btn btn-success btn-lg">Save Question</button>
+    </form>
+  </article>
+</div>
+
 {% endblock content %}

@@ -1,0 +1,72 @@
+{% extends 'exam/adminbase.html' %}
+{% load widget_tweaks %}
+{% block content %}
+
+<div class="container">
+  <article class="form-card">
+    <h2>Update Question</h2>
+    <p>Edit content, difficulty, options, and answer key. Equation format remains supported with LaTeX.</p>
+
+    <form method="POST" autocomplete="off" class="stack-form">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="question">Course</label>
+        {% render_field questionForm.courseID|attr:'required:true' class="form-control" %}
+      </div>
+
+      <div class="form-group">
+        <label for="question">Question</label>
+        {% render_field questionForm.question|attr:'required:true' class="form-control" placeholder="Example: Which function represents \(f(x)=x^2\)?" %}
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="question_number">Marks</label>
+          {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="Example: 5" %}
+        </div>
+
+        <div class="form-group">
+          <label for="difficulty">Difficulty</label>
+          {% render_field questionForm.difficulty|attr:'required:true' class="form-control" %}
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="option1">Option 1</label>
+          {% render_field questionForm.option1|attr:'required:true' class="form-control" %}
+        </div>
+        <div class="form-group">
+          <label for="option2">Option 2</label>
+          {% render_field questionForm.option2|attr:'required:true' class="form-control" %}
+        </div>
+        <div class="form-group">
+          <label for="option3">Option 3</label>
+          {% render_field questionForm.option3|attr:'required:true' class="form-control" %}
+        </div>
+        <div class="form-group">
+          <label for="option4">Option 4</label>
+          {% render_field questionForm.option4|attr:'required:true' class="form-control" %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="answer">Correct Answer</label>
+        {% render_field questionForm.answer|attr:'required:true' class="form-control" %}
+      </div>
+
+      <div class="form-group">
+        <label for="explanation">Solution/Explanation (Optional)</label>
+        {% render_field questionForm.explanation class="form-control" placeholder="Add explanation for moderation or student feedback." %}
+      </div>
+
+      <div class="d-flex inline-actions">
+        <button type="submit" class="btn btn-success btn-lg">Update Question</button>
+        <a href="{% url 'view-question' question.course_id %}" class="btn btn-secondary btn-lg">Cancel</a>
+      </div>
+    </form>
+  </article>
+</div>
+
+{% endblock content %}

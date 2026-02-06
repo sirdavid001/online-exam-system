@@ -1,38 +1,54 @@
 {% extends 'exam/adminbase.html' %}
 {% load widget_tweaks %}
 {% block content %}
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <style>
-       <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  a:link {
-        text-decoration: none;
-      }
-    
-  </style>
-</head>
-<h2 style="text-align:center;">Add Course</h2>
-<form method="POST" autocomplete="off" style="margin:100px;margin-top: 0px;">
-    {%csrf_token%}
-    <div class="form-group">
-      <label for="course_name">Course Name</label>
-      {% render_field courseForm.course_name class="form-control rounded-0" placeholder="Example: Software Engineering" %}
 
-      <label for="question_number">Total Question</label>
-      {% render_field courseForm.question_number class="form-control rounded-0" placeholder="Example: 50" %}
+<div class="container">
+  <article class="form-card">
+    <h2>Create Course</h2>
+    <p>Configure exam rules. Question count and total marks are calculated automatically from added questions.</p>
 
-      <label for="total_marks">Total Marks</label>
-      {% render_field courseForm.total_marks class="form-control rounded-0" placeholder="Example: 100" %}
-    </div>
-    
+    <form method="POST" autocomplete="off" class="stack-form">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="course_name">Course Name</label>
+        {% render_field courseForm.course_name class="form-control" placeholder="Example: Engineering Mathematics I" %}
+      </div>
 
-    <button type="submit" class="btn btn-primary rounded-0">Add Course Info</button>
-  </form>
-<br><br><br>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="duration_minutes">Duration (Minutes)</label>
+          {% render_field courseForm.duration_minutes class="form-control" placeholder="Example: 90" %}
+        </div>
+
+        <div class="form-group">
+          <label for="pass_mark">Pass Mark (%)</label>
+          {% render_field courseForm.pass_mark class="form-control" placeholder="Example: 50" %}
+        </div>
+
+        <div class="form-group">
+          <label for="max_attempts">Max Attempts</label>
+          {% render_field courseForm.max_attempts class="form-control" placeholder="Example: 3" %}
+        </div>
+
+        <div class="form-group">
+          <label for="negative_mark_per_wrong">Negative Mark Per Wrong Answer</label>
+          {% render_field courseForm.negative_mark_per_wrong class="form-control" placeholder="Example: 0.25" %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="shuffle_questions">Shuffle Questions</label>
+        {% render_field courseForm.shuffle_questions class="form-control" %}
+      </div>
+
+      <div class="form-group">
+        <label for="instructions">Instructions</label>
+        {% render_field courseForm.instructions class="form-control" placeholder="Provide exam instructions shown to students before the exam starts." %}
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg">Save Course</button>
+    </form>
+  </article>
+</div>
+
 {% endblock content %}
