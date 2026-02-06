@@ -1,0 +1,24 @@
+#!/bin/sh
+set -u
+
+# Auto-push current branch after each commit.
+# Disable temporarily with: git config autopush.enabled false
+
+enabled=$(git config --get autopush.enabled || echo true)
+if [ "$enabled" = "false" ]; then
+  exit 0
+fi
+
+if [ -d .git/rebase-apply ] || [ -d .git/rebase-merge ]; then
+  exit 0
+fi
+
+branch=$(git symbolic-ref --quiet --short HEAD 2>/dev/null) || exit 0
+remote=$(git config --get autopush.remote || echo origin)
+
+echo "[autopush] pushing ${branch} -> ${remote}"
+if git push "$remote" "$branch"; then
+  echo "[autopush] push successful"
+else
+  echo "[autopush] push failed (commit is still saved locally)" >&2
+fi
