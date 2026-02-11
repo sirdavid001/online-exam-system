@@ -23,14 +23,6 @@ def _clear_exam_session(request, course_id):
     request.session.pop(_exam_session_key(course_id, "started_at"), None)
 
 
-# for showing signup/login button for student
-
-def studentclick_view(request):
-    if request.user.is_authenticated:
-        return HttpResponseRedirect("afterlogin")
-    return render(request, "student/studentclick.html")
-
-
 def student_signup_view(request):
     userForm = forms.StudentUserForm()
     studentForm = forms.StudentForm()

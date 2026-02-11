@@ -17,9 +17,9 @@
 
     <div class="nav-links" data-nav-menu>
       <a href="/">Home</a>
-      <a href="/teacher/teacherclick">Teacher</a>
-      <a href="/student/studentclick">Student</a>
-      <a href="/adminclick">Admin</a>
+      <a href="{% url 'studentlogin' %}">Student</a>
+      <a href="{% url 'teacherlogin' %}">Teacher</a>
+      <a href="{% url 'adminlogin' %}" class="nav-cta">Admin</a>
       <a href="/contactus">Contact</a>
     </div>
   </div>

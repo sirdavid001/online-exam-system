@@ -56,12 +56,6 @@ def afterlogin_view(request):
     return redirect("logout")
 
 
-def adminclick_view(request):
-    if request.user.is_authenticated:
-        return HttpResponseRedirect("afterlogin")
-    return HttpResponseRedirect("adminlogin")
-
-
 def _result_export_queryset():
     return models.Result.objects.select_related("student__user", "exam").order_by("-date", "-attempt_number")
 

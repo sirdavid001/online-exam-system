@@ -5,40 +5,57 @@
 {% block content %}
 <section class="hero-shell">
   <article class="hero-content">
-    <p class="eyebrow">Fast. Transparent. Structured.</p>
-    <h1>Professional Online Examination Platform</h1>
+    <p class="eyebrow">Assessment Excellence, End to End</p>
+    <h1>Secure and professional exam operations for modern institutions.</h1>
     <p>
-      Manage assessments, track results, and keep exam workflows organized for students,
-      teachers, and administrators in one place.
+      Launch tests quickly, manage questions with confidence, and keep student performance
+      records organized across departments and sessions.
     </p>
 
     <div class="hero-actions">
-      <a href="/student/studentsignup" class="btn btn-brand btn-lg">
-        <i class="fas fa-user-graduate"></i> Start as Student
+      <a href="{% url 'studentlogin' %}" class="btn btn-brand btn-lg">
+        <i class="fas fa-user-graduate"></i> Student Login
       </a>
-      <a href="/teacher/teachersignup" class="btn btn-outline-brand btn-lg">
-        <i class="fas fa-chalkboard-teacher"></i> Register as Teacher
+      <a href="{% url 'teacherlogin' %}" class="btn btn-outline-brand btn-lg">
+        <i class="fas fa-chalkboard-teacher"></i> Teacher Login
       </a>
+      <a href="{% url 'adminlogin' %}" class="btn btn-dark btn-lg">
+        <i class="fas fa-user-shield"></i> Admin Login
+      </a>
+    </div>
+
+    <div class="hero-points">
+      <span><i class="fas fa-shield-alt"></i> Secure exam sessions</span>
+      <span><i class="fas fa-chart-line"></i> Instant result analytics</span>
+      <span><i class="fas fa-history"></i> Attempt and score history</span>
     </div>
   </article>
 
   <div class="hero-grid">
     <article class="hero-card">
-      <h3>Student Workflow</h3>
-      <p>Join exams, follow clear instructions, and view marks instantly.</p>
-      <a href="/student/studentclick" class="btn btn-primary btn-sm">Student Access</a>
+      <h3>Student Portal</h3>
+      <p>Access exams, follow clear instructions, and review marks with full attempt history.</p>
+      <div class="card-actions">
+        <a href="{% url 'studentlogin' %}" class="btn btn-primary btn-sm">Sign In</a>
+        <a href="{% url 'studentsignup' %}" class="btn btn-outline-brand btn-sm">Create Account</a>
+      </div>
     </article>
 
     <article class="hero-card">
       <h3>Teacher Workspace</h3>
-      <p>Create courses, add questions, and manage exam content efficiently.</p>
-      <a href="/teacher/teacherclick" class="btn btn-primary btn-sm">Teacher Access</a>
+      <p>Create exams, upload question banks, and monitor class performance from one dashboard.</p>
+      <div class="card-actions">
+        <a href="{% url 'teacherlogin' %}" class="btn btn-primary btn-sm">Sign In</a>
+        <a href="{% url 'teachersignup' %}" class="btn btn-outline-brand btn-sm">Register</a>
+      </div>
     </article>
 
     <article class="hero-card">
       <h3>Admin Console</h3>
-      <p>Approve teachers, monitor students, and control the whole system.</p>
-      <a href="/adminclick" class="btn btn-primary btn-sm">Admin Access</a>
+      <p>Control approvals, track platform performance, and export institutional reports.</p>
+      <div class="card-actions">
+        <a href="{% url 'adminlogin' %}" class="btn btn-primary btn-sm">Open Console</a>
+      </div>
     </article>
   </div>
 </section>

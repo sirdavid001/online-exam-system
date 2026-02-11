@@ -14,7 +14,6 @@ urlpatterns = [
     path('contactus', views.contactus_view),
     path('afterlogin', views.afterlogin_view, name='afterlogin'),
 
-    path('adminclick', views.adminclick_view),
     path('adminlogin', LoginView.as_view(template_name='exam/adminlogin.html'), name='adminlogin'),
     path('admin-dashboard', views.admin_dashboard_view, name='admin-dashboard'),
     path('admin-results', views.admin_results_view, name='admin-results'),
