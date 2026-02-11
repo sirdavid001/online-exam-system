@@ -1125,3 +1125,358 @@ body.sidebar-collapsed .app-stage {
     align-items: flex-start;
   }
 }
+
+/* Premium refinement layer */
+:root {
+  --font-heading: "Space Grotesk", "Trebuchet MS", sans-serif;
+  --font-body: "Manrope", "Segoe UI", sans-serif;
+}
+
+body {
+  letter-spacing: 0.004em;
+}
+
+.public-main {
+  position: relative;
+}
+
+.public-main::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(15, 40, 67, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 40, 67, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 85%);
+}
+
+.hero-content,
+.hero-card,
+.auth-card,
+.form-card,
+.alert-card,
+.waiting-card {
+  backdrop-filter: blur(6px);
+}
+
+.btn,
+button,
+input[type="submit"] {
+  box-shadow: 0 10px 18px rgba(15, 40, 67, 0.14);
+}
+
+.btn-primary,
+.btn-brand,
+.btn-dark,
+.btn-success,
+.btn-danger {
+  border: 1px solid rgba(255, 255, 255, 0.26);
+}
+
+.btn-secondary,
+.btn-outline-brand {
+  background: rgba(255, 255, 255, 0.78);
+  border-color: rgba(15, 77, 124, 0.34);
+}
+
+.btn-sm,
+.btn-xs {
+  font-weight: 700;
+}
+
+.dashboard-shell .app-stage {
+  background: linear-gradient(180deg, rgba(240, 246, 252, 0.66), rgba(233, 241, 249, 0.68));
+}
+
+.app-sidebar {
+  width: 286px;
+  border-right: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.app-stage {
+  margin-left: 286px;
+}
+
+.admin-shell .app-sidebar {
+  background: linear-gradient(165deg, #0f2d46 0%, #123b59 56%, #1c4b67 100%);
+}
+
+.teacher-shell .app-sidebar {
+  background: linear-gradient(165deg, #173543 0%, #1b4a5d 57%, #24596d 100%);
+}
+
+.student-shell .app-sidebar {
+  background: linear-gradient(165deg, #1a3152 0%, #1f4367 58%, #255472 100%);
+}
+
+.app-brand {
+  padding-bottom: 0.95rem;
+  margin-bottom: 1.1rem;
+}
+
+.app-brand i {
+  font-size: 1.08rem;
+  color: #f5c97a;
+}
+
+.profile-chip {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.08));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.profile-chip h4 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+.app-nav-link {
+  border: 1px solid transparent;
+}
+
+.app-nav-link:hover,
+.app-nav-link.is-active {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.app-topbar {
+  padding: 0.95rem 1.25rem;
+  background: rgba(251, 254, 255, 0.78);
+  box-shadow: 0 8px 20px rgba(15, 40, 67, 0.08);
+}
+
+.topbar-title {
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
+
+.topbar-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.role-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+  border-radius: 999px;
+  padding: 0.22rem 0.72rem;
+  border: 1px solid transparent;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.role-admin {
+  background: rgba(18, 60, 95, 0.12);
+  border-color: rgba(18, 60, 95, 0.2);
+  color: #103b61;
+}
+
+.role-teacher {
+  background: rgba(22, 92, 85, 0.12);
+  border-color: rgba(22, 92, 85, 0.2);
+  color: #15534d;
+}
+
+.role-student {
+  background: rgba(27, 77, 136, 0.11);
+  border-color: rgba(27, 77, 136, 0.2);
+  color: #164676;
+}
+
+.content-wrap {
+  padding: 1.2rem 1.15rem 2.3rem;
+}
+
+.page-head {
+  padding: 0.1rem 0.1rem 0.35rem;
+}
+
+.page-head h1,
+.page-head h2,
+.page-head h3 {
+  font-size: clamp(1.3rem, 2.4vw, 1.75rem);
+}
+
+.metric-card {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.metric-card h6 {
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+}
+
+.table-card {
+  border-radius: 20px;
+  border: 1px solid rgba(16, 35, 58, 0.12);
+}
+
+.table-head {
+  background: linear-gradient(124deg, #153c5b 0%, #1d5b84 100%);
+}
+
+.table {
+  font-size: 0.93rem;
+}
+
+.table thead th {
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.table tbody tr:hover {
+  background: #edf5ff;
+}
+
+.badge {
+  border-radius: 999px;
+  padding: 0.3rem 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+}
+
+.badge-success {
+  background: #d8f2e3;
+  color: #1f6f4a;
+}
+
+.badge-danger {
+  background: #f6dbdd;
+  color: #8f2f34;
+}
+
+.stack-form .form-control,
+.stack-form input,
+.stack-form select,
+.stack-form textarea,
+form .form-control,
+form input[type="text"],
+form input[type="number"],
+form input[type="password"],
+form input[type="email"],
+form input[type="file"],
+form select,
+form textarea {
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.errorlist {
+  margin: 0.28rem 0 0;
+  padding: 0;
+  list-style: none;
+  color: #a63437;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.errorlist li {
+  margin: 0;
+}
+
+.helptext {
+  display: block;
+  margin-top: 0.26rem;
+  color: #586a7e;
+  font-size: 0.79rem;
+}
+
+.flash-stack .alert {
+  background: #fff;
+  border-left: 4px solid #1f4f7a;
+}
+
+.flash-stack .alert-success {
+  border-left-color: #1f8f5f;
+}
+
+.flash-stack .alert-warning {
+  border-left-color: #b57a1e;
+}
+
+.flash-stack .alert-danger {
+  border-left-color: #be3a3a;
+}
+
+.auth-card,
+.form-card,
+.alert-card,
+.waiting-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-card::before,
+.form-card::before,
+.alert-card::before,
+.waiting-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(90deg, rgba(18, 73, 115, 0.92), rgba(185, 135, 47, 0.85));
+}
+
+.brand-strip {
+  width: min(1120px, 95vw);
+  margin: 1rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.brand-item {
+  padding: 0.95rem 1rem;
+  border-radius: 16px;
+  border: 1px solid rgba(16, 35, 58, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 10px 24px rgba(15, 40, 67, 0.08);
+}
+
+.brand-item h4 {
+  margin-bottom: 0.35rem;
+  color: #123d63;
+  font-size: 0.96rem;
+}
+
+.brand-item p {
+  margin: 0;
+  font-size: 0.86rem;
+}
+
+.dashboard-shell .site-footer {
+  margin-top: auto;
+}
+
+@media (max-width: 1024px) {
+  .brand-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .app-stage {
+    margin-left: 0;
+  }
+
+  .topbar-right .role-pill {
+    display: none;
+  }
+
+  .topbar-title {
+    font-size: 0.96rem;
+  }
+
+  .table-card .table {
+    min-width: 680px;
+  }
+}
