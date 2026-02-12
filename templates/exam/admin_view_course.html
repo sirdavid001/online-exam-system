@@ -3,56 +3,124 @@
 {% block content %}
 <section class="page-head reveal">
   <h2>Courses</h2>
-  <p class="page-lead">Review and edit course exam settings, then manage each course question bank.</p>
+  <p class="page-lead">Review governance settings, publish status, and exam availability windows.</p>
 </section>
 
 <div class="table-card reveal">
   <div class="table-head">
-    <h6>Available Courses</h6>
+    <h6>Search and Filter</h6>
   </div>
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Course</th>
-        <th>Questions</th>
-        <th>Total Marks</th>
-        <th>Duration</th>
-        <th>Pass Mark</th>
-        <th>Attempts</th>
-        <th>Negative</th>
-        <th class="text-center">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for t in courses %}
-      <tr>
-        <td>{{ t.course_name }}</td>
-        <td>{{ t.question_number }}</td>
-        <td>{{ t.total_marks }}</td>
-        <td>{{ t.duration_minutes }} mins</td>
-        <td>{{ t.pass_mark }}%</td>
-        <td>{{ t.max_attempts }}</td>
-        <td>{{ t.negative_mark_per_wrong }}</td>
-        <td class="text-center">
-          <div class="action-group">
-            <a class="btn btn-primary btn-sm" href="{% url 'update-course' t.id %}">
-              <i class="fas fa-edit"></i> Edit
-            </a>
-            <a class="btn btn-secondary btn-sm" href="{% url 'view-question' t.id %}">
-              <i class="fas fa-list"></i> Questions
-            </a>
-            <a class="btn btn-danger btn-sm" href="{% url 'delete-course' t.id %}">
-              <i class="fas fa-trash"></i> Delete
-            </a>
-          </div>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td class="text-center text-muted" colspan="8">No courses created yet.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="p-3">
+    <form method="get" class="form-grid">
+      <div class="form-group">
+        <label for="q">Keyword</label>
+        <input
+          type="text"
+          id="q"
+          name="q"
+          value="{{ selected_q }}"
+          class="form-control"
+          placeholder="Course name, code, or session"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="status">Publish Status</label>
+        <select id="status" name="status" class="form-control">
+          <option value="" {% if not selected_status %}selected{% endif %}>All statuses</option>
+          <option value="published" {% if selected_status == "published" %}selected{% endif %}>Published only</option>
+          <option value="unpublished" {% if selected_status == "unpublished" %}selected{% endif %}>Unpublished only</option>
+        </select>
+      </div>
+
+      <div class="form-group d-flex align-items-end inline-actions">
+        <button type="submit" class="btn btn-primary">Apply</button>
+        <a href="{% url 'admin-view-course' %}" class="btn btn-secondary">Reset</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="table-card mt-3 reveal">
+  <div class="table-head">
+    <h6>Available Courses ({{ courses_count }})</h6>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Course</th>
+          <th>Academic</th>
+          <th>Status</th>
+          <th>Questions</th>
+          <th>Duration</th>
+          <th>Pass Mark</th>
+          <th>Availability</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in courses %}
+        <tr>
+          <td>
+            <strong>{{ t.course_name }}</strong><br />
+            <span class="text-muted">{{ t.course_code|default:"-" }}</span>
+          </td>
+          <td>
+            {{ t.get_level_display }}<br />
+            <span class="text-muted">{{ t.get_semester_display }} &middot; {{ t.academic_session|default:"N/A" }}</span>
+          </td>
+          <td>
+            {% if t.is_published %}
+            <span class="badge badge-success">Published</span>
+            {% else %}
+            <span class="badge badge-danger">Unpublished</span>
+            {% endif %}
+          </td>
+          <td>{{ t.question_number }} / {{ t.total_marks }}</td>
+          <td>{{ t.duration_minutes }} mins</td>
+          <td>{{ t.pass_mark }}%</td>
+          <td>
+            {% if t.available_from or t.available_until %}
+              {{ t.available_from|date:"Y-m-d H:i"|default:"Open" }}<br />
+              <span class="text-muted">to {{ t.available_until|date:"Y-m-d H:i"|default:"No end" }}</span>
+            {% else %}
+              Always open
+            {% endif %}
+          </td>
+          <td class="text-center">
+            <div class="action-group action-group-wrap">
+              <a class="btn btn-primary btn-sm" href="{% url 'update-course' t.id %}">
+                <i class="fas fa-edit"></i> Edit
+              </a>
+              <a class="btn btn-secondary btn-sm" href="{% url 'view-question' t.id %}">
+                <i class="fas fa-list"></i> Questions
+              </a>
+              <a class="btn btn-danger btn-sm" href="{% url 'delete-course' t.id %}">
+                <i class="fas fa-trash"></i> Delete
+              </a>
+              <form method="post" action="{% url 'toggle-course-publish' t.id %}?next={{ request.get_full_path|urlencode }}">
+                {% csrf_token %}
+                {% if t.is_published %}
+                <button class="btn btn-secondary btn-sm" type="submit">
+                  <i class="fas fa-lock"></i> Unpublish
+                </button>
+                {% else %}
+                <button class="btn btn-success btn-sm" type="submit">
+                  <i class="fas fa-check-circle"></i> Publish
+                </button>
+                {% endif %}
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td class="text-center text-muted" colspan="8">No courses match the selected filters.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock content %}

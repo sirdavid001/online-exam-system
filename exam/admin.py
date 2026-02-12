@@ -1,12 +1,16 @@
 from django.contrib import admin
 
-from .models import Course, Question, Result
+from .models import AdminAnnouncement, Course, InstitutionSettings, Question, Result
 
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
     list_display = (
+        "course_code",
         "course_name",
+        "level",
+        "semester",
+        "academic_session",
         "question_number",
         "total_marks",
         "duration_minutes",
@@ -14,21 +18,34 @@ class CourseAdmin(admin.ModelAdmin):
         "max_attempts",
         "negative_mark_per_wrong",
         "shuffle_questions",
+        "is_published",
+        "available_from",
+        "available_until",
     )
     list_filter = (
+        "is_published",
+        "level",
+        "semester",
         "shuffle_questions",
         "pass_mark",
         "max_attempts",
         "duration_minutes",
     )
-    search_fields = ("course_name", "instructions")
+    search_fields = ("course_name", "course_code", "academic_session", "instructions")
     ordering = ("course_name",)
     readonly_fields = ("question_number", "total_marks")
     fieldsets = (
         (
             "Course Details",
             {
-                "fields": ("course_name", "instructions"),
+                "fields": (
+                    "course_name",
+                    "course_code",
+                    "level",
+                    "semester",
+                    "academic_session",
+                    "instructions",
+                ),
             },
         ),
         (
@@ -40,6 +57,9 @@ class CourseAdmin(admin.ModelAdmin):
                     "max_attempts",
                     "negative_mark_per_wrong",
                     "shuffle_questions",
+                    "is_published",
+                    "available_from",
+                    "available_until",
                 ),
             },
         ),
@@ -109,6 +129,37 @@ class ResultAdmin(admin.ModelAdmin):
         return obj.student.get_name
 
     student_name.short_description = "Student"
+
+
+@admin.register(InstitutionSettings)
+class InstitutionSettingsAdmin(admin.ModelAdmin):
+    list_display = (
+        "institution_name",
+        "short_name",
+        "current_session",
+        "current_semester",
+        "allow_student_signup",
+        "allow_teacher_signup",
+        "updated_at",
+    )
+    search_fields = ("institution_name", "short_name", "support_email")
+    readonly_fields = ("updated_at",)
+
+
+@admin.register(AdminAnnouncement)
+class AdminAnnouncementAdmin(admin.ModelAdmin):
+    list_display = (
+        "title",
+        "audience",
+        "is_active",
+        "starts_at",
+        "ends_at",
+        "updated_at",
+    )
+    list_filter = ("audience", "is_active", "starts_at", "ends_at")
+    search_fields = ("title", "message")
+    ordering = ("-created_at",)
+    readonly_fields = ("created_at", "updated_at")
 
 
 admin.site.site_header = "Online Examination Backend"

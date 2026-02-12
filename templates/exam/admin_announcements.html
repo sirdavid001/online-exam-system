@@ -1,0 +1,141 @@
+{% extends 'exam/adminbase.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<section class="page-head reveal">
+  <h2>Announcements</h2>
+  <p class="page-lead">Create timed institutional updates for students, teachers, or all users.</p>
+</section>
+
+<div class="stack-card reveal">
+  <article class="form-card">
+    <h3>{% if edit_announcement %}Update Announcement{% else %}Create Announcement{% endif %}</h3>
+    <p class="mb-3">Set an optional active window. Leave dates blank to publish immediately without expiry.</p>
+
+    <form method="post" class="stack-form">
+      {% csrf_token %}
+      {% if edit_announcement %}
+      <input type="hidden" name="announcement_id" value="{{ edit_announcement.id }}" />
+      {% endif %}
+
+      <div class="form-grid">
+        <div class="form-group span-2">
+          <label for="title">Title</label>
+          {% render_field form.title class="form-control" placeholder="Examination timetable update" %}
+          {{ form.title.errors }}
+        </div>
+
+        <div class="form-group">
+          <label for="audience">Audience</label>
+          {% render_field form.audience class="form-control" %}
+          {{ form.audience.errors }}
+        </div>
+
+        <div class="form-group d-flex align-items-end">
+          <label class="form-checkbox">
+            {{ form.is_active }}
+            <span>Announcement is active</span>
+          </label>
+          {{ form.is_active.errors }}
+        </div>
+
+        <div class="form-group">
+          <label for="starts_at">Starts At</label>
+          {% render_field form.starts_at class="form-control" %}
+          {{ form.starts_at.errors }}
+        </div>
+
+        <div class="form-group">
+          <label for="ends_at">Ends At</label>
+          {% render_field form.ends_at class="form-control" %}
+          {{ form.ends_at.errors }}
+        </div>
+
+        <div class="form-group span-2">
+          <label for="message">Message</label>
+          {% render_field form.message class="form-control" placeholder="Write the announcement details..." %}
+          {{ form.message.errors }}
+        </div>
+      </div>
+
+      <div class="d-flex inline-actions">
+        <button type="submit" class="btn btn-primary btn-lg">
+          {% if edit_announcement %}Update{% else %}Publish{% endif %} Announcement
+        </button>
+        {% if edit_announcement %}
+        <a href="{% url 'admin-announcements' %}" class="btn btn-secondary btn-lg">Cancel Edit</a>
+        {% endif %}
+      </div>
+    </form>
+  </article>
+</div>
+
+<div class="table-card mt-3 reveal">
+  <div class="table-head">
+    <h6>Announcement Registry</h6>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Audience</th>
+          <th>Status</th>
+          <th>Window</th>
+          <th>Message</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in announcements %}
+        <tr>
+          <td>{{ item.title }}</td>
+          <td>{{ item.get_audience_display }}</td>
+          <td>
+            {% if item.is_active %}
+            <span class="badge badge-success">Active</span>
+            {% else %}
+            <span class="badge badge-danger">Inactive</span>
+            {% endif %}
+          </td>
+          <td>
+            {{ item.starts_at|date:"Y-m-d H:i"|default:"Immediate" }}<br />
+            <span class="text-muted">to {{ item.ends_at|date:"Y-m-d H:i"|default:"No end" }}</span>
+          </td>
+          <td>{{ item.message|truncatechars:100 }}</td>
+          <td class="text-center">
+            <div class="action-group action-group-wrap">
+              <a class="btn btn-primary btn-sm" href="{% url 'admin-announcements' %}?edit={{ item.id }}">
+                <i class="fas fa-edit"></i> Edit
+              </a>
+              <form method="post" action="{% url 'toggle-announcement' item.id %}">
+                {% csrf_token %}
+                {% if item.is_active %}
+                <button class="btn btn-secondary btn-sm" type="submit">
+                  <i class="fas fa-toggle-off"></i> Deactivate
+                </button>
+                {% else %}
+                <button class="btn btn-success btn-sm" type="submit">
+                  <i class="fas fa-toggle-on"></i> Activate
+                </button>
+                {% endif %}
+              </form>
+              <form method="post" action="{% url 'delete-announcement' item.id %}">
+                {% csrf_token %}
+                <button class="btn btn-danger btn-sm" type="submit">
+                  <i class="fas fa-trash"></i> Delete
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center text-muted">No announcements created yet.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock content %}

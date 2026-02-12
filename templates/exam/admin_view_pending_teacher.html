@@ -1,6 +1,4 @@
 {% extends 'exam/adminbase.html' %}
-{% load static %}
-
 {% block content %}
 <section class="page-head reveal">
   <h2>Pending Teacher Approvals</h2>
@@ -37,7 +35,7 @@
         <td>{{ t.mobile }}</td>
         <td>
           {% if t.profile_pic %}
-          <img class="thumb-sm" src="{% static t.profile_pic.url %}" alt="{{ t.get_name }}" />
+          <img class="thumb-sm" src="{{ t.profile_pic.url }}" alt="{{ t.get_name }}" />
           {% else %}
           <span class="text-muted">No photo</span>
           {% endif %}

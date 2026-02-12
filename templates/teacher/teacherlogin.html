@@ -7,17 +7,21 @@
 <section class="auth-shell">
   <article class="auth-card">
     <h1>Teacher Login</h1>
-    <p>Sign in to manage courses and question sets.</p>
+    <p>Sign in with your username, staff ID, or official email to manage courses and question sets.</p>
 
     <form method="post" class="stack-form">
       {% csrf_token %}
       <div class="form-group">
-        <label for="id_username">Username</label>
-        {% render_field form.username class="form-control" autocomplete="off" placeholder="Enter username" %}
+        <label for="id_username">Username / Staff ID / Official Email</label>
+        {% render_field form.username class="form-control" autocomplete="off" placeholder="e.g. DOU/CSE/2026/014 or lecturer@university.edu.ng" %}
       </div>
       <div class="form-group">
         <label for="id_password">Password</label>
         {% render_field form.password class="form-control" autocomplete="off" placeholder="Enter password" %}
+      </div>
+      <div class="auth-meta">
+        <span class="auth-help">Need account access recovery?</span>
+        <a href="{% url 'password-reset' %}" class="auth-link">Forgot password?</a>
       </div>
       <button type="submit" class="btn btn-brand btn-lg">Sign In</button>
     </form>

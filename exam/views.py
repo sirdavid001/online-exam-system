@@ -24,6 +24,14 @@ def home_view(request):
     return render(request, "exam/index.html")
 
 
+def privacy_policy_view(request):
+    return render(request, "exam/privacy_policy.html")
+
+
+def terms_of_use_view(request):
+    return render(request, "exam/terms_of_use.html")
+
+
 def is_teacher(user):
     return user.groups.filter(name="TEACHER").exists()
 
@@ -60,12 +68,28 @@ def _result_export_queryset():
     return models.Result.objects.select_related("student__user", "exam").order_by("-date", "-attempt_number")
 
 
+def _get_institution_settings():
+    settings_obj, _ = models.InstitutionSettings.objects.get_or_create(
+        pk=1,
+        defaults={
+            "institution_name": "Dennis Osadebay University",
+            "short_name": "DOU",
+            "current_session": "2026/2027",
+            "current_semester": "FIRST",
+        },
+    )
+    return settings_obj
+
+
 @admin_required
 def admin_dashboard_view(request):
+    institution = _get_institution_settings()
     total_student = SMODEL.Student.objects.count()
     total_teacher = TMODEL.Teacher.objects.filter(status=True).count()
     total_course = models.Course.objects.count()
     total_question = models.Question.objects.count()
+    published_courses = models.Course.objects.filter(is_published=True).count()
+    unpublished_courses = total_course - published_courses
 
     total_attempts = models.Result.objects.count()
     pass_attempts = models.Result.objects.filter(passed=True).count()
@@ -97,10 +121,13 @@ def admin_dashboard_view(request):
     )
 
     context = {
+        "institution": institution,
         "total_student": total_student,
         "total_teacher": total_teacher,
         "total_course": total_course,
         "total_question": total_question,
+        "published_courses": published_courses,
+        "unpublished_courses": unpublished_courses,
         "total_attempts": total_attempts,
         "pass_attempts": pass_attempts,
         "failed_attempts": failed_attempts,
@@ -111,8 +138,92 @@ def admin_dashboard_view(request):
         "pending_teacher": TMODEL.Teacher.objects.filter(status=False).count(),
         "top_courses": top_courses,
         "at_risk_students": at_risk_students,
+        "active_announcements": models.AdminAnnouncement.active_for(
+            models.AdminAnnouncement.AUDIENCE_ALL
+        ).count(),
+        "latest_announcements": models.AdminAnnouncement.objects.order_by("-created_at")[:6],
+        "governance_alert_courses": models.Course.objects.filter(
+            Q(is_published=False) | Q(question_number=0)
+        ).order_by("course_name")[:8],
     }
     return render(request, "exam/admin_dashboard.html", context=context)
+
+
+@admin_required
+def admin_system_settings_view(request):
+    settings_obj = _get_institution_settings()
+    form = forms.InstitutionSettingsForm(instance=settings_obj)
+
+    if request.method == "POST":
+        form = forms.InstitutionSettingsForm(request.POST, instance=settings_obj)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Institution settings updated successfully.")
+            return redirect("admin-system-settings")
+        messages.error(request, "Could not update institution settings. Review the fields below.")
+
+    return render(request, "exam/admin_system_settings.html", {"form": form, "settings_obj": settings_obj})
+
+
+@admin_required
+def admin_announcements_view(request):
+    announcement_id = request.GET.get("edit")
+    edit_announcement = None
+    if announcement_id:
+        edit_announcement = get_object_or_404(models.AdminAnnouncement, id=announcement_id)
+
+    form = forms.AdminAnnouncementForm(instance=edit_announcement)
+
+    if request.method == "POST":
+        posted_announcement_id = request.POST.get("announcement_id")
+        instance = None
+        if posted_announcement_id:
+            instance = get_object_or_404(models.AdminAnnouncement, id=posted_announcement_id)
+        form = forms.AdminAnnouncementForm(request.POST, instance=instance)
+        if form.is_valid():
+            announcement = form.save()
+            action = "updated" if posted_announcement_id else "created"
+            messages.success(request, f"Announcement '{announcement.title}' {action} successfully.")
+            return redirect("admin-announcements")
+        messages.error(request, "Could not save announcement. Review the fields below.")
+
+    announcements = models.AdminAnnouncement.objects.all()
+    return render(
+        request,
+        "exam/admin_announcements.html",
+        {
+            "form": form,
+            "announcements": announcements,
+            "edit_announcement": edit_announcement,
+        },
+    )
+
+
+@admin_required
+def toggle_announcement_view(request, pk):
+    if request.method != "POST":
+        messages.error(request, "Invalid announcement action request.")
+        return redirect("admin-announcements")
+
+    announcement = get_object_or_404(models.AdminAnnouncement, id=pk)
+    announcement.is_active = not announcement.is_active
+    announcement.save(update_fields=["is_active", "updated_at"])
+    status = "active" if announcement.is_active else "inactive"
+    messages.success(request, f"Announcement '{announcement.title}' is now {status}.")
+    return redirect("admin-announcements")
+
+
+@admin_required
+def delete_announcement_view(request, pk):
+    if request.method != "POST":
+        messages.error(request, "Invalid announcement action request.")
+        return redirect("admin-announcements")
+
+    announcement = get_object_or_404(models.AdminAnnouncement, id=pk)
+    title = announcement.title
+    announcement.delete()
+    messages.success(request, f"Announcement '{title}' deleted.")
+    return redirect("admin-announcements")
 
 
 @admin_required
@@ -295,6 +406,10 @@ def admin_export_courses_csv_view(request):
     writer.writerow(
         [
             "Course",
+            "Course Code",
+            "Level",
+            "Semester",
+            "Academic Session",
             "Questions",
             "Total Marks",
             "Duration Minutes",
@@ -302,6 +417,9 @@ def admin_export_courses_csv_view(request):
             "Max Attempts",
             "Negative Mark Per Wrong",
             "Shuffle Questions",
+            "Published",
+            "Available From",
+            "Available Until",
         ]
     )
 
@@ -309,6 +427,10 @@ def admin_export_courses_csv_view(request):
         writer.writerow(
             [
                 course.course_name,
+                course.course_code,
+                course.get_level_display(),
+                course.get_semester_display(),
+                course.academic_session,
                 course.question_number,
                 course.total_marks,
                 course.duration_minutes,
@@ -316,6 +438,9 @@ def admin_export_courses_csv_view(request):
                 course.max_attempts,
                 course.negative_mark_per_wrong,
                 "Yes" if course.shuffle_questions else "No",
+                "Yes" if course.is_published else "No",
+                course.available_from.isoformat() if course.available_from else "",
+                course.available_until.isoformat() if course.available_until else "",
             ]
         )
 
@@ -333,8 +458,25 @@ def admin_teacher_view(request):
 
 @admin_required
 def admin_view_teacher_view(request):
-    teachers = TMODEL.Teacher.objects.filter(status=True)
-    return render(request, "exam/admin_view_teacher.html", {"teachers": teachers})
+    selected_q = request.GET.get("q", "").strip()
+    teachers = TMODEL.Teacher.objects.filter(status=True).select_related("user")
+
+    if selected_q:
+        teachers = teachers.filter(
+            Q(user__first_name__icontains=selected_q)
+            | Q(user__last_name__icontains=selected_q)
+            | Q(staff_id__icontains=selected_q)
+            | Q(official_email__icontains=selected_q)
+            | Q(department__icontains=selected_q)
+            | Q(faculty__icontains=selected_q)
+        )
+
+    teachers = teachers.order_by("user__last_name", "user__first_name")
+    return render(
+        request,
+        "exam/admin_view_teacher.html",
+        {"teachers": teachers, "selected_q": selected_q, "teachers_count": teachers.count()},
+    )
 
 
 @admin_required
@@ -409,8 +551,26 @@ def admin_student_view(request):
 
 @admin_required
 def admin_view_student_view(request):
-    students = SMODEL.Student.objects.all()
-    return render(request, "exam/admin_view_student.html", {"students": students})
+    selected_q = request.GET.get("q", "").strip()
+    students = SMODEL.Student.objects.select_related("user")
+
+    if selected_q:
+        students = students.filter(
+            Q(user__first_name__icontains=selected_q)
+            | Q(user__last_name__icontains=selected_q)
+            | Q(matric_number__icontains=selected_q)
+            | Q(institutional_email__icontains=selected_q)
+            | Q(department__icontains=selected_q)
+            | Q(faculty__icontains=selected_q)
+            | Q(programme__icontains=selected_q)
+        )
+
+    students = students.order_by("user__last_name", "user__first_name")
+    return render(
+        request,
+        "exam/admin_view_student.html",
+        {"students": students, "selected_q": selected_q, "students_count": students.count()},
+    )
 
 
 @admin_required
@@ -470,8 +630,33 @@ def admin_add_course_view(request):
 
 @admin_required
 def admin_view_course_view(request):
+    selected_q = request.GET.get("q", "").strip()
+    selected_status = request.GET.get("status", "").strip()
     courses = models.Course.objects.all()
-    return render(request, "exam/admin_view_course.html", {"courses": courses})
+
+    if selected_q:
+        courses = courses.filter(
+            Q(course_name__icontains=selected_q)
+            | Q(course_code__icontains=selected_q)
+            | Q(academic_session__icontains=selected_q)
+        )
+
+    if selected_status == "published":
+        courses = courses.filter(is_published=True)
+    elif selected_status == "unpublished":
+        courses = courses.filter(is_published=False)
+
+    courses = courses.order_by("course_name")
+    return render(
+        request,
+        "exam/admin_view_course.html",
+        {
+            "courses": courses,
+            "selected_q": selected_q,
+            "selected_status": selected_status,
+            "courses_count": courses.count(),
+        },
+    )
 
 
 @admin_required
@@ -502,6 +687,24 @@ def delete_course_view(request, pk):
     course.delete()
     messages.success(request, f"Course '{course_name}' deleted.")
     return HttpResponseRedirect("/admin-view-course")
+
+
+@admin_required
+def toggle_course_publish_view(request, pk):
+    if request.method != "POST":
+        messages.error(request, "Invalid publish action request.")
+        return redirect("admin-view-course")
+
+    course = get_object_or_404(models.Course, id=pk)
+    course.is_published = not course.is_published
+    course.save(update_fields=["is_published"])
+    status = "published" if course.is_published else "unpublished"
+    messages.success(request, f"Course '{course.course_name}' is now {status}.")
+
+    next_url = request.GET.get("next")
+    if next_url and next_url.startswith("/"):
+        return redirect(next_url)
+    return redirect("admin-view-course")
 
 
 @admin_required
@@ -673,7 +876,7 @@ def contactus_view(request):
             send_mail(
                 str(name) + " || " + str(email),
                 message,
-                settings.EMAIL_HOST_USER,
+                settings.DEFAULT_FROM_EMAIL,
                 settings.EMAIL_RECEIVING_USER,
                 fail_silently=False,
             )

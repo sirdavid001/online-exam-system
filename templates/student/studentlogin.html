@@ -7,17 +7,23 @@
 <section class="auth-shell">
   <article class="auth-card">
     <h1>Student Login</h1>
-    <p>Access your dashboard to take exams and review your marks.</p>
+    <p>
+      Sign in with your portal username, matric/reg number, or institutional email to access exams and results.
+    </p>
 
     <form method="post" class="stack-form">
       {% csrf_token %}
       <div class="form-group">
-        <label for="id_username">Username</label>
-        {% render_field form.username class="form-control" autocomplete="off" placeholder="Enter username" %}
+        <label for="id_username">Username / Matric Number / Institutional Email</label>
+        {% render_field form.username class="form-control" autocomplete="off" placeholder="e.g. DOU/2026/12345 or student@university.edu.ng" %}
       </div>
       <div class="form-group">
         <label for="id_password">Password</label>
         {% render_field form.password class="form-control" autocomplete="off" placeholder="Enter password" %}
+      </div>
+      <div class="auth-meta">
+        <span class="auth-help">Need account access recovery?</span>
+        <a href="{% url 'password-reset' %}" class="auth-link">Forgot password?</a>
       </div>
       <button type="submit" class="btn btn-brand btn-lg">Sign In</button>
     </form>

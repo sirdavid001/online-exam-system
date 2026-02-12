@@ -1,15 +1,38 @@
 from decimal import Decimal
 
 from django.db import models
+from django.db.models import Q
 from django.db.models import Sum
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 from student.models import Student
 
 
 class Course(models.Model):
+    LEVEL_CHOICES = (
+        ("JUPEB", "JUPEB"),
+        ("100", "100 Level"),
+        ("200", "200 Level"),
+        ("300", "300 Level"),
+        ("400", "400 Level"),
+        ("500", "500 Level"),
+        ("600", "600 Level"),
+        ("PG", "Postgraduate"),
+    )
+
+    SEMESTER_CHOICES = (
+        ("FIRST", "First Semester"),
+        ("SECOND", "Second Semester"),
+        ("SUMMER", "Summer Semester"),
+    )
+
     course_name = models.CharField(max_length=120)
+    course_code = models.CharField(max_length=30, blank=True, default="")
+    level = models.CharField(max_length=10, choices=LEVEL_CHOICES, default="100")
+    semester = models.CharField(max_length=10, choices=SEMESTER_CHOICES, default="FIRST")
+    academic_session = models.CharField(max_length=20, blank=True, default="")
     question_number = models.PositiveIntegerField(default=0)
     total_marks = models.PositiveIntegerField(default=0)
 
@@ -23,13 +46,28 @@ class Course(models.Model):
         default=Decimal("0.00"),
     )
     shuffle_questions = models.BooleanField(default=True)
+    is_published = models.BooleanField(default=True)
+    available_from = models.DateTimeField(null=True, blank=True)
+    available_until = models.DateTimeField(null=True, blank=True)
     instructions = models.TextField(blank=True, default="")
 
     class Meta:
         ordering = ["course_name"]
 
     def __str__(self):
+        if self.course_code:
+            return f"{self.course_code} - {self.course_name}"
         return self.course_name
+
+    def is_available_now(self, at=None):
+        at = at or timezone.now()
+        if not self.is_published:
+            return False
+        if self.available_from and at < self.available_from:
+            return False
+        if self.available_until and at > self.available_until:
+            return False
+        return True
 
     def refresh_assessment_totals(self):
         metrics = self.question_set.aggregate(
@@ -39,6 +77,64 @@ class Course(models.Model):
         self.question_number = metrics["question_total"] or 0
         self.total_marks = metrics["mark_total"] or 0
         self.save(update_fields=["question_number", "total_marks"])
+
+
+class InstitutionSettings(models.Model):
+    institution_name = models.CharField(max_length=160, default="Dennis Osadebay University")
+    short_name = models.CharField(max_length=40, default="DOU")
+    official_website = models.URLField(blank=True, default="")
+    support_email = models.EmailField(blank=True, default="")
+    support_phone = models.CharField(max_length=30, blank=True, default="")
+    address = models.CharField(max_length=220, blank=True, default="")
+    current_session = models.CharField(max_length=20, default="2026/2027")
+    current_semester = models.CharField(max_length=10, choices=Course.SEMESTER_CHOICES, default="FIRST")
+    allow_student_signup = models.BooleanField(default=True)
+    allow_teacher_signup = models.BooleanField(default=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Institution Settings"
+        verbose_name_plural = "Institution Settings"
+
+    def __str__(self):
+        return f"{self.institution_name} Settings"
+
+
+class AdminAnnouncement(models.Model):
+    AUDIENCE_ALL = "ALL"
+    AUDIENCE_STUDENT = "STUDENT"
+    AUDIENCE_TEACHER = "TEACHER"
+    AUDIENCE_CHOICES = (
+        (AUDIENCE_ALL, "All Users"),
+        (AUDIENCE_STUDENT, "Students"),
+        (AUDIENCE_TEACHER, "Teachers"),
+    )
+
+    title = models.CharField(max_length=180)
+    message = models.TextField()
+    audience = models.CharField(max_length=20, choices=AUDIENCE_CHOICES, default=AUDIENCE_ALL)
+    is_active = models.BooleanField(default=True)
+    starts_at = models.DateTimeField(null=True, blank=True)
+    ends_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.title
+
+    @classmethod
+    def active_for(cls, audience, at=None):
+        at = at or timezone.now()
+        return cls.objects.filter(
+            is_active=True,
+            audience__in=[cls.AUDIENCE_ALL, audience],
+        ).filter(
+            Q(starts_at__isnull=True) | Q(starts_at__lte=at),
+            Q(ends_at__isnull=True) | Q(ends_at__gte=at),
+        )
 
 
 class Question(models.Model):

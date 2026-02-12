@@ -37,6 +37,50 @@ body {
   line-height: 1.55;
 }
 
+@keyframes driftPulseA {
+  0% { transform: translate3d(-4%, -2%, 0) scale(1); }
+  50% { transform: translate3d(6%, 5%, 0) scale(1.08); }
+  100% { transform: translate3d(-4%, -2%, 0) scale(1); }
+}
+
+@keyframes driftPulseB {
+  0% { transform: translate3d(3%, 0, 0) scale(1); }
+  50% { transform: translate3d(-6%, -6%, 0) scale(1.1); }
+  100% { transform: translate3d(3%, 0, 0) scale(1); }
+}
+
+@keyframes sheenSweep {
+  0% { transform: translateX(-175%) rotate(20deg); }
+  100% { transform: translateX(235%) rotate(20deg); }
+}
+
+@keyframes tableRise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes iconBob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes rippleSpread {
+  from {
+    transform: scale(0);
+    opacity: 0.52;
+  }
+  to {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
 a,
 a:visited,
 a:hover,
@@ -115,6 +159,7 @@ img {
 }
 
 .nav-links a {
+  position: relative;
   color: #dce9f5;
   padding: 0.48rem 0.84rem;
   border-radius: 10px;
@@ -123,11 +168,30 @@ img {
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0.8rem;
+  right: 0.8rem;
+  bottom: 0.25rem;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.78);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.26s ease;
+}
+
 .nav-links a:hover,
 .nav-links a.is-active {
   color: #fff;
   background: rgba(255, 255, 255, 0.13);
   border-color: rgba(255, 255, 255, 0.2);
+}
+
+.nav-links a:hover::after,
+.nav-links a.is-active::after {
+  transform: scaleX(1);
 }
 
 .nav-links a.nav-cta {
@@ -375,6 +439,9 @@ form label {
 .btn,
 button,
 input[type="submit"] {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   border-radius: 12px !important;
   border: none;
   font-weight: 700;
@@ -495,6 +562,7 @@ input[type="submit"]:hover {
 }
 
 .app-nav-link {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -503,6 +571,20 @@ input[type="submit"]:hover {
   color: #d6ebf8;
   font-weight: 650;
   transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.app-nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0.7rem;
+  right: 0.7rem;
+  bottom: 0.34rem;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.26s ease;
 }
 
 .app-nav-link i {
@@ -515,6 +597,11 @@ input[type="submit"]:hover {
   color: #fff;
   background: rgba(255, 255, 255, 0.16);
   transform: translateX(3px);
+}
+
+.app-nav-link:hover::after,
+.app-nav-link.is-active::after {
+  transform: scaleX(1);
 }
 
 .app-stage {
@@ -873,9 +960,28 @@ body.sidebar-collapsed .app-stage {
   background: rgba(255, 255, 255, 0.12);
 }
 
+.metric-card::after {
+  content: "";
+  position: absolute;
+  top: -140%;
+  left: -165%;
+  width: 52%;
+  height: 300%;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 48%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
 .metric-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 24px 40px rgba(16, 37, 57, 0.22);
+}
+
+.metric-card:hover::after {
+  animation: sheenSweep 0.78s ease-out both;
 }
 
 .metric-card.bg-c-blue {
@@ -915,6 +1021,7 @@ body.sidebar-collapsed .app-stage {
 
 .metric-value i {
   opacity: 0.9;
+  animation: iconBob 3s ease-in-out infinite;
 }
 
 .metric-card small {
@@ -978,6 +1085,29 @@ body.sidebar-collapsed .app-stage {
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
+}
+
+.action-group-wrap {
+  flex-wrap: wrap;
+}
+
+.action-group form {
+  margin: 0;
+}
+
+.form-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  font-weight: 700;
+  color: #17344c;
+}
+
+.form-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
 }
 
 .stack-card {
@@ -1338,6 +1468,10 @@ input[type="submit"] {
   background: #edf5ff;
 }
 
+.table-row-entrance {
+  animation: tableRise 0.5s ease both;
+}
+
 .badge {
   border-radius: 999px;
   padding: 0.3rem 0.6rem;
@@ -1453,8 +1587,119 @@ form textarea {
   font-size: 0.86rem;
 }
 
+.footer-legal {
+  margin-top: 0.55rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.footer-legal a {
+  color: #e4eff8;
+  border: 1px solid rgba(228, 239, 248, 0.28);
+  border-radius: 999px;
+  padding: 0.2rem 0.68rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.footer-legal a:hover,
+.footer-legal a:focus {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.policy-content {
+  margin-top: 1rem;
+}
+
+.policy-content h2 {
+  margin: 0.95rem 0 0.35rem;
+  color: #153c5f;
+  font-size: 1.02rem;
+}
+
+.policy-content p {
+  margin-bottom: 0.4rem;
+}
+
+.auth-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  margin-bottom: 0.95rem;
+  flex-wrap: wrap;
+}
+
+.auth-help {
+  color: #506274;
+  font-size: 0.86rem;
+  font-weight: 650;
+}
+
+.auth-link {
+  color: #134b79;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.auth-link:hover,
+.auth-link:focus {
+  text-decoration: underline;
+}
+
+.course-catalog-note {
+  margin-bottom: 0.8rem;
+}
+
 .dashboard-shell .site-footer {
   margin-top: auto;
+}
+
+.dashboard-shell::before,
+.dashboard-shell::after {
+  content: "";
+  position: fixed;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  filter: blur(55px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.26;
+}
+
+.dashboard-shell::before {
+  top: 8%;
+  right: 2%;
+  background: radial-gradient(circle, rgba(33, 116, 171, 0.46) 0%, transparent 70%);
+  animation: driftPulseA 11s ease-in-out infinite;
+}
+
+.dashboard-shell::after {
+  bottom: 8%;
+  left: 20%;
+  background: radial-gradient(circle, rgba(185, 135, 47, 0.34) 0%, transparent 72%);
+  animation: driftPulseB 13s ease-in-out infinite;
+}
+
+.app-stage {
+  position: relative;
+  z-index: 1;
+}
+
+.btn-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.46);
+  pointer-events: none;
+  transform: scale(0);
+  animation: rippleSpread 0.62s ease-out forwards;
 }
 
 @media (max-width: 1024px) {

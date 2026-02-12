@@ -11,6 +11,7 @@ nigerian_phone_validator = RegexValidator(
 
 class Student(models.Model):
     LEVEL_CHOICES = (
+        ("JUPEB", "JUPEB"),
         ("100", "100 Level"),
         ("200", "200 Level"),
         ("300", "300 Level"),

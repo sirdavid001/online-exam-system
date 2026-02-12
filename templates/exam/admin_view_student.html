@@ -1,5 +1,4 @@
 {% extends 'exam/adminbase.html' %}
-{% load static %}
 
 {% block content %}
 <section class="page-head reveal">
@@ -9,56 +8,83 @@
 
 <div class="table-card reveal">
   <div class="table-head">
-    <h6>Registered Students</h6>
+    <h6>Search Students</h6>
   </div>
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Matric/Reg No.</th>
-        <th>Faculty</th>
-        <th>Department</th>
-        <th>Level</th>
-        <th>Institutional Email</th>
-        <th>Phone</th>
-        <th>Photo</th>
-        <th class="text-center">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for t in students %}
-      <tr>
-        <td>{{ t.get_name }}</td>
-        <td>{{ t.matric_number|default:"-" }}</td>
-        <td>{{ t.faculty|default:"-" }}</td>
-        <td>{{ t.department|default:"-" }}</td>
-        <td>{{ t.get_current_level_display }}</td>
-        <td>{{ t.institutional_email|default:"-" }}</td>
-        <td>{{ t.mobile }}</td>
-        <td>
-          {% if t.profile_pic %}
-          <img class="thumb-sm" src="{% static t.profile_pic.url %}" alt="{{ t.get_name }}" />
-          {% else %}
-          <span class="text-muted">No photo</span>
-          {% endif %}
-        </td>
-        <td class="text-center">
-          <div class="action-group">
-            <a class="btn btn-primary btn-sm" href="{% url 'update-student' t.id %}">
-              <i class="fas fa-edit"></i> Edit
-            </a>
-            <a class="btn btn-danger btn-sm" href="{% url 'delete-student' t.id %}">
-              <i class="fas fa-trash"></i> Delete
-            </a>
-          </div>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td class="text-center text-muted" colspan="9">No students found.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="p-3">
+    <form method="get" class="form-grid">
+      <div class="form-group">
+        <label for="q">Keyword</label>
+        <input
+          type="text"
+          id="q"
+          name="q"
+          value="{{ selected_q }}"
+          class="form-control"
+          placeholder="Name, matric number, email, department, programme"
+        />
+      </div>
+      <div class="form-group d-flex align-items-end inline-actions">
+        <button type="submit" class="btn btn-primary">Apply</button>
+        <a href="{% url 'admin-view-student' %}" class="btn btn-secondary">Reset</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="table-card mt-3 reveal">
+  <div class="table-head">
+    <h6>Registered Students ({{ students_count }})</h6>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Matric/Reg No.</th>
+          <th>Faculty</th>
+          <th>Department</th>
+          <th>Level</th>
+          <th>Institutional Email</th>
+          <th>Phone</th>
+          <th>Photo</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in students %}
+        <tr>
+          <td>{{ t.get_name }}</td>
+          <td>{{ t.matric_number|default:"-" }}</td>
+          <td>{{ t.faculty|default:"-" }}</td>
+          <td>{{ t.department|default:"-" }}</td>
+          <td>{{ t.get_current_level_display }}</td>
+          <td>{{ t.institutional_email|default:"-" }}</td>
+          <td>{{ t.mobile }}</td>
+          <td>
+            {% if t.profile_pic %}
+            <img class="thumb-sm" src="{{ t.profile_pic.url }}" alt="{{ t.get_name }}" />
+            {% else %}
+            <span class="text-muted">No photo</span>
+            {% endif %}
+          </td>
+          <td class="text-center">
+            <div class="action-group">
+              <a class="btn btn-primary btn-sm" href="{% url 'update-student' t.id %}">
+                <i class="fas fa-edit"></i> Edit
+              </a>
+              <a class="btn btn-danger btn-sm" href="{% url 'delete-student' t.id %}">
+                <i class="fas fa-trash"></i> Delete
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td class="text-center text-muted" colspan="9">No students match the selected filter.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock content %}

@@ -1,6 +1,14 @@
 from django.contrib import admin
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import (
+    LoginView,
+    LogoutView,
+    PasswordResetCompleteView,
+    PasswordResetConfirmView,
+    PasswordResetDoneView,
+    PasswordResetView,
+)
 from django.urls import include, path
+from django.urls import reverse_lazy
 
 from exam import views
 
@@ -10,12 +18,46 @@ urlpatterns = [
     path('student/', include('student.urls')),
 
     path('', views.home_view, name=''),
+    path('privacy-policy', views.privacy_policy_view, name='privacy-policy'),
+    path('terms-of-use', views.terms_of_use_view, name='terms-of-use'),
     path('logout', LogoutView.as_view(template_name='exam/logout.html'), name='logout'),
+    path(
+        "password-reset",
+        PasswordResetView.as_view(
+            template_name="exam/password_reset_form.html",
+            email_template_name="exam/password_reset_email.txt",
+            subject_template_name="exam/password_reset_subject.txt",
+            success_url=reverse_lazy("password-reset-done"),
+        ),
+        name="password-reset",
+    ),
+    path(
+        "password-reset/done",
+        PasswordResetDoneView.as_view(template_name="exam/password_reset_done.html"),
+        name="password-reset-done",
+    ),
+    path(
+        "password-reset-confirm/<uidb64>/<token>",
+        PasswordResetConfirmView.as_view(
+            template_name="exam/password_reset_confirm.html",
+            success_url=reverse_lazy("password-reset-complete"),
+        ),
+        name="password-reset-confirm",
+    ),
+    path(
+        "password-reset-complete",
+        PasswordResetCompleteView.as_view(template_name="exam/password_reset_complete.html"),
+        name="password-reset-complete",
+    ),
     path('contactus', views.contactus_view),
     path('afterlogin', views.afterlogin_view, name='afterlogin'),
 
     path('adminlogin', LoginView.as_view(template_name='exam/adminlogin.html'), name='adminlogin'),
     path('admin-dashboard', views.admin_dashboard_view, name='admin-dashboard'),
+    path('admin-system-settings', views.admin_system_settings_view, name='admin-system-settings'),
+    path('admin-announcements', views.admin_announcements_view, name='admin-announcements'),
+    path('toggle-announcement/<int:pk>', views.toggle_announcement_view, name='toggle-announcement'),
+    path('delete-announcement/<int:pk>', views.delete_announcement_view, name='delete-announcement'),
     path('admin-results', views.admin_results_view, name='admin-results'),
     path('delete-result/<int:pk>', views.delete_result_view, name='delete-result'),
 
@@ -45,6 +87,7 @@ urlpatterns = [
     path('admin-add-course', views.admin_add_course_view, name='admin-add-course'),
     path('admin-view-course', views.admin_view_course_view, name='admin-view-course'),
     path('update-course/<int:pk>', views.update_course_view, name='update-course'),
+    path('toggle-course-publish/<int:pk>', views.toggle_course_publish_view, name='toggle-course-publish'),
     path('delete-course/<int:pk>', views.delete_course_view, name='delete-course'),
 
     path('admin-question', views.admin_question_view, name='admin-question'),

@@ -5,46 +5,112 @@
 <div class="container">
   <article class="form-card">
     <h2>Create Course</h2>
-    <p>Configure exam rules. Question count and total marks are calculated automatically from added questions.</p>
+    <p>Configure exam governance. Question count and total marks are calculated automatically from added questions.</p>
 
     <form method="POST" autocomplete="off" class="stack-form">
       {% csrf_token %}
       <div class="form-group">
-        <label for="course_name">Course Name</label>
-        {% render_field courseForm.course_name class="form-control" placeholder="Example: Engineering Mathematics I" %}
+        <label for="available_course">Available Courses (Dennis Osadebay University)</label>
+        {% render_field courseForm.available_course class="form-control" %}
+        {{ courseForm.available_course.errors }}
       </div>
+      <p class="course-catalog-note">Select from the institutional catalogue or enter a custom course name below.</p>
 
       <div class="form-grid">
+        <div class="form-group span-2">
+          <label for="course_name">Course Name</label>
+          {% render_field courseForm.course_name class="form-control" placeholder="Example: Engineering Mathematics I" %}
+          {{ courseForm.course_name.errors }}
+        </div>
+
+        <div class="form-group">
+          <label for="course_code">Course Code</label>
+          {% render_field courseForm.course_code class="form-control" placeholder="Example: CSC 311" %}
+          {{ courseForm.course_code.errors }}
+        </div>
+
+        <div class="form-group">
+          <label for="academic_session">Academic Session</label>
+          {% render_field courseForm.academic_session class="form-control" placeholder="Example: 2026/2027" %}
+          {{ courseForm.academic_session.errors }}
+        </div>
+
+        <div class="form-group">
+          <label for="level">Level</label>
+          {% render_field courseForm.level class="form-control" %}
+          {{ courseForm.level.errors }}
+        </div>
+
+        <div class="form-group">
+          <label for="semester">Semester</label>
+          {% render_field courseForm.semester class="form-control" %}
+          {{ courseForm.semester.errors }}
+        </div>
+
         <div class="form-group">
           <label for="duration_minutes">Duration (Minutes)</label>
           {% render_field courseForm.duration_minutes class="form-control" placeholder="Example: 90" %}
+          {{ courseForm.duration_minutes.errors }}
         </div>
 
         <div class="form-group">
           <label for="pass_mark">Pass Mark (%)</label>
           {% render_field courseForm.pass_mark class="form-control" placeholder="Example: 50" %}
+          {{ courseForm.pass_mark.errors }}
         </div>
 
         <div class="form-group">
           <label for="max_attempts">Max Attempts</label>
           {% render_field courseForm.max_attempts class="form-control" placeholder="Example: 3" %}
+          {{ courseForm.max_attempts.errors }}
         </div>
 
         <div class="form-group">
           <label for="negative_mark_per_wrong">Negative Mark Per Wrong Answer</label>
           {% render_field courseForm.negative_mark_per_wrong class="form-control" placeholder="Example: 0.25" %}
+          {{ courseForm.negative_mark_per_wrong.errors }}
+        </div>
+
+        <div class="form-group">
+          <label for="available_from">Available From</label>
+          {% render_field courseForm.available_from class="form-control" %}
+          {{ courseForm.available_from.errors }}
+        </div>
+
+        <div class="form-group">
+          <label for="available_until">Available Until</label>
+          {% render_field courseForm.available_until class="form-control" %}
+          {{ courseForm.available_until.errors }}
+        </div>
+
+        <div class="form-group d-flex align-items-end">
+          <label class="form-checkbox">
+            {{ courseForm.is_published }}
+            <span>Published and visible to students</span>
+          </label>
+          {{ courseForm.is_published.errors }}
+        </div>
+
+        <div class="form-group d-flex align-items-end">
+          <label class="form-checkbox">
+            {{ courseForm.shuffle_questions }}
+            <span>Shuffle question order per attempt</span>
+          </label>
+          {{ courseForm.shuffle_questions.errors }}
+        </div>
+
+        <div class="form-group span-2">
+          <label for="instructions">Instructions</label>
+          {% render_field courseForm.instructions class="form-control" placeholder="Provide exam instructions shown to students before the exam starts." %}
+          {{ courseForm.instructions.errors }}
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="shuffle_questions">Shuffle Questions</label>
-        {% render_field courseForm.shuffle_questions class="form-control" %}
+      {% if courseForm.non_field_errors %}
+      <div class="alert alert-danger">
+        {{ courseForm.non_field_errors }}
       </div>
-
-      <div class="form-group">
-        <label for="instructions">Instructions</label>
-        {% render_field courseForm.instructions class="form-control" placeholder="Provide exam instructions shown to students before the exam starts." %}
-      </div>
+      {% endif %}
 
       <button type="submit" class="btn btn-primary btn-lg">Save Course</button>
     </form>

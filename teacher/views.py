@@ -14,6 +14,14 @@ from .services import QuestionUploadError, parse_questions_upload
 
 
 def teacher_signup_view(request):
+    institution_settings = QMODEL.InstitutionSettings.objects.first()
+    if institution_settings and not institution_settings.allow_teacher_signup:
+        messages.error(
+            request,
+            "Teacher self-signup is temporarily disabled by the institution administrator.",
+        )
+        return redirect("teacherlogin")
+
     userForm = forms.TeacherUserForm()
     teacherForm = forms.TeacherForm()
 
@@ -51,6 +59,7 @@ def teacher_dashboard_view(request):
         "total_course": QMODEL.Course.objects.all().count(),
         "total_question": QMODEL.Question.objects.all().count(),
         "total_student": SMODEL.Student.objects.all().count(),
+        "announcements": QMODEL.AdminAnnouncement.active_for(QMODEL.AdminAnnouncement.AUDIENCE_TEACHER)[:6],
     }
     return render(request, "teacher/teacher_dashboard.html", context=context)
 

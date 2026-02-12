@@ -140,21 +140,49 @@ else:
 WHITENOISE_USE_FINDERS = True
 
 LOGIN_REDIRECT_URL = "/afterlogin"
+AUTHENTICATION_BACKENDS = [
+    "exam.auth_backends.MultiIdentifierBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
-# Contact-us email setup (all secrets via environment variables)
-EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
-EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+# Contact-us and auth emails (all secrets via environment variables)
+BREVO_API_KEY = os.getenv("BREVO_API_KEY", "").strip()
+BREVO_SENDER_NAME = os.getenv("BREVO_SENDER_NAME", "").strip()
+BREVO_SENDER_EMAIL = os.getenv("BREVO_SENDER_EMAIL", "").strip()
+
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "").strip()
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "").strip()
+EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", "20"))
+
+configured_from_email = os.getenv("DEFAULT_FROM_EMAIL", "").strip()
+
+if BREVO_API_KEY:
+    # Brevo transactional API mode (uses API key provided by user).
+    EMAIL_BACKEND = "exam.email_backends.BrevoAPIEmailBackend"
+    DEFAULT_FROM_EMAIL = (
+        configured_from_email
+        or BREVO_SENDER_EMAIL
+        or EMAIL_HOST_USER
+        or "noreply@online-exam.local"
+    )
+elif EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
+    # Generic SMTP mode (Gmail or other SMTP provider).
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com").strip()
+    EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+    EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() == "true"
+    DEFAULT_FROM_EMAIL = configured_from_email or EMAIL_HOST_USER
+else:
+    # Local/dev fallback.
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+    DEFAULT_FROM_EMAIL = configured_from_email or "noreply@online-exam.local"
+
 EMAIL_RECEIVING_USER = [
     email.strip()
     for email in os.getenv("EMAIL_RECEIVING_USER", "").split(",")
     if email.strip()
-] or ([EMAIL_HOST_USER] if EMAIL_HOST_USER else [])
+]
 
-if EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = "smtp.gmail.com"
-    EMAIL_USE_TLS = True
-    EMAIL_PORT = 587
-else:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+if not EMAIL_RECEIVING_USER and "@" in DEFAULT_FROM_EMAIL:
+    EMAIL_RECEIVING_USER = [DEFAULT_FROM_EMAIL]

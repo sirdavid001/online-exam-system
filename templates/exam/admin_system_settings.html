@@ -1,0 +1,86 @@
+{% extends 'exam/adminbase.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+<section class="page-head reveal">
+  <h2>System Settings</h2>
+  <p class="page-lead">
+    Configure institutional profile, active academic period, and self-signup controls for the exam portal.
+  </p>
+</section>
+
+<div class="stack-card reveal">
+  <article class="form-card">
+    <h3 class="mb-2">Institution Profile</h3>
+    <p class="mb-3">Last updated: {{ settings_obj.updated_at|date:"Y-m-d H:i" }}</p>
+
+    <form method="post" class="stack-form">
+      {% csrf_token %}
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="institution_name">Institution Name</label>
+          {% render_field form.institution_name class="form-control" placeholder="Dennis Osadebay University" %}
+          {{ form.institution_name.errors }}
+        </div>
+        <div class="form-group">
+          <label for="short_name">Short Name</label>
+          {% render_field form.short_name class="form-control" placeholder="DOU" %}
+          {{ form.short_name.errors }}
+        </div>
+
+        <div class="form-group">
+          <label for="current_session">Current Session</label>
+          {% render_field form.current_session class="form-control" placeholder="2026/2027" %}
+          {{ form.current_session.errors }}
+        </div>
+        <div class="form-group">
+          <label for="current_semester">Current Semester</label>
+          {% render_field form.current_semester class="form-control" %}
+          {{ form.current_semester.errors }}
+        </div>
+
+        <div class="form-group">
+          <label for="support_email">Support Email</label>
+          {% render_field form.support_email class="form-control" placeholder="support@dou.edu.ng" %}
+          {{ form.support_email.errors }}
+        </div>
+        <div class="form-group">
+          <label for="support_phone">Support Phone</label>
+          {% render_field form.support_phone class="form-control" placeholder="+234..." %}
+          {{ form.support_phone.errors }}
+        </div>
+
+        <div class="form-group">
+          <label for="official_website">Official Website</label>
+          {% render_field form.official_website class="form-control" placeholder="https://www.dou.edu.ng" %}
+          {{ form.official_website.errors }}
+        </div>
+        <div class="form-group">
+          <label for="address">Address</label>
+          {% render_field form.address class="form-control" placeholder="Main Campus Address" %}
+          {{ form.address.errors }}
+        </div>
+
+        <div class="form-group d-flex align-items-end">
+          <label class="form-checkbox">
+            {{ form.allow_student_signup }}
+            <span>Allow student self-signup</span>
+          </label>
+          {{ form.allow_student_signup.errors }}
+        </div>
+
+        <div class="form-group d-flex align-items-end">
+          <label class="form-checkbox">
+            {{ form.allow_teacher_signup }}
+            <span>Allow teacher self-signup</span>
+          </label>
+          {{ form.allow_teacher_signup.errors }}
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg">Save Settings</button>
+    </form>
+  </article>
+</div>
+{% endblock content %}

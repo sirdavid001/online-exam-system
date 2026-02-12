@@ -27,4 +27,34 @@
     </article>
   </a>
 </section>
+
+<section class="table-card mt-3 reveal">
+  <div class="table-head">
+    <h6>Institution Announcements</h6>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Message</th>
+          <th>Period</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in announcements %}
+        <tr>
+          <td>{{ item.title }}</td>
+          <td>{{ item.message|truncatechars:120 }}</td>
+          <td>{{ item.starts_at|date:"Y-m-d H:i"|default:"Immediate" }} - {{ item.ends_at|date:"Y-m-d H:i"|default:"No end" }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td class="text-center text-muted" colspan="3">No active announcements right now.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
 {% endblock content %}

@@ -5,6 +5,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import Group
+from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -23,7 +24,34 @@ def _clear_exam_session(request, course_id):
     request.session.pop(_exam_session_key(course_id, "started_at"), None)
 
 
+def _available_courses_queryset(at=None):
+    at = at or timezone.now()
+    return QMODEL.Course.objects.filter(is_published=True).filter(
+        Q(available_from__isnull=True) | Q(available_from__lte=at),
+        Q(available_until__isnull=True) | Q(available_until__gte=at),
+    )
+
+
+def _course_availability_issue(course, at=None):
+    at = at or timezone.now()
+    if not course.is_published:
+        return "This exam is not currently published."
+    if course.available_from and at < course.available_from:
+        return f"This exam opens on {timezone.localtime(course.available_from).strftime('%Y-%m-%d %H:%M')}."
+    if course.available_until and at > course.available_until:
+        return "The exam availability window has closed."
+    return None
+
+
 def student_signup_view(request):
+    institution_settings = QMODEL.InstitutionSettings.objects.first()
+    if institution_settings and not institution_settings.allow_student_signup:
+        messages.error(
+            request,
+            "Student self-signup is temporarily disabled by the institution administrator.",
+        )
+        return redirect("studentlogin")
+
     userForm = forms.StudentUserForm()
     studentForm = forms.StudentForm()
 
@@ -57,9 +85,11 @@ def is_student(user):
 @login_required(login_url="studentlogin")
 @user_passes_test(is_student, login_url="studentlogin")
 def student_dashboard_view(request):
+    available_courses = _available_courses_queryset()
     context = {
-        "total_course": QMODEL.Course.objects.all().count(),
+        "total_course": available_courses.count(),
         "total_question": QMODEL.Question.objects.all().count(),
+        "announcements": QMODEL.AdminAnnouncement.active_for(QMODEL.AdminAnnouncement.AUDIENCE_STUDENT)[:6],
     }
     return render(request, "student/student_dashboard.html", context=context)
 
@@ -67,7 +97,7 @@ def student_dashboard_view(request):
 @login_required(login_url="studentlogin")
 @user_passes_test(is_student, login_url="studentlogin")
 def student_exam_view(request):
-    courses = QMODEL.Course.objects.all()
+    courses = _available_courses_queryset()
     return render(request, "student/student_exam.html", {"courses": courses})
 
 
@@ -75,6 +105,11 @@ def student_exam_view(request):
 @user_passes_test(is_student, login_url="studentlogin")
 def take_exam_view(request, pk):
     course = get_object_or_404(QMODEL.Course, id=pk)
+    issue = _course_availability_issue(course)
+    if issue:
+        messages.error(request, issue)
+        return redirect("student-exam")
+
     questions = QMODEL.Question.objects.filter(course=course)
     total_questions = questions.count()
     total_marks = sum(question.marks for question in questions)
@@ -97,6 +132,11 @@ def take_exam_view(request, pk):
 @user_passes_test(is_student, login_url="studentlogin")
 def start_exam_view(request, pk):
     course = get_object_or_404(QMODEL.Course, id=pk)
+    issue = _course_availability_issue(course)
+    if issue:
+        messages.error(request, issue)
+        return redirect("student-exam")
+
     student = get_object_or_404(models.Student, user_id=request.user.id)
     attempts_taken = QMODEL.Result.objects.filter(student=student, exam=course).count()
 
