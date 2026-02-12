@@ -102,10 +102,10 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="{{ userForm.accept_policies.id_for_label }}" class="d-flex align-items-start">
+      <div class="consent-block">
+        <label for="{{ userForm.accept_policies.id_for_label }}" class="consent-label">
           {{ userForm.accept_policies }}
-          <span class="ml-2">
+          <span>
             I agree to the
             <a href="{% url 'terms-of-use' %}" target="_blank" rel="noopener">Terms of Use</a>
             and

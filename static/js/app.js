@@ -1,5 +1,6 @@
 (function () {
   const body = document.body;
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   function cleanPath(path) {
     return path.replace(/\/+$/, "") || "/";
@@ -90,7 +91,7 @@
 
   function setupReveal() {
     const targets = document.querySelectorAll(
-      ".hero-content, .hero-card, .auth-card, .form-card, .alert-card, .waiting-card, .card, .panel, .jumbotron, .table-card, .metric-card, form, table"
+      ".page-head, .hero-content, .hero-card, .auth-card, .form-card, .alert-card, .waiting-card, .card, .panel, .jumbotron, .table-card, .metric-card, .brand-item"
     );
 
     targets.forEach((el, index) => {
@@ -246,6 +247,10 @@
   }
 
   function setupMetricCounters() {
+    if (prefersReducedMotion) {
+      return;
+    }
+
     const values = document.querySelectorAll(".metric-value span");
     if (!values.length) {
       return;
@@ -337,6 +342,10 @@
   }
 
   function setupTableRowMotion() {
+    if (prefersReducedMotion) {
+      return;
+    }
+
     const rows = document.querySelectorAll(".table tbody tr");
     if (!rows.length) {
       return;
@@ -349,6 +358,10 @@
   }
 
   function setupButtonRipples() {
+    if (prefersReducedMotion) {
+      return;
+    }
+
     const controls = document.querySelectorAll(".btn, button, input[type='submit']");
     if (!controls.length) {
       return;

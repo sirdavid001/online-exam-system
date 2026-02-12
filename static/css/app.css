@@ -27,6 +27,8 @@ body {
 }
 
 body {
+  position: relative;
+  overflow-x: hidden;
   margin: 0;
   color: var(--text-main);
   font-family: var(--font-body);
@@ -336,6 +338,8 @@ img {
 }
 
 .hero-card {
+  display: flex;
+  flex-direction: column;
   padding: 1.2rem 1.15rem;
   background: linear-gradient(160deg, #ffffff 0%, #f8fbff 100%);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -361,6 +365,7 @@ img {
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem;
+  margin-top: auto;
 }
 
 .auth-shell {
@@ -742,6 +747,7 @@ input[type="submit"]:hover {
 .table th {
   vertical-align: middle;
   border-color: rgba(18, 42, 66, 0.1);
+  word-break: break-word;
 }
 
 .table tbody tr:hover {
@@ -1056,6 +1062,11 @@ body.sidebar-collapsed .app-stage {
 
 .table-card .table {
   margin: 0;
+}
+
+.table-card .table-responsive {
+  width: 100%;
+  overflow-x: auto;
 }
 
 .table-head {
@@ -1657,6 +1668,34 @@ form textarea {
   margin-bottom: 0.8rem;
 }
 
+.consent-block {
+  margin: 0.2rem 0 0.95rem;
+  padding: 0.68rem 0.75rem;
+  border: 1px solid rgba(18, 42, 66, 0.14);
+  border-radius: 12px;
+  background: rgba(248, 252, 255, 0.86);
+}
+
+.consent-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  margin: 0;
+  font-weight: 650;
+  color: #1a415f;
+}
+
+.consent-label input[type="checkbox"] {
+  margin-top: 0.12rem;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.consent-label span {
+  line-height: 1.42;
+}
+
 .dashboard-shell .site-footer {
   margin-top: auto;
 }
@@ -1670,7 +1709,7 @@ form textarea {
   border-radius: 50%;
   filter: blur(55px);
   pointer-events: none;
-  z-index: 0;
+  z-index: -1;
   opacity: 0.26;
 }
 
@@ -1691,6 +1730,10 @@ form textarea {
 .app-stage {
   position: relative;
   z-index: 1;
+}
+
+.form-grid > .form-group {
+  min-width: 0;
 }
 
 .btn-ripple {
