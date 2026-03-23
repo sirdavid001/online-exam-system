@@ -1,11 +1,11 @@
 {% extends 'exam/base_public.html' %}
 
-{% block title %}Online Examination System{% endblock %}
+{% block title %}Online Examination System | Modern Assessment{% endblock %}
 
 {% block content %}
 <section class="hero-shell">
   <article class="hero-content reveal">
-    <p class="eyebrow">Fast. Transparent. Structured.</p>
+    <span class="eyebrow">Fast. Transparent. Structured.</span>
     <h1>The Modern Standard for Online Assessment</h1>
     <p>
       An all-in-one platform designed for academic excellence. Manage courses, 
@@ -14,10 +14,10 @@
 
     <div class="hero-actions">
       <a href="/student/studentsignup" class="btn btn-brand btn-lg">
-        <i class="fas fa-rocket"></i> Get Started Free
+        <i class="fas fa-rocket mr-2"></i> Get Started Free
       </a>
       <a href="/teacher/teachersignup" class="btn btn-outline-brand btn-lg">
-        <i class="fas fa-plus"></i> For Educators
+        <i class="fas fa-plus mr-2"></i> For Educators
       </a>
     </div>
   </article>
@@ -25,23 +25,35 @@
   <div class="hero-grid">
     <article class="hero-card reveal reveal-delay-1">
       <div class="card-icon"><i class="fas fa-graduation-cap"></i></div>
-      <h3>Student Hub</h3>
-      <p>Enter exams, track your progress, and review detailed results instantly.</p>
-      <a href="/student/studentclick" class="btn btn-primary btn-sm">Student Access</a>
+      <div class="hero-card-info">
+        <h3>Student Hub</h3>
+        <p>Access exams and check your result analytics instantly.</p>
+        <div class="mt-3">
+            <a href="/student/studentclick" class="btn btn-primary btn-sm">Student Access</a>
+        </div>
+      </div>
     </article>
 
     <article class="hero-card reveal reveal-delay-2">
       <div class="card-icon"><i class="fas fa-chalkboard-teacher"></i></div>
-      <h3>Teacher Suite</h3>
-      <p>Draft courses, manage question banks, and monitor student performance.</p>
-      <a href="/teacher/teacherclick" class="btn btn-primary btn-sm">Teacher Access</a>
+      <div class="hero-card-info">
+        <h3>Teacher Suite</h3>
+        <p>Draft courses and monitor student performance with ease.</p>
+        <div class="mt-3">
+            <a href="/teacher/teacherclick" class="btn btn-primary btn-sm">Teacher Access</a>
+        </div>
+      </div>
     </article>
 
     <article class="hero-card reveal reveal-delay-3">
       <div class="card-icon"><i class="fas fa-user-shield"></i></div>
-      <h3>Admin Panel</h3>
-      <p>Oversee all users, approve teachers, and ensure system-wide integrity.</p>
-      <a href="/adminclick" class="btn btn-primary btn-sm">Admin Portal</a>
+      <div class="hero-card-info">
+        <h3>Admin Panel</h3>
+        <p>Full system integrity and user management controls.</p>
+        <div class="mt-3">
+            <a href="/adminclick" class="btn btn-primary btn-sm">Admin Portal</a>
+        </div>
+      </div>
     </article>
   </div>
 </section>
