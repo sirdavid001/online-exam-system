@@ -17,34 +17,38 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   </head>
   <body class="dashboard-shell teacher-shell">
-    <aside class="app-sidebar">
+    <aside class="app-sidebar" id="appSidebar">
       <div class="app-brand">
-        <i class="fas fa-chalkboard-teacher"></i>
-        <h1 class="app-brand-title"><span>Online</span> Exam</h1>
+        <div class="brand-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+        <h4>Teacher<span>Hub</span></h4>
       </div>
 
       <div class="profile-chip">
-        <img src="{% static 'image/teacher-avatar.png' %}" alt="Teacher" />
+        <div class="avatar-glow">
+          <img src="{% static 'image/teacher-avatar.png' %}" alt="Teacher" />
+        </div>
         <h4>{{ request.user.first_name }}</h4>
-        <small>Teacher</small>
+        <small><i class="fas fa-circle text-success mr-1" style="font-size: 0.6rem"></i> Educator</small>
       </div>
 
       <nav class="app-nav">
-        <a class="app-nav-link" href="/teacher/teacher-dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a class="app-nav-link" href="/teacher/teacher-exam"><i class="fas fa-book-open"></i> Manage Courses</a>
-        <a class="app-nav-link" href="/teacher/teacher-question"><i class="fas fa-question-circle"></i> Manage Questions</a>
+        <a class="app-nav-link" href="/teacher/teacher-dashboard"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a class="app-nav-link" href="/teacher/teacher-exam"><i class="fas fa-book-open"></i> Courses</a>
+        <a class="app-nav-link" href="/teacher/teacher-question"><i class="fas fa-question-circle"></i> Questions</a>
       </nav>
     </aside>
 
     <div class="app-stage">
       <header class="app-topbar">
         <div class="topbar-left">
-          <button type="button" class="icon-toggle" data-sidebar-toggle aria-label="Toggle sidebar">
+          <button type="button" class="icon-toggle" onclick="document.body.classList.toggle('sidebar-open')">
             <i class="fas fa-bars"></i>
           </button>
           <h2 class="topbar-title">Teacher Workspace</h2>
         </div>
-        <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
+        <div class="topbar-right">
+          <a href="/logout" class="btn btn-outline-brand btn-sm"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </div>
       </header>
 
       <main class="content-wrap">

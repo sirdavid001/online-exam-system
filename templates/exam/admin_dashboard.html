@@ -12,7 +12,7 @@
       <h6>Registered Students</h6>
       <div class="metric-value">
         <span>{{ total_student }}</span>
-        <i class="fas fa-user-graduate"></i>
+        <div class="metric-icon"><i class="fas fa-user-graduate"></i></div>
       </div>
     </article>
   </a>
@@ -22,7 +22,7 @@
       <h6>Approved Teachers</h6>
       <div class="metric-value">
         <span>{{ total_teacher }}</span>
-        <i class="fas fa-chalkboard-teacher"></i>
+        <div class="metric-icon"><i class="fas fa-chalkboard-teacher"></i></div>
       </div>
     </article>
   </a>
@@ -32,7 +32,7 @@
       <h6>Pending Teachers</h6>
       <div class="metric-value">
         <span>{{ pending_teacher }}</span>
-        <i class="fas fa-user-clock"></i>
+        <div class="metric-icon"><i class="fas fa-user-clock"></i></div>
       </div>
     </article>
   </a>
@@ -42,7 +42,7 @@
       <h6>Total Courses</h6>
       <div class="metric-value">
         <span>{{ total_course }}</span>
-        <i class="fas fa-book-open"></i>
+        <div class="metric-icon"><i class="fas fa-book-open"></i></div>
       </div>
     </article>
   </a>
@@ -52,7 +52,7 @@
       <h6>Question Bank</h6>
       <div class="metric-value">
         <span>{{ total_question }}</span>
-        <i class="fas fa-question-circle"></i>
+        <div class="metric-icon"><i class="fas fa-question-circle"></i></div>
       </div>
     </article>
   </a>
@@ -62,7 +62,7 @@
       <h6>Active Courses</h6>
       <div class="metric-value">
         <span>{{ active_courses }}</span>
-        <i class="fas fa-layer-group"></i>
+        <div class="metric-icon"><i class="fas fa-layer-group"></i></div>
       </div>
     </article>
   </a>
@@ -72,18 +72,20 @@
       <h6>Total Attempts</h6>
       <div class="metric-value">
         <span>{{ total_attempts }}</span>
-        <i class="fas fa-clipboard-check"></i>
+        <div class="metric-icon"><i class="fas fa-clipboard-check"></i></div>
       </div>
     </article>
   </a>
 
   <article class="metric-card bg-c-yellow reveal">
-    <h6>Pass Rate / Avg Score</h6>
+    <h6>Performance Avg</h6>
     <div class="metric-value">
-      <span>{{ pass_rate|floatformat:2 }}%</span>
-      <i class="fas fa-chart-line"></i>
+      <span>{{ pass_rate|floatformat:1 }}%</span>
+      <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
     </div>
-    <small>Pass: {{ pass_attempts }} | Fail: {{ failed_attempts }} | Avg: {{ avg_score|floatformat:2 }}%</small>
+    <div class="metric-meta mt-2">
+      <small>Pass: {{ pass_attempts }} | Fail: {{ failed_attempts }}</small>
+    </div>
   </article>
 </section>
 

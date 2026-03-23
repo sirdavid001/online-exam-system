@@ -17,38 +17,40 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   </head>
   <body class="dashboard-shell admin-shell">
-    <aside class="app-sidebar">
+    <aside class="app-sidebar" id="appSidebar">
       <div class="app-brand">
-        <i class="fas fa-user-shield"></i>
-        <h1 class="app-brand-title"><span>Online</span> Exam</h1>
+        <div class="brand-icon"><i class="fas fa-shield-alt"></i></div>
+        <h4>Admin<span>Portal</span></h4>
       </div>
 
       <div class="profile-chip">
-        <img src="{% static 'image/admin-avatar.png' %}" alt="Admin" />
+        <div class="avatar-glow">
+          <img src="{% static 'image/admin-avatar.png' %}" alt="Admin" />
+        </div>
         <h4>Administrator</h4>
-        <small>System Control</small>
+        <small><i class="fas fa-circle text-success mr-1" style="font-size: 0.6rem"></i> System active</small>
       </div>
 
       <nav class="app-nav">
-        <a class="app-nav-link" href="/admin-dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-        <a class="app-nav-link" href="/admin-teacher"><i class="fas fa-chalkboard-teacher"></i> Teacher Section</a>
-        <a class="app-nav-link" href="/admin-student"><i class="fas fa-user-graduate"></i> Student Section</a>
-        <a class="app-nav-link" href="/admin-course"><i class="fas fa-book-open"></i> Manage Courses</a>
-        <a class="app-nav-link" href="/admin-question"><i class="fas fa-question-circle"></i> Manage Questions</a>
-        <a class="app-nav-link" href="/admin-results"><i class="fas fa-clipboard-list"></i> Manage Results</a>
+        <a class="app-nav-link" href="/admin-dashboard"><i class="fas fa-th-large"></i> Overview</a>
+        <a class="app-nav-link" href="/admin-teacher"><i class="fas fa-chalkboard-teacher"></i> Teachers</a>
+        <a class="app-nav-link" href="/admin-student"><i class="fas fa-user-graduate"></i> Students</a>
+        <a class="app-nav-link" href="/admin-course"><i class="fas fa-book-open"></i> Courses</a>
+        <a class="app-nav-link" href="/admin-question"><i class="fas fa-question-circle"></i> Questions</a>
+        <a class="app-nav-link" href="/admin-results"><i class="fas fa-chart-bar"></i> Results</a>
       </nav>
     </aside>
 
     <div class="app-stage">
       <header class="app-topbar">
         <div class="topbar-left">
-          <button type="button" class="icon-toggle" data-sidebar-toggle aria-label="Toggle sidebar">
+          <button type="button" class="icon-toggle" onclick="document.body.classList.toggle('sidebar-open')">
             <i class="fas fa-bars"></i>
           </button>
-          <h2 class="topbar-title">Administrator Console</h2>
+          <h2 class="topbar-title">System Management</h2>
         </div>
-        <div class="d-flex align-items-center">
-          <a href="/logout" class="btn btn-danger btn-sm">Logout</a>
+        <div class="topbar-right">
+          <a href="/logout" class="btn btn-outline-brand btn-sm"><i class="fas fa-sign-out-alt"></i> Logout</a>
         </div>
       </header>
 
