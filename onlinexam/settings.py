@@ -18,6 +18,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-change-me")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
+# ALLOWED_HOSTS configuration
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost,testserver").split(",")
@@ -26,15 +27,24 @@ ALLOWED_HOSTS = [
 
 # Support Vercel dynamic URLs and custom domains
 if not DEBUG:
-    # Add .vercel.app if not already present
-    if not any(".vercel.app" in host for host in ALLOWED_HOSTS):
+    # Always allow Vercel domains
+    if ".vercel.app" not in ALLOWED_HOSTS:
         ALLOWED_HOSTS.append(".vercel.app")
+    
+    # Allow the specific Vercel deployment URL if available
+    vercel_url = os.getenv("VERCEL_URL")
+    if vercel_url and vercel_url not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(vercel_url)
 
-CSRF_TRUSTED_ORIGINS = [
-    f"https://{host}" if not host.startswith(".") else f"https://*{host}"
-    for host in ALLOWED_HOSTS
-    if host not in ("127.0.0.1", "localhost", "testserver")
-]
+CSRF_TRUSTED_ORIGINS = []
+for host in ALLOWED_HOSTS:
+    if host in ("127.0.0.1", "localhost", "testserver"):
+        continue
+    if host.startswith("."):
+        CSRF_TRUSTED_ORIGINS.append(f"https://*{host}")
+    else:
+        CSRF_TRUSTED_ORIGINS.append(f"https://{host}")
+
 # For local testing with DEBUG=False if needed
 if DEBUG:
     CSRF_TRUSTED_ORIGINS += ["http://127.0.0.1:8000", "http://localhost:8000"]
