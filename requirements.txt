@@ -5,3 +5,4 @@ gunicorn
 whitenoise[brotli]
 dj-database-url
 python-dotenv
+reportlab
