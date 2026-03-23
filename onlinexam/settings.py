@@ -101,7 +101,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "onlinexam.wsgi.application"
 
 # Database
-database_url = os.getenv("DATABASE_URL")
 if database_url:
     DATABASES = {
         "default": dj_database_url.parse(
@@ -110,6 +109,8 @@ if database_url:
             ssl_require=not DEBUG,
         )
     }
+    if not DEBUG:
+        DATABASES["default"]["OPTIONS"] = {"sslmode": "require"}
 else:
     DATABASES = {
         "default": {
