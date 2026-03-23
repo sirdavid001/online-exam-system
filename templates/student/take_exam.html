@@ -19,7 +19,9 @@
       <li>Attempts Used: {{ attempts_taken }}</li>
       <li>Attempts Remaining: {{ remaining_attempts }}</li>
       <li>Negative Mark Per Wrong Answer: {{ course.negative_mark_per_wrong }}</li>
-      <li>Question Order: {% if course.shuffle_questions %}Shuffled{% else %}Fixed{% endif %}</li>
+      <li><i class="fas fa-random mr-2"></i> Question Order: {% if course.shuffle_questions %}Randomized{% else %}Standard{% endif %}</li>
+      <li><i class="fas fa-sync-alt mr-2"></i> Option Shuffling: {% if course.shuffle_options %}Enabled{% else %}Disabled{% endif %}</li>
+      <li><i class="fas fa-user-shield mr-2"></i> Proctoring Status: {% if course.enable_proctoring %}<span class="text-danger font-weight-bold">Active (Tab switches logged)</span>{% else %}Inactive{% endif %}</li>
     </ul>
 
     {% if course.instructions %}

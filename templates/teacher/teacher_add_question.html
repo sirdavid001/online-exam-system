@@ -2,80 +2,90 @@
 {% load widget_tweaks %}
 {% block content %}
 
-<div class="container">
+<div class="container reveal">
   <article class="form-card">
-    <h2>Add Question</h2>
-    <p>Add an MCQ item with explanation and difficulty. For equations, use LaTeX like <code>\(x^2 + y^2 = z^2\)</code>.</p>
+    <div class="form-card-head">
+      <i class="fas fa-plus-circle text-success"></i>
+      <h3>Add New Question</h3>
+    </div>
+    <p class="text-muted">Create high-quality MCQ, True/False, or Short Answer items. Use LaTeX for professional mathematical equations.</p>
 
-    <form method="POST" autocomplete="off" class="stack-form" data-question-form>
+    <form method="POST" autocomplete="off" class="stack-form mt-4" data-question-form>
       {% csrf_token %}
 
       <div class="form-grid">
         <div class="form-group">
-          <label for="courseID">Course</label>
+          <label for="courseID">Assign to Course</label>
           {% render_field questionForm.courseID|attr:'required:true' class="form-control" %}
         </div>
         <div class="form-group">
-          <label for="question_type">Question Type</label>
+          <label for="question_type">Question Format</label>
           {% render_field questionForm.question_type|attr:'required:true' class="form-control" data-type-selector="" %}
         </div>
       </div>
 
       <div class="form-group">
-        <label for="question">Question</label>
-        {% render_field questionForm.question|attr:'required:true' class="form-control" placeholder="Example: Solve \(\int_0^1 x^2 dx\)" %}
+        <label for="question">Question Content</label>
+        {% render_field questionForm.question|attr:'required:true' class="form-control" placeholder="Type your question here... e.g. Solve \(\int_0^1 x^2 dx\)" %}
       </div>
 
       <div class="form-grid">
         <div class="form-group">
-          <label for="marks">Marks</label>
-          {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="Example: 5" %}
+          <label for="marks">Award Marks</label>
+          {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="e.g. 5" %}
         </div>
 
         <div class="form-group">
-          <label for="difficulty">Difficulty</label>
+          <label for="difficulty">Cognitive Difficulty</label>
           {% render_field questionForm.difficulty|attr:'required:true' class="form-control" %}
         </div>
       </div>
 
-      <div id="options-container">
+      <div id="options-container" class="mt-2">
+        <h6 class="form-section-title">Answer Options</h6>
         <div class="form-grid">
           <div class="form-group" data-option-field="1">
-            <label for="option1">Option 1 (True if T/F)</label>
-            {% render_field questionForm.option1 class="form-control" %}
+            <label for="option1">Option A (True if T/F)</label>
+            {% render_field questionForm.option1 class="form-control" placeholder="Primary choice..." %}
           </div>
           <div class="form-group" data-option-field="2">
-            <label for="option2">Option 2 (False if T/F)</label>
-            {% render_field questionForm.option2 class="form-control" %}
+            <label for="option2">Option B (False if T/F)</label>
+            {% render_field questionForm.option2 class="form-control" placeholder="Secondary choice..." %}
           </div>
           <div class="form-group" data-option-field="3">
-            <label for="option3">Option 3</label>
-            {% render_field questionForm.option3 class="form-control" %}
+            <label for="option3">Option C (Optional)</label>
+            {% render_field questionForm.option3 class="form-control" placeholder="Tertiary choice..." %}
           </div>
           <div class="form-group" data-option-field="4">
-            <label for="option4">Option 4</label>
-            {% render_field questionForm.option4 class="form-control" %}
+            <label for="option4">Option D (Optional)</label>
+            {% render_field questionForm.option4 class="form-control" placeholder="Quaternary choice..." %}
           </div>
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="answer">Correct Answer</label>
+      <div class="form-group mt-3">
+        <label for="answer">Correct Answer Designation</label>
         <div id="answer-interactive-container">
-          <!-- Will be populated by JS -->
+          <!-- Populated by JS -->
         </div>
         {% render_field questionForm.answer class="form-control" id="id_answer_field" type="hidden" %}
-        <small class="form-text text-muted" id="answer-help">
-          MCQ: select Option1-4. T/F: select Option1 (True) or Option2 (False). Short Answer: type the text.
-        </small>
+        <div class="alert alert-info py-2 px-3 mt-2" style="font-size: 0.85rem">
+          <i class="fas fa-lightbulb mr-1"></i> 
+          <strong>Quick Tip:</strong> 
+          MCQ: select Option A-D. T/F: select True/False. Short Answer: type the precise text.
+        </div>
       </div>
 
       <div class="form-group">
-        <label for="explanation">Solution/Explanation (Optional)</label>
-        {% render_field questionForm.explanation class="form-control" placeholder="Explain the solution logic for review and moderation." %}
+        <label for="explanation">Comprehensive Solution (Optional)</label>
+        {% render_field questionForm.explanation class="form-control" placeholder="Explain the rationale to help students after the exam." %}
       </div>
 
-      <button type="submit" class="btn btn-success btn-lg">Save Question</button>
+      <div class="form-actions mt-4 pt-3 border-top">
+        <button type="submit" class="btn btn-success btn-lg">
+          <i class="fas fa-save mr-1"></i> Finalize & Save Question
+        </button>
+      </div>
     </form>
   </article>
 </div>

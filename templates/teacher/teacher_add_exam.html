@@ -36,9 +36,25 @@
         </div>
       </div>
 
-      <div class="form-group">
-        <label for="shuffle_questions">Shuffle Questions</label>
-        {% render_field courseForm.shuffle_questions class="form-control" %}
+      <div class="form-grid mb-3">
+        <div class="form-group mb-0">
+          <label class="d-flex align-items-center gap-2">
+            {% render_field courseForm.shuffle_questions %}
+            <span>Shuffle Questions</span>
+          </label>
+        </div>
+        <div class="form-group mb-0">
+          <label class="d-flex align-items-center gap-2">
+            {% render_field courseForm.shuffle_options %}
+            <span>Shuffle Options</span>
+          </label>
+        </div>
+        <div class="form-group mb-0">
+          <label class="d-flex align-items-center gap-2">
+            {% render_field courseForm.enable_proctoring %}
+            <span>Enable Proctoring</span>
+          </label>
+        </div>
       </div>
 
       <div class="form-group">

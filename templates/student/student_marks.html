@@ -10,29 +10,37 @@
   <div class="table-head">
     <h6>Result by Course</h6>
   </div>
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Course</th>
-        <th class="text-center">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for t in courses %}
-      <tr>
-        <td>{{ t.course_name }}</td>
-        <td class="text-center">
-          <a class="btn btn-primary btn-sm" href="{% url 'check-marks' t.id %}">
-            <i class="fas fa-chart-bar"></i> View Results
-          </a>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td class="text-center text-muted" colspan="2">No courses found.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  {% if courses %}
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Course</th>
+          <th class="text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in courses %}
+        <tr>
+          <td>{{ t.course_name }}</td>
+          <td class="text-center">
+            <a class="btn btn-primary btn-sm" href="{% url 'check-marks' t.id %}">
+              <i class="fas fa-chart-bar"></i> View Results
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon"><i class="fas fa-book"></i></div>
+    <div class="empty-text">
+      <h4>No Exams Taken</h4>
+      <p>You haven't participated in any examinations yet. Go to 'Take Exam' to start!</p>
+    </div>
+  </div>
+  {% endif %}
 </div>
 {% endblock content %}
