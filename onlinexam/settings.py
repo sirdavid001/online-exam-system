@@ -7,7 +7,8 @@ from dotenv import load_dotenv
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
-MEDIA_ROOT = os.path.join(BASE_DIR, "static")
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/media/"
 
 # Load .env file
 load_dotenv(os.path.join(BASE_DIR, ".env"))
@@ -145,6 +146,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 if not DEBUG:
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    WHITENOISE_MANIFEST_STRICT = False
     WHITENOISE_USE_FINDERS = True
 
 LOGIN_REDIRECT_URL = "/afterlogin"
