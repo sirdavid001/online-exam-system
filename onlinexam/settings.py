@@ -24,6 +24,21 @@ ALLOWED_HOSTS = [
     if host.strip()
 ]
 
+# Support Vercel dynamic URLs and custom domains
+if not DEBUG:
+    # Add .vercel.app if not already present
+    if not any(".vercel.app" in host for host in ALLOWED_HOSTS):
+        ALLOWED_HOSTS.append(".vercel.app")
+
+CSRF_TRUSTED_ORIGINS = [
+    f"https://{host}" if not host.startswith(".") else f"https://*{host}"
+    for host in ALLOWED_HOSTS
+    if host not in ("127.0.0.1", "localhost", "testserver")
+]
+# For local testing with DEBUG=False if needed
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS += ["http://127.0.0.1:8000", "http://localhost:8000"]
+
 # Application definition
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -51,6 +66,7 @@ MIDDLEWARE = [
 
 CSRF_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 ROOT_URLCONF = "onlinexam.urls"
 
