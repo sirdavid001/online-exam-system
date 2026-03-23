@@ -10,43 +10,57 @@
   <div class="table-head">
     <h6>Result Entries</h6>
   </div>
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Attempt</th>
-        <th>Score</th>
-        <th>Correct</th>
-        <th>Wrong</th>
-        <th>Unanswered</th>
-        <th>Percentage</th>
-        <th>Status</th>
-        <th>Submitted At</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for t in results %}
-      <tr>
-        <td>{{ t.attempt_number }}</td>
-        <td>{{ t.marks }} / {{ t.total_possible_marks }}</td>
-        <td>{{ t.correct_answers }}</td>
-        <td>{{ t.wrong_answers }}</td>
-        <td>{{ t.unanswered }}</td>
-        <td>{{ t.percentage }}%</td>
-        <td>
-          {% if t.passed %}
-          <span class="badge badge-success">Passed</span>
-          {% else %}
-          <span class="badge badge-danger">Not Passed</span>
-          {% endif %}
-        </td>
-        <td>{{ t.date }}</td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td class="text-center text-muted" colspan="8">No attempts found for this course yet.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  {% if results %}
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Attempt</th>
+          <th>Score</th>
+          <th>Correct</th>
+          <th>Wrong</th>
+          <th>Unanswered</th>
+          <th>Percentage</th>
+          <th>Status</th>
+          <th>Submitted At</th>
+          <th class="text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in results %}
+        <tr>
+          <td>{{ t.attempt_number }}</td>
+          <td>{{ t.marks }} / {{ t.total_possible_marks }}</td>
+          <td>{{ t.correct_answers }}</td>
+          <td>{{ t.wrong_answers }}</td>
+          <td>{{ t.unanswered }}</td>
+          <td>{{ t.percentage }}%</td>
+          <td>
+            {% if t.passed %}
+            <span class="badge badge-success">Passed</span>
+            {% else %}
+            <span class="badge badge-danger">Not Passed</span>
+            {% endif %}
+          </td>
+          <td>{{ t.date|date:"Y-m-d H:i" }}</td>
+          <td class="text-center">
+            <a href="{% url 'export-result-pdf' t.id %}" class="btn btn-outline-brand btn-sm" title="Download PDF Report">
+              <i class="fas fa-file-pdf"></i> Download
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon"><i class="fas fa-history"></i></div>
+    <div class="empty-text">
+      <h4>No Attempts Found</h4>
+      <p>You haven't attempted this examination yet.</p>
+    </div>
+  </div>
+  {% endif %}
 </div>
 {% endblock content %}

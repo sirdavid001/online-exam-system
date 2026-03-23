@@ -17,6 +17,7 @@ from teacher import forms as TFORM
 from teacher import models as TMODEL
 
 from . import forms, models
+from .pdf_utils import render_to_pdf
 
 
 def home_view(request):
@@ -693,3 +694,14 @@ def contactus_view(request):
             )
             return render(request, "exam/contactussuccess.html")
     return render(request, "exam/contactus.html", {"form": sub})
+def export_result_pdf_view(request, pk):
+    result = get_object_or_404(models.Result, pk=pk)
+    # Ensure only the student or an admin can access
+    if not (is_admin(request.user) or (is_student(request.user) and result.student.user == request.user)):
+        return HttpResponseRedirect("/")
+
+    context = {
+        "result": result,
+        "current_date": timezone.now(),
+    }
+    return render_to_pdf("exam/result_pdf.html", context)

@@ -162,6 +162,21 @@ def start_exam_view(request, pk):
     if course.shuffle_questions:
         random.shuffle(questions)
 
+    for q in questions:
+        if q.question_type == "MCQ":
+            opts = [("Option1", q.option1), ("Option2", q.option2)]
+            if q.option3:
+                opts.append(("Option3", q.option3))
+            if q.option4:
+                opts.append(("Option4", q.option4))
+            
+            if course.shuffle_options:
+                random.shuffle(opts)
+            q.shuffled_options = opts
+        elif q.question_type == "TRUE_FALSE":
+            # True/False typically stays ordered as True, False
+            q.shuffled_options = [("Option1", "True"), ("Option2", "False")]
+
     question_ids = [question.id for question in questions]
     request.session[_exam_session_key(course.id, "question_ids")] = question_ids
     request.session[_exam_session_key(course.id, "started_at")] = timezone.now().isoformat()
@@ -265,10 +280,11 @@ def calculate_marks_view(request):
         percentage = (final_marks / Decimal(total_possible_marks)) * Decimal("100")
         percentage = percentage.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
+    tab_switches = int(request.POST.get("tab_switches", 0))
     attempt_number = attempts_taken + 1
     passed = percentage >= Decimal(course.pass_mark)
 
-    QMODEL.Result.objects.create(
+    result = QMODEL.Result.objects.create(
         student=student,
         exam=course,
         attempt_number=attempt_number,
@@ -280,7 +296,32 @@ def calculate_marks_view(request):
         unanswered=unanswered,
         percentage=percentage,
         passed=passed,
+        tab_switches=tab_switches,
     )
+
+    # Send Notification Email
+    try:
+        subject = f"Exam Result: {course.course_name}"
+        message = (
+            f"Hello {student.user.first_name},\n\n"
+            f"You have completed your attempt #{attempt_number} for {course.course_name}.\n\n"
+            f"Summary:\n"
+            f"- Score: {final_marks}/{total_possible_marks}\n"
+            f"- Percentage: {percentage}%\n"
+            f"- Status: {'PASSED' if passed else 'FAILED'}\n"
+            f"- Tab Switches: {tab_switches}\n\n"
+            f"Login to the portal to view the full report.\n"
+            f"Regards,\nExam System"
+        )
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [student.institutional_email],
+            fail_silently=True,
+        )
+    except Exception:
+        pass
 
     _clear_exam_session(request, course.id)
 

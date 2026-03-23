@@ -54,4 +54,5 @@ urlpatterns = [
     path('view-question/<int:pk>', views.view_question_view, name='view-question'),
     path('update-question/<int:pk>', views.update_question_view, name='update-question'),
     path('delete-question/<int:pk>', views.delete_question_view, name='delete-question'),
+    path('export-result-pdf/<int:pk>', views.export_result_pdf_view, name='export-result-pdf'),
 ]

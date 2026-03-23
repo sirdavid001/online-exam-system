@@ -6,6 +6,8 @@ from django.contrib.auth.models import Group
 from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
+from django.core.mail import send_mail
+from django.conf import settings
 
 from exam import forms as QFORM
 from exam import models as QMODEL
@@ -87,6 +89,19 @@ def teacher_add_exam_view(request):
         courseForm = QFORM.CourseForm(request.POST)
         if courseForm.is_valid():
             course = courseForm.save()
+            # Send Notification to students
+            try:
+                emails = list(SMODEL.Student.objects.filter(institutional_email__isnull=False).values_list('institutional_email', flat=True))
+                if emails:
+                    send_mail(
+                        f"New Exam Available: {course.course_name}",
+                        f"A new course '{course.course_name}' has been added. You can now login and start the examination.",
+                        settings.DEFAULT_FROM_EMAIL,
+                        emails,
+                        fail_silently=True
+                    )
+            except Exception:
+                pass
             messages.success(request, f"Course '{course.course_name}' created successfully.")
             return HttpResponseRedirect("/teacher/teacher-view-exam")
         messages.error(request, "Could not create course. Please fix the highlighted fields.")

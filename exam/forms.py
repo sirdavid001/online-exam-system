@@ -19,6 +19,8 @@ class CourseForm(forms.ModelForm):
             "max_attempts",
             "negative_mark_per_wrong",
             "shuffle_questions",
+            "shuffle_options",
+            "enable_proctoring",
             "instructions",
         ]
         widgets = {

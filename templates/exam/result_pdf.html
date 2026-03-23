@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #0ea4ba;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #0ea4ba;
+            margin: 0;
+            font-size: 24pt;
+            text-transform: uppercase;
+        }
+        .header p {
+            margin: 5px 0 0 0;
+            font-size: 12pt;
+            color: #64748b;
+        }
+        .doc-title {
+            text-align: center;
+            font-size: 18pt;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #0f172a;
+        }
+        .student-info {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        .student-info td {
+            padding: 5px;
+        }
+        .label {
+            font-weight: bold;
+            color: #475569;
+            width: 35%;
+        }
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .result-table th, .result-table td {
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            text-align: left;
+        }
+        .result-table th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: bold;
+        }
+        .status-box {
+            text-align: center;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .pass {
+            background-color: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+        .fail {
+            background-color: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 9pt;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Online Examination System</h1>
+        <p>Official Examination Result Slip</p>
+    </div>
+
+    <div class="doc-title">Statement of Results</div>
+
+    <table class="student-info">
+        <tr>
+            <td class="label">Student Name:</td>
+            <td>{{ result.student.user.first_name }} {{ result.student.user.last_name }}</td>
+        </tr>
+        <tr>
+            <td class="label">Matric Number:</td>
+            <td>{{ result.student.matric_number }}</td>
+        </tr>
+        <tr>
+            <td class="label">Course/Exam:</td>
+            <td>{{ result.exam.course_name }}</td>
+        </tr>
+        <tr>
+            <td class="label">Date of Exam:</td>
+            <td>{{ result.date|date:"F d, Y" }} at {{ result.date|date:"H:i" }}</td>
+        </tr>
+        <tr>
+            <td class="label">Attempt Number:</td>
+            <td>{{ result.attempt_number }}</td>
+        </tr>
+    </table>
+
+    <table class="result-table">
+        <thead>
+            <tr>
+                <th>Category</th>
+                <th>Score / Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Total Questions</td>
+                <td>{{ result.total_questions }}</td>
+            </tr>
+            <tr>
+                <td>Correct Answers</td>
+                <td>{{ result.correct_answers }}</td>
+            </tr>
+            <tr>
+                <td>Total Marks Obtained</td>
+                <td>{{ result.marks }} / {{ result.total_possible_marks }}</td>
+            </tr>
+            <tr>
+                <td>Percentage Score</td>
+                <td>{{ result.percentage }}%</td>
+            </tr>
+            <tr>
+                <td>Minimum Pass Mark</td>
+                <td>{{ result.exam.pass_mark }}%</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="status-box {% if result.passed %}pass{% else %}fail{% endif %}">
+        <h2 style="margin: 0;">RESULT: {% if result.passed %}PASSED{% else %}FAILED{% endif %}</h2>
+    </div>
+
+    <div class="footer">
+        This is a computer-generated document and requires no physical signature.<br>
+        Generated on {{ current_date|date:"Y-m-d H:i:s" }}
+    </div>
+</body>
+</html>

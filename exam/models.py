@@ -23,6 +23,8 @@ class Course(models.Model):
         default=Decimal("0.00"),
     )
     shuffle_questions = models.BooleanField(default=True)
+    shuffle_options = models.BooleanField(default=False)
+    enable_proctoring = models.BooleanField(default=False)
     instructions = models.TextField(blank=True, default="")
 
     class Meta:
@@ -100,6 +102,7 @@ class Result(models.Model):
 
     percentage = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal("0.00"))
     passed = models.BooleanField(default=False)
+    tab_switches = models.PositiveIntegerField(default=0)
     date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
