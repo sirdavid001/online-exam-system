@@ -5,16 +5,20 @@
   --bg-muted: #e2ebf4;
   --surface: rgba(255, 255, 255, 0.9);
   --surface-strong: #ffffff;
+  --surface-raised: linear-gradient(145deg, rgba(255, 255, 255, 0.92), rgba(244, 250, 255, 0.82));
   --text-main: #112031;
+  --text: #112031;
   --text-muted: #5d6b79;
   --brand: #0e7490;
   --brand-strong: #155e75;
+  --brand-gradient: linear-gradient(135deg, #155e75 0%, #0e7490 48%, #0ea5b9 100%);
   --brand-soft: #d8eef2;
   --accent: #e58e26;
   --success: #1f8f5f;
   --danger: #d64545;
   --line-soft: rgba(17, 32, 49, 0.1);
   --shadow-soft: 0 20px 45px rgba(18, 42, 66, 0.12);
+  --shadow-premium: 0 26px 64px rgba(18, 42, 66, 0.18);
 }
 
 * {
@@ -159,10 +163,17 @@ img {
   overflow: hidden;
   background: var(--surface-raised);
   border: 1px solid var(--line-soft);
+  border-radius: 28px;
+  box-shadow: var(--shadow-premium);
   min-height: 480px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.hero-content > * {
+  position: relative;
+  z-index: 1;
 }
 
 .hero-content::after {
@@ -180,12 +191,11 @@ img {
   font-size: clamp(2.5rem, 5vw, 4rem);
   line-height: 1.1;
   margin-bottom: 1.5rem;
-  background: var(--brand-gradient);
+  color: var(--brand-strong);
+  background-image: var(--brand-gradient);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  position: relative;
-  z-index: 1;
 }
 
 .hero-content p {
@@ -193,8 +203,6 @@ img {
   color: var(--text-muted);
   max-width: 520px;
   margin-bottom: 2.5rem;
-  position: relative;
-  z-index: 1;
 }
 
 .hero-grid {
@@ -206,14 +214,16 @@ img {
 .hero-card {
   padding: 1.8rem;
   border: 1px solid var(--line-soft);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 24px;
+  box-shadow: 0 14px 34px rgba(18, 42, 66, 0.08);
   backdrop-filter: blur(10px);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .hero-card:hover {
   transform: translateY(-8px) scale(1.02);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.92);
   border-color: var(--brand);
   box-shadow: var(--shadow-premium);
 }
@@ -221,7 +231,7 @@ img {
 .card-icon {
   width: 54px;
   height: 54px;
-  background: rgba(14, 164, 186, 0.1);
+  background: linear-gradient(145deg, rgba(14, 116, 144, 0.14), rgba(14, 165, 185, 0.18));
   color: var(--brand);
   border-radius: 12px;
   display: flex;
@@ -363,6 +373,7 @@ input[type="submit"]:hover {
 .btn-brand {
   background: linear-gradient(135deg, var(--brand), #0b8daa);
   color: #fff !important;
+  box-shadow: 0 14px 28px rgba(14, 116, 144, 0.18);
 }
 
 .btn-success {
@@ -377,7 +388,7 @@ input[type="submit"]:hover {
 
 .btn-secondary,
 .btn-outline-brand {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.78);
   color: var(--brand-strong) !important;
   border: 1px solid rgba(14, 116, 144, 0.45);
 }
@@ -903,7 +914,7 @@ body.sidebar-collapsed .app-stage {
 .table-head {
   padding: 1.5rem 2rem;
   border-bottom: 1px solid var(--line-soft);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.66);
 }
 
 .table-head h6 {
@@ -1216,7 +1227,7 @@ body.sidebar-collapsed .app-stage {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.01);
+  background: rgba(255, 255, 255, 0.55);
   border-radius: 24px;
   border: 1px dashed var(--line-soft);
   margin: 1.5rem 0;
@@ -1225,7 +1236,7 @@ body.sidebar-collapsed .app-stage {
 .empty-icon {
   width: 80px;
   height: 80px;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.8);
   color: var(--text-muted);
   border-radius: 50%;
   display: flex;
@@ -1259,7 +1270,7 @@ body.sidebar-collapsed .app-stage {
 .btn-brand {
   background: var(--brand-gradient);
   border: none;
-  color: white;
+  color: #fff !important;
 }
 
 .btn-outline-brand {
@@ -1269,5 +1280,5 @@ body.sidebar-collapsed .app-stage {
 
 .btn-outline-brand:hover {
   background: var(--brand);
-  color: white;
+  color: #fff !important;
 }
