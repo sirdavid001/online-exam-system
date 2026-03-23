@@ -291,11 +291,17 @@ img {
   font-size: clamp(2.5rem, 6vw, 4.2rem);
   line-height: 1.05;
   margin-bottom: 2rem;
-  color: #fff;
-  background: linear-gradient(to bottom right, #fff 30%, rgba(255, 255, 255, 0.6));
+  color: var(--text-main);
+  background: linear-gradient(to bottom right, var(--text-main) 30%, rgba(255, 255, 255, 0.6));
   -webkit-background-clip: text;
   background-clip: text;
-  -webkit-text-fill-color: transparent;
+  -webkit-text-fill-color: initial;
+}
+
+@media (prefers-color-scheme: dark) {
+  .hero-content h1 {
+    -webkit-text-fill-color: transparent;
+  }
 }
 
 .hero-content p {
@@ -354,7 +360,7 @@ img {
 .hero-card:hover {
   transform: translateX(12px);
   border-color: var(--brand);
-  background: rgba(30, 41, 59, 1);
+  background: var(--surface-strong);
   box-shadow: var(--shadow-premium);
 }
 
@@ -375,7 +381,8 @@ img {
 .hero-card-info h3 {
   font-size: 1.35rem;
   margin-bottom: 0.5rem;
-  color: #fff;
+  color: var(--text-main);
+  -webkit-text-fill-color: initial;
 }
 
 .hero-card-info p {
@@ -425,7 +432,8 @@ img {
 .form-card h1 {
   margin-bottom: 0.75rem;
   font-size: clamp(1.75rem, 4vw, 2.5rem);
-  color: #fff;
+  color: var(--text-main);
+  -webkit-text-fill-color: initial;
 }
 
 .auth-card p,
@@ -484,6 +492,12 @@ form label {
   text-transform: uppercase;
 }
 
+@media (prefers-color-scheme: light) {
+  form label {
+    color: #1e3a8a; /* Darker blue for contrast in light mode */
+  }
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -506,6 +520,14 @@ form label {
   padding-top: 1.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+@media (prefers-color-scheme: light) {
+  .form-footer {
+    color: #475569;
+    border-top-color: rgba(0, 0, 0, 0.05);
+  }
 }
 
 .form-footer a {
