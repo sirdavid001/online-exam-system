@@ -121,11 +121,12 @@ def _get_database_url():
 # Database
 database_url = _get_database_url()
 if database_url:
+    ssl_required = not DEBUG and database_url.startswith(("postgres://", "postgresql://"))
     DATABASES = {
         "default": dj_database_url.parse(
             database_url,
             conn_max_age=600,
-            ssl_require=not DEBUG,
+            ssl_require=ssl_required,
         )
     }
     if not DEBUG and DATABASES["default"]["ENGINE"] == "django.db.backends.postgresql":
