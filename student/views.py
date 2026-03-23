@@ -34,10 +34,14 @@ def ajax_save_answer_view(request):
                 saved_answers = request.session.get(session_key, {})
                 saved_answers[str(question_id)] = selected_ans
                 request.session[session_key] = saved_answers
+                request.session.modified = True
                 return JsonResponse({"status": "success"})
-        except Exception:
-            pass
-    return JsonResponse({"status": "error"}, status=400)
+            return JsonResponse({"status": "error", "message": "Missing course_id or question_id"}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({"status": "error", "message": "Invalid JSON"}, status=400)
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=400)
+    return JsonResponse({"status": "error", "message": "Method not allowed"}, status=405)
 
 
 # for showing signup/login button for student

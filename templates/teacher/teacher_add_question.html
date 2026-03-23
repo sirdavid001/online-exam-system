@@ -61,10 +61,10 @@
 
       <div class="form-group">
         <label for="answer">Correct Answer</label>
-        <div id="answer-selector-container">
+        <div id="answer-interactive-container">
           <!-- Will be populated by JS -->
-          {% render_field questionForm.answer|attr:'required:true' class="form-control" id="id_answer_field" %}
         </div>
+        {% render_field questionForm.answer class="form-control" id="id_answer_field" type="hidden" %}
         <small class="form-text text-muted" id="answer-help">
           MCQ: select Option1-4. T/F: select Option1 (True) or Option2 (False). Short Answer: type the text.
         </small>
@@ -85,7 +85,7 @@
     const typeSelector = document.querySelector('[data-type-selector]');
     const optionsContainer = document.getElementById('options-container');
     const optionFields = document.querySelectorAll('[data-option-field]');
-    const answerContainer = document.getElementById('answer-selector-container');
+    const answerContainer = document.getElementById('answer-interactive-container');
     const actualAnswerInput = document.getElementById('id_answer_field');
 
     function updateForm() {

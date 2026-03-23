@@ -21,7 +21,7 @@
   </div>
 </div>
 
-<form class="exam-sheet reveal" data-exam-form autocomplete="off" action="{% url 'calculate-marks' %}" method="POST">
+<form class="exam-sheet reveal" data-exam-form data-course-id="{{ course.id }}" autocomplete="off" action="{% url 'calculate-marks' %}" method="POST">
   {% csrf_token %}
   <input type="hidden" name="course_id" value="{{ course.id }}" />
 
