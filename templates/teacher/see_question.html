@@ -12,7 +12,7 @@
   </div>
   {% if questions %}
   <div class="table-responsive">
-    <table class="table table-hover mb-0">
+    <table class="table-premium">
       <thead>
         <tr>
           <th>Question</th>
@@ -25,12 +25,12 @@
       </thead>
       <tbody>
         {% for c in questions %}
-        <tr>
+        <tr id="question-row-{{ c.id }}">
           <td>
-            {{ c.question|linebreaksbr }}
-            <div class="mt-2">
-              <small class="text-muted">
-                <strong>Answer:</strong> 
+            <div class="font-weight-bold mb-1">{{ c.question|linebreaksbr }}</div>
+            <div class="mt-2 text-glow-soft">
+              <small>
+                <strong>Key:</strong> 
                 {% if c.question_type == 'MCQ' %}
                   {{ c.answer }}: 
                   {% if c.answer == 'Option1' %}{{ c.option1 }}
@@ -46,20 +46,27 @@
               </small>
             </div>
           </td>
-          <td><span class="badge badge-info">{{ c.get_question_type_display }}</span></td>
+          <td><span class="badge badge-info-soft">{{ c.get_question_type_display }}</span></td>
           <td>{{ c.get_difficulty_display }}</td>
           <td>{{ c.marks }}</td>
           <td>
-            {% if c.explanation %}
-            {{ c.explanation|linebreaksbr }}
-            {% else %}
-            <span class="text-muted">Not provided</span>
-            {% endif %}
+            <div class="text-small text-secondary">
+              {% if c.explanation %}
+              {{ c.explanation|linebreaksbr }}
+              {% else %}
+              <i class="opacity-50">No context provided</i>
+              {% endif %}
+            </div>
           </td>
           <td class="text-center">
-            <a class="btn btn-danger btn-sm" href="{% url 'remove-question' c.id %}" data-confirm="Are you sure you want to delete this question?">
-              <i class="fas fa-trash"></i> Delete
-            </a>
+            <button class="btn-icon-soft danger" 
+                    hx-delete="{% url 'remove-question' c.id %}"
+                    hx-target="#question-row-{{ c.id }}"
+                    hx-swap="outerHTML"
+                    hx-confirm="Delete this question?"
+                    title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
           </td>
         </tr>
         {% endfor %}

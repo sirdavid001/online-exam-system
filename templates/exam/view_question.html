@@ -2,35 +2,44 @@
 
 {% block content %}
 <section class="page-head reveal">
-  <h2>Questions</h2>
-  <p class="page-lead">{{ course.course_name }} question bank with full edit and delete controls.</p>
+  <div class="d-flex justify-content-between align-items-center w-100">
+    <div>
+      <h2>Questions</h2>
+      <p class="page-lead">{{ course.course_name }} question bank.</p>
+    </div>
+    <a href="{% url 'admin-add-question' %}?course_id={{ course.id }}" class="btn-premium">
+      <i class="fas fa-plus mr-2"></i> Add Question
+    </a>
+  </div>
 </section>
 
-<div class="table-card reveal">
+<div class="table-card reveal mt-4">
   <div class="table-head">
     <h6>Question List</h6>
+    <div class="htmx-indicator spinner-border spinner-border-sm text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
   </div>
   {% if questions %}
   <div class="table-responsive">
-    <table class="table table-hover mb-0">
+    <table class="table-premium">
       <thead>
         <tr>
           <th>Question</th>
           <th>Type</th>
           <th>Difficulty</th>
           <th>Marks</th>
-          <th>Explanation</th>
           <th class="text-center">Actions</th>
         </tr>
       </thead>
       <tbody>
         {% for c in questions %}
-        <tr>
+        <tr id="question-row-{{ c.id }}">
           <td>
-            {{ c.question|linebreaksbr }}
+            <div class="question-text-truncate">{{ c.question|linebreaksbr }}</div>
             <div class="mt-2">
-              <small class="text-muted">
-                <strong>Answer:</strong> 
+              <span class="badge badge-brand-soft">
+                Answer: 
                 {% if c.question_type == 'MCQ' %}
                   {{ c.answer }}: 
                   {% if c.answer == 'Option1' %}{{ c.option1 }}
@@ -43,27 +52,25 @@
                 {% else %}
                   {{ c.answer }}
                 {% endif %}
-              </small>
+              </span>
             </div>
           </td>
-          <td><span class="badge badge-info">{{ c.get_question_type_display }}</span></td>
-          <td>{{ c.get_difficulty_display }}</td>
-          <td>{{ c.marks }}</td>
-          <td>
-            {% if c.explanation %}
-            {{ c.explanation|linebreaksbr }}
-            {% else %}
-            <span class="text-muted">Not provided</span>
-            {% endif %}
-          </td>
+          <td><span class="badge badge-indigo-soft">{{ c.get_question_type_display }}</span></td>
+          <td><span class="difficulty-tag {{ c.difficulty|lower }}">{{ c.get_difficulty_display }}</span></td>
+          <td class="font-weight-bold">{{ c.marks }}</td>
           <td class="text-center">
             <div class="action-group">
-              <a class="btn btn-primary btn-sm" href="{% url 'update-question' c.id %}">
-                <i class="fas fa-edit"></i> Edit
+              <a class="btn-icon-soft" href="{% url 'update-question' c.id %}" title="Edit">
+                <i class="fas fa-edit"></i>
               </a>
-              <a class="btn btn-danger btn-sm" href="{% url 'delete-question' c.id %}?next={{ request.path|urlencode }}" data-confirm="Are you sure you want to delete this question?">
-                <i class="fas fa-trash"></i> Delete
-              </a>
+              <button class="btn-icon-soft danger" 
+                      hx-delete="{% url 'delete-question' c.id %}"
+                      hx-target="#question-row-{{ c.id }}"
+                      hx-swap="outerHTML"
+                      hx-confirm="Delete this question?"
+                      title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
             </div>
           </td>
         </tr>
@@ -72,12 +79,10 @@
     </table>
   </div>
   {% else %}
-  <div class="empty-state">
-    <div class="empty-icon"><i class="fas fa-question-circle"></i></div>
-    <div class="empty-text">
-      <h4>Empty Question Bank</h4>
-      <p>No questions have been added to this course yet.</p>
-    </div>
+  <div class="empty-state p-5 text-center">
+    <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
+    <h4>No Questions Yet</h4>
+    <p class="text-muted">Start building your question bank by clicking the 'Add Question' button above.</p>
   </div>
   {% endif %}
 </div>

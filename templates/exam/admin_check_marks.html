@@ -10,49 +10,56 @@
   <div class="table-head">
     <h6>Result Entries</h6>
   </div>
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Attempt</th>
-        <th>Score</th>
-        <th>Correct</th>
-        <th>Wrong</th>
-        <th>Unanswered</th>
-        <th>Percentage</th>
-        <th>Status</th>
-        <th>Submitted At</th>
-        <th class="text-center">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for t in results %}
-      <tr>
-        <td>{{ t.attempt_number }}</td>
-        <td>{{ t.marks }} / {{ t.total_possible_marks }}</td>
-        <td>{{ t.correct_answers }}</td>
-        <td>{{ t.wrong_answers }}</td>
-        <td>{{ t.unanswered }}</td>
-        <td>{{ t.percentage }}%</td>
-        <td>
-          {% if t.passed %}
-          <span class="badge badge-success">Passed</span>
-          {% else %}
-          <span class="badge badge-danger">Not Passed</span>
-          {% endif %}
-        </td>
-        <td>{{ t.date|date:"Y-m-d H:i" }}</td>
-        <td class="text-center">
-          <a class="btn btn-danger btn-sm" href="{% url 'delete-result' t.id %}?next={{ request.path|urlencode }}">
-            <i class="fas fa-trash"></i> Delete
-          </a>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td class="text-center text-muted" colspan="9">No results found for this exam.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table-premium">
+      <thead>
+        <tr>
+          <th>Attempt</th>
+          <th>Score</th>
+          <th>Correct</th>
+          <th>Wrong</th>
+          <th>Unanswered</th>
+          <th>Percentage</th>
+          <th>Status</th>
+          <th>Submitted At</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in results %}
+        <tr id="result-row-{{ t.id }}">
+          <td class="font-weight-bold">#{{ t.attempt_number }}</td>
+          <td>{{ t.marks }} / {{ t.total_possible_marks }}</td>
+          <td>{{ t.correct_answers }}</td>
+          <td>{{ t.wrong_answers }}</td>
+          <td>{{ t.unanswered }}</td>
+          <td>{{ t.percentage }}%</td>
+          <td>
+            {% if t.passed %}
+            <span class="badge badge-success-soft">Passed</span>
+            {% else %}
+            <span class="badge badge-danger-soft">Not Passed</span>
+            {% endif %}
+          </td>
+          <td>{{ t.date|date:"M d, Y H:i" }}</td>
+          <td class="text-center">
+            <button class="btn-icon-soft danger" 
+                    hx-delete="{% url 'delete-result' t.id %}"
+                    hx-target="#result-row-{{ t.id }}"
+                    hx-swap="outerHTML"
+                    hx-confirm="Delete this result record?"
+                    title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td class="text-center text-muted" colspan="9">No results found for this exam.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock content %}

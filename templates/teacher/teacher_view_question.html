@@ -12,7 +12,7 @@
   </div>
   {% if courses %}
   <div class="table-responsive">
-    <table class="table table-hover mb-0">
+    <table class="table-premium">
       <thead>
         <tr>
           <th>Course</th>
@@ -24,12 +24,12 @@
       <tbody>
         {% for c in courses %}
         <tr>
-          <td>{{ c.course_name }}</td>
+          <td class="font-weight-bold">{{ c.course_name }}</td>
           <td>{{ c.question_number }}</td>
           <td>{{ c.total_marks }}</td>
           <td class="text-center">
-            <a class="btn btn-primary btn-sm" href="{% url 'see-question' c.id %}">
-              <i class="fas fa-eye"></i> View Questions
+            <a class="btn-icon-soft" href="{% url 'see-question' c.id %}" title="View Questions">
+              <i class="fas fa-eye"></i>
             </a>
           </td>
         </tr>

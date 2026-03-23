@@ -3,62 +3,50 @@
 
 {% block content %}
 <section class="page-head reveal">
-  <h2>Students</h2>
-  <p class="page-lead">Manage student profiles and institutional records.</p>
+  <div class="d-flex justify-content-between align-items-center w-100">
+    <div>
+      <h2>Students</h2>
+      <p class="page-lead">Manage student profiles and institutional records.</p>
+    </div>
+    <div class="search-box-premium">
+      <i class="fas fa-search"></i>
+      <input type="text" 
+             name="search" 
+             placeholder="Search by name, matric, or email..." 
+             hx-get="{% url 'admin-view-student' %}" 
+             hx-trigger="keyup changed delay:500ms" 
+             hx-target="#student-table-body" 
+             hx-indicator=".htmx-indicator">
+    </div>
+  </div>
 </section>
 
-<div class="table-card reveal">
+<div class="table-card reveal mt-4">
   <div class="table-head">
     <h6>Registered Students</h6>
+    <div class="htmx-indicator spinner-border spinner-border-sm text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
   </div>
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Matric/Reg No.</th>
-        <th>Faculty</th>
-        <th>Department</th>
-        <th>Level</th>
-        <th>Institutional Email</th>
-        <th>Phone</th>
-        <th>Photo</th>
-        <th class="text-center">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for t in students %}
-      <tr>
-        <td>{{ t.get_name }}</td>
-        <td>{{ t.matric_number|default:"-" }}</td>
-        <td>{{ t.faculty|default:"-" }}</td>
-        <td>{{ t.department|default:"-" }}</td>
-        <td>{{ t.get_current_level_display }}</td>
-        <td>{{ t.institutional_email|default:"-" }}</td>
-        <td>{{ t.mobile }}</td>
-        <td>
-          {% if t.profile_pic %}
-          <img class="thumb-sm" src="{% static t.profile_pic.url %}" alt="{{ t.get_name }}" />
-          {% else %}
-          <span class="text-muted">No photo</span>
-          {% endif %}
-        </td>
-        <td class="text-center">
-          <div class="action-group">
-            <a class="btn btn-primary btn-sm" href="{% url 'update-student' t.id %}">
-              <i class="fas fa-edit"></i> Edit
-            </a>
-            <a class="btn btn-danger btn-sm" href="{% url 'delete-student' t.id %}">
-              <i class="fas fa-trash"></i> Delete
-            </a>
-          </div>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td class="text-center text-muted" colspan="9">No students found.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table-premium">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Matric/Reg No.</th>
+          <th>Faculty</th>
+          <th>Department</th>
+          <th>Level</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Photo</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="student-table-body">
+        {% include 'exam/admin_view_student_partial.html' %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock content %}

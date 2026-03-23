@@ -102,11 +102,19 @@ def student_dashboard_view(request):
     chart_labels = [r.exam.course_name for r in perf_results]
     chart_data = [float(r.percentage) for r in perf_results]
 
+    # Calculate average performance for the new tile
+    all_results = QMODEL.Result.objects.filter(student=student)
+    avg_perf = 0
+    if all_results.exists():
+        avg_perf = sum(r.percentage for r in all_results) / all_results.count()
+        avg_perf = float(avg_perf.quantize(Decimal("0.1")))
+
     context = {
-        "total_course": QMODEL.Course.objects.all().count(),
-        "total_question": QMODEL.Question.objects.all().count(),
+        "total_course": QMODEL.Course.objects.filter(is_published=True).count(),
+        "total_question": QMODEL.Question.objects.filter(course__is_published=True).count(),
         "recent_results": recent_results,
         "performance_data": json.dumps({"labels": chart_labels, "series": chart_data}),
+        "performance_data_avg": avg_perf,
     }
     return render(request, "student/student_dashboard.html", context=context)
 
@@ -114,90 +122,91 @@ def student_dashboard_view(request):
 @login_required(login_url="studentlogin")
 @user_passes_test(is_student, login_url="studentlogin")
 def student_exam_view(request):
-    courses = QMODEL.Course.objects.all()
+    courses = QMODEL.Course.objects.filter(is_published=True)
     return render(request, "student/student_exam.html", {"courses": courses})
-
 
 @login_required(login_url="studentlogin")
 @user_passes_test(is_student, login_url="studentlogin")
 def take_exam_view(request, pk):
+    """V2.0 Entrance: Shows exam instructions and attempt status"""
     course = get_object_or_404(QMODEL.Course, id=pk)
-    questions = QMODEL.Question.objects.filter(course=course)
-    total_questions = questions.count()
-    total_marks = sum(question.marks for question in questions)
-
     student = get_object_or_404(models.Student, user_id=request.user.id)
+    
     attempts_taken = QMODEL.Result.objects.filter(student=student, exam=course).count()
     remaining_attempts = max(course.max_attempts - attempts_taken, 0)
+    
+    # Check for active session
+    active_session = QMODEL.ExamSession.objects.filter(
+        student=student, course=course, is_completed=False
+    ).first()
 
     context = {
         "course": course,
-        "total_questions": total_questions,
-        "total_marks": total_marks,
         "attempts_taken": attempts_taken,
         "remaining_attempts": remaining_attempts,
+        "active_session": active_session,
     }
     return render(request, "student/take_exam.html", context)
-
 
 @login_required(login_url="studentlogin")
 @user_passes_test(is_student, login_url="studentlogin")
 def start_exam_view(request, pk):
-    course = get_object_or_404(QMODEL.Course, id=pk)
-    student = get_object_or_404(models.Student, user_id=request.user.id)
-    attempts_taken = QMODEL.Result.objects.filter(student=student, exam=course).count()
-
-    if attempts_taken >= course.max_attempts:
-        messages.error(
-            request,
-            f"You have reached the maximum attempts ({course.max_attempts}) for this exam.",
-        )
-        return redirect("take-exam", pk=course.id)
-
-    questions = list(QMODEL.Question.objects.filter(course=course))
-    if not questions:
-        messages.warning(request, "No questions are available for this course yet.")
-        return redirect("student-exam")
-
-    if course.shuffle_questions:
-        random.shuffle(questions)
-
-    for q in questions:
-        if q.question_type == "MCQ":
-            opts = [("Option1", q.option1), ("Option2", q.option2)]
-            if q.option3:
-                opts.append(("Option3", q.option3))
-            if q.option4:
-                opts.append(("Option4", q.option4))
-            
-            if course.shuffle_options:
-                random.shuffle(opts)
-            q.shuffled_options = opts
-        elif q.question_type == "TRUE_FALSE":
-            # True/False typically stays ordered as True, False
-            q.shuffled_options = [("Option1", "True"), ("Option2", "False")]
-
-    question_ids = [question.id for question in questions]
-    request.session[_exam_session_key(course.id, "question_ids")] = question_ids
-    request.session[_exam_session_key(course.id, "started_at")] = timezone.now().isoformat()
-
-    # Load previously saved answers if any
-    saved_answers = request.session.get(_exam_session_key(course.id, "saved_answers"), {})
-
-    context = {
-        "course": course,
-        "questions": questions,
-        "duration_seconds": course.duration_minutes * 60,
-        "attempt_number": attempts_taken + 1,
-        "saved_answers": saved_answers,
-        "saved_answers_json": json.dumps(saved_answers),
-    }
-    return render(request, "student/start_exam.html", context)
-
+    """V2.0 Start/Resume: Redirects to the HTMX Engine"""
+    from exam.views import take_exam_view as v2_engine
+    return v2_engine(request, pk)
 
 @login_required(login_url="studentlogin")
 @user_passes_test(is_student, login_url="studentlogin")
-def calculate_marks_view(request):
+def calculate_marks_view(request, pk=None):
+    """V2.0 Grading: Processes ExamSession data into Result"""
+    course_id = pk or request.POST.get("course_id")
+    course = get_object_or_404(QMODEL.Course, id=course_id)
+    student = get_object_or_404(models.Student, user_id=request.user.id)
+    
+    session = get_object_or_404(QMODEL.ExamSession, student=student, course=course, is_completed=False)
+    
+    # Logic to aggregate StudentAnswer instances into a Result
+    answers = QMODEL.StudentAnswer.objects.filter(session=session)
+    questions = QMODEL.Question.objects.filter(course=course)
+    
+    correct_count = answers.filter(is_correct=True).count()
+    total_q = questions.count()
+    
+    # Simple calculation for now (expandable with weighting/negative marks)
+    raw_marks = Decimal(sum(a.question.marks for a in answers.filter(is_correct=True)))
+    
+    # Handle negative marking
+    wrong_count = answers.filter(is_correct=False).count()
+    unanswered_count = total_q - (correct_count + wrong_count)
+    
+    negative_deduction = Decimal(wrong_count) * course.negative_mark_per_wrong
+    final_marks = max(raw_marks - negative_deduction, Decimal("0.00"))
+    
+    total_possible = sum(q.marks for q in questions)
+    percentage = (final_marks / Decimal(total_possible) * 100) if total_possible > 0 else 0
+    
+    attempt_num = QMODEL.Result.objects.filter(student=student, exam=course).count() + 1
+    
+    result = QMODEL.Result.objects.create(
+        student=student,
+        exam=course,
+        attempt_number=attempt_num,
+        marks=final_marks,
+        total_possible_marks=total_possible,
+        total_questions=total_q,
+        correct_answers=correct_count,
+        wrong_answers=wrong_count,
+        unanswered=unanswered_count,
+        percentage=percentage,
+        passed=(percentage >= course.pass_mark),
+        tab_switches=session.current_question_index, # We'll reuse fields for now or expand session
+    )
+    
+    session.is_completed = True
+    session.save()
+    
+    messages.success(request, f"Exam submitted! You scored {percentage}%")
+    return redirect("check-marks", pk=course.id)
     if request.method != "POST":
         return redirect("student-exam")
 

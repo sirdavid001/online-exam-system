@@ -1,0 +1,326 @@
+{% extends 'student/studentbase.html' %}
+{% block content %}
+<div class="exam-engine-container" x-data="examEngine()">
+    <!-- Midnight Luxury Header: Course Info & Timer -->
+    <div class="exam-header-glass">
+        <div class="course-meta">
+            <h2 class="text-glow">{{ course.course_name }}</h2>
+            <span class="badge-premium">Attempt: {{ session.attempt_number|default:1 }}</span>
+        </div>
+        
+        <div class="exam-timer-wrapper">
+            <div class="timer-label">Time Remaining</div>
+            <div class="timer-display" :class="{'timer-warning': timeLeft < 300}" x-text="formatTime(timeLeft)">
+                --:--
+            </div>
+        </div>
+    </div>
+
+    <div class="exam-body-grid">
+        <!-- Question Sidebar / Navigation Portal -->
+        <aside class="question-nav-portal">
+            <div class="portal-header">Questions</div>
+            <div class="nav-dots-grid">
+                {% for q in questions %}
+                <button 
+                    class="nav-dot" 
+                    :class="{'active': currentIdx === {{ forloop.counter0 }}, 'answered': isAnswered({{ q.id }})}"
+                    @click="goTo({{ forloop.counter0 }})">
+                    {{ forloop.counter }}
+                </button>
+                {% endfor %}
+            </div>
+            
+            <div class="portal-footer">
+                <button class="btn-finish-exam" @click="confirmFinish()">Finish Exam</button>
+            </div>
+        </aside>
+
+        <!-- Main Question Canvas -->
+        <main class="question-canvas-glass">
+            {% for q in questions %}
+            <div class="question-slide" x-show="currentIdx === {{ forloop.counter0 }}" x-transition:enter="fade-in">
+                <div class="question-meta">
+                    <span class="q-number">Question {{ forloop.counter }} of {{ questions|length }}</span>
+                    <span class="q-marks">{{ q.marks }} Marks</span>
+                </div>
+                
+                <h3 class="question-text">{{ q.question_text }}</h3>
+                
+                {% if q.image %}
+                <div class="question-media">
+                    <img src="{{ q.image.url }}" alt="Question Context">
+                </div>
+                {% endif %}
+
+                <div class="options-container">
+                    {% if q.question_type == 'MCQ' %}
+                        <label class="option-tile" :class="{'selected': answers[{{ q.id }}] === '1'}">
+                            <input type="radio" name="q{{ q.id }}" value="1" 
+                                   @change="saveAnswer({{ session.id }}, {{ q.id }}, '1')"
+                                   :checked="answers[{{ q.id }}] === '1'">
+                            <span class="option-label">A</span>
+                            <span class="option-content">{{ q.option1 }}</span>
+                        </label>
+                        <label class="option-tile" :class="{'selected': answers[{{ q.id }}] === '2'}">
+                            <input type="radio" name="q{{ q.id }}" value="2" 
+                                   @change="saveAnswer({{ session.id }}, {{ q.id }}, '2')"
+                                   :checked="answers[{{ q.id }}] === '2'">
+                            <span class="option-label">B</span>
+                            <span class="option-content">{{ q.option2 }}</span>
+                        </label>
+                        {% if q.option3 %}<label class="option-tile" :class="{'selected': answers[{{ q.id }}] === '3'}">
+                            <input type="radio" name="q{{ q.id }}" value="3" 
+                                   @change="saveAnswer({{ session.id }}, {{ q.id }}, '3')"
+                                   :checked="answers[{{ q.id }}] === '3'">
+                            <span class="option-label">C</span>
+                            <span class="option-content">{{ q.option3 }}</span>
+                        </label>{% endif %}
+                        {% if q.option4 %}<label class="option-tile" :class="{'selected': answers[{{ q.id }}] === '4'}">
+                            <input type="radio" name="q{{ q.id }}" value="4" 
+                                   @change="saveAnswer({{ session.id }}, {{ q.id }}, '4')"
+                                   :checked="answers[{{ q.id }}] === '4'">
+                            <span class="option-label">D</span>
+                            <span class="option-content">{{ q.option4 }}</span>
+                        </label>{% endif %}
+                    {% elif q.question_type == 'TRUE_FALSE' %}
+                        <label class="option-tile" :class="{'selected': answers[{{ q.id }}] === '1'}">
+                            <input type="radio" name="q{{ q.id }}" value="1" 
+                                   @change="saveAnswer({{ session.id }}, {{ q.id }}, '1')"
+                                   :checked="answers[{{ q.id }}] === '1'">
+                            <span class="option-label">T</span>
+                            <span class="option-content">True</span>
+                        </label>
+                        <label class="option-tile" :class="{'selected': answers[{{ q.id }}] === '2'}">
+                            <input type="radio" name="q{{ q.id }}" value="2" 
+                                   @change="saveAnswer({{ session.id }}, {{ q.id }}, '2')"
+                                   :checked="answers[{{ q.id }}] === '2'">
+                            <span class="option-label">F</span>
+                            <span class="option-content">False</span>
+                        </label>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="canvas-footer">
+                <button class="btn-nav" @click="prev()" :disabled="currentIdx === 0">Previous</button>
+                <button class="btn-nav btn-primary" @click="next()" x-show="currentIdx < {{ questions|length|add:'-1' }}">Next</button>
+                <button class="btn-nav btn-success" @click="confirmFinish()" x-show="currentIdx === {{ questions|length|add:'-1' }}">Submit Exam</button>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+function examEngine() {
+    return {
+        currentIdx: 0,
+        timeLeft: {{ time_left|floatformat:0 }},
+        answers: {}, // Loaded via init or observed changes
+        
+        init() {
+            // Heartbeat for timer
+            setInterval(() => {
+                if (this.timeLeft > 0) this.timeLeft-- ;
+                else this.autoSubmit();
+            }, 1000);
+
+            // Tab switch detection (Proctoring)
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    this.logProctorEvent('tab-switch');
+                }
+            });
+        },
+
+        formatTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${m}:${s < 10 ? '0' : ''}${s}`;
+        },
+
+        goTo(idx) { this.currentIdx = idx; },
+        next() { if (this.currentIdx < {{ questions|length|add:'-1' }}) this.currentIdx++; },
+        prev() { if (this.currentIdx > 0) this.currentIdx--; },
+
+        isAnswered(qId) { return !!this.answers[qId]; },
+
+        saveAnswer(sessionId, qId, val) {
+            this.answers[qId] = val;
+            // Background HTMX-like post
+            let formData = new FormData();
+            formData.append('session_id', sessionId);
+            formData.append('question_id', qId);
+            formData.append('option', val);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch('{% url "submit-answer-htmx" %}', {
+                method: 'POST',
+                body: formData
+            });
+        },
+
+        logProctorEvent(event) {
+            let formData = new FormData();
+            formData.append('session_id', {{ session.id }});
+            formData.append('event', event);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch('{% url "proctor-event-htmx" %}', {
+                method: 'POST',
+                body: formData
+            });
+        },
+
+        confirmFinish() {
+            if (confirm("Are you sure you want to finish the exam?")) {
+                window.location.href = "{% url 'calculate-marks' course.id %}";
+            }
+        },
+
+        autoSubmit() {
+            alert("Time is up! Your exam is being submitted.");
+            window.location.href = "{% url 'calculate-marks' course.id %}";
+        }
+    }
+}
+</script>
+
+<style>
+/* V2.0 Midnight Luxury Exam Engine Styles */
+.exam-engine-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    color: var(--text-primary);
+}
+
+.exam-header-glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-premium);
+}
+
+.timer-display {
+    font-family: 'Space Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+}
+
+.timer-warning {
+    color: #ff4d4d;
+    animation: pulse-red 1s infinite;
+}
+
+.exam-body-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+}
+
+.question-nav-portal {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    height: fit-content;
+}
+
+.nav-dots-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+    margin: 1.5rem 0;
+}
+
+.nav-dot {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    border: 1px solid var(--border-subtle);
+    background: transparent;
+    color: var(--text-secondary);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.nav-dot.active {
+    background: var(--accent-primary);
+    color: white;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+}
+
+.nav-dot.answered {
+    background: rgba(0, 243, 255, 0.1);
+    border-color: var(--accent-primary);
+}
+
+.question-canvas-glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 3rem;
+    min-height: 500px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.option-tile {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.option-tile:hover {
+    background: rgba(255, 255, 255, 0.07);
+    transform: translateX(5px);
+}
+
+.option-tile.selected {
+    background: rgba(0, 243, 255, 0.1);
+    border-color: var(--accent-primary);
+}
+
+.option-label {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--border-subtle);
+    border-radius: 8px;
+    margin-right: 1.25rem;
+    font-weight: 700;
+}
+
+.btn-nav {
+    padding: 0.75rem 2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+@keyframes pulse-red {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+</style>
+{% endblock content %}

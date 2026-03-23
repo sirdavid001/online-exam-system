@@ -12,7 +12,7 @@
   </div>
   {% if courses %}
   <div class="table-responsive">
-    <table class="table table-hover mb-0">
+    <table class="table-premium">
       <thead>
         <tr>
           <th>Course</th>
@@ -27,18 +27,23 @@
       </thead>
       <tbody>
         {% for t in courses %}
-        <tr>
-          <td>{{ t.course_name }}</td>
+        <tr id="exam-row-{{ t.id }}">
+          <td class="font-weight-bold">{{ t.course_name }}</td>
           <td>{{ t.question_number }}</td>
           <td>{{ t.total_marks }}</td>
-          <td>{{ t.duration_minutes }} mins</td>
+          <td>{{ t.duration_minutes }}m</td>
           <td>{{ t.pass_mark }}%</td>
           <td>{{ t.max_attempts }}</td>
           <td>{{ t.negative_mark_per_wrong }}</td>
           <td class="text-center">
-            <a class="btn btn-danger btn-sm" href="{% url 'delete-exam' t.id %}" data-confirm="Are you sure you want to delete this course?">
-              <i class="fas fa-trash"></i> Delete
-            </a>
+            <button class="btn-icon-soft danger" 
+                    hx-delete="{% url 'delete-exam' t.id %}"
+                    hx-target="#exam-row-{{ t.id }}"
+                    hx-swap="outerHTML"
+                    hx-confirm="Delete this course and all associated questions?"
+                    title="Delete">
+              <i class="fas fa-trash"></i>
+            </button>
           </td>
         </tr>
         {% endfor %}

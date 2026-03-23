@@ -37,7 +37,11 @@
       <li>You can review detailed result analytics after submission.</li>
     </ul>
 
-    {% if remaining_attempts > 0 %}
+    {% if active_session %}
+    <a href="{% url 'start-exam' course.id %}" class="btn btn-warning btn-lg">
+      <i class="fas fa-redo"></i> Resume Active Exam
+    </a>
+    {% elif remaining_attempts > 0 %}
     <a href="{% url 'start-exam' course.id %}" class="btn btn-primary btn-lg">
       <i class="fas fa-play"></i> Start Exam
     </a>

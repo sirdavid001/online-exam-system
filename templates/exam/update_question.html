@@ -75,9 +75,9 @@
         {% render_field questionForm.explanation class="form-control" placeholder="Explain the solution logic for review and moderation." %}
       </div>
 
-      <div class="d-flex inline-actions">
-        <button type="submit" class="btn btn-success btn-lg">Update Question</button>
-        <a href="{% url 'view-question' question.course_id %}" class="btn btn-secondary btn-lg">Cancel</a>
+      <div class="form-footer">
+        <button type="submit" class="btn-premium">Update Question</button>
+        <a href="{% url 'view-question' question.course_id %}" class="btn-icon-soft ml-2" title="Cancel">Cancel</a>
       </div>
     </form>
   </article>

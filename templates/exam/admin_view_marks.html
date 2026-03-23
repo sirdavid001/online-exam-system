@@ -2,37 +2,39 @@
 
 {% block content %}
 <section class="page-head reveal">
-  <h2>Exams</h2>
-  <p class="page-lead">Select an exam to inspect the chosen student's results.</p>
+  <h2>Inspect Marks</h2>
+  <p class="page-lead">Select a course to view detailed performance metrics for this student.</p>
 </section>
 
-<div class="table-card reveal">
+<div class="table-card reveal mt-4">
   <div class="table-head">
-    <h6>Exam Courses</h6>
+    <h6>Participated Course Exams</h6>
   </div>
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Exam Name</th>
-        <th class="text-center">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for t in courses %}
-      <tr>
-        <td>{{ t.course_name }}</td>
-        <td class="text-center">
-          <a class="btn btn-danger btn-sm" href="{% url 'admin-check-marks' student_id t.id %}">
-            <i class="fas fa-eye"></i> View Results
-          </a>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td class="text-center text-muted" colspan="2">No exams available.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table-premium">
+      <thead>
+        <tr>
+          <th>Course Name</th>
+          <th class="text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in courses %}
+        <tr>
+          <td class="font-weight-bold">{{ t.course_name }}</td>
+          <td class="text-center">
+            <a class="btn-premium py-2 px-3" href="{% url 'admin-check-marks' student_id t.id %}">
+               View Detailed Marks
+            </a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td class="text-center text-muted" colspan="2">No exam activity found for this student.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock content %}

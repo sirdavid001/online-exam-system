@@ -7,58 +7,73 @@
   <p class="page-lead">Review institutional details before approving lecturer accounts.</p>
 </section>
 
-<div class="table-card reveal">
+<div class="table-card reveal mt-4">
   <div class="table-head">
     <h6>Pending Teachers</h6>
+    <div class="htmx-indicator spinner-border spinner-border-sm text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
   </div>
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Staff ID</th>
-        <th>Faculty</th>
-        <th>Department</th>
-        <th>Designation</th>
-        <th>Official Email</th>
-        <th>Phone</th>
-        <th>Photo</th>
-        <th class="text-center">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for t in teachers %}
-      <tr>
-        <td>{{ t.get_name }}</td>
-        <td>{{ t.staff_id|default:"-" }}</td>
-        <td>{{ t.faculty|default:"-" }}</td>
-        <td>{{ t.department|default:"-" }}</td>
-        <td>{{ t.get_designation_display }}</td>
-        <td>{{ t.official_email|default:"-" }}</td>
-        <td>{{ t.mobile }}</td>
-        <td>
-          {% if t.profile_pic %}
-          <img class="thumb-sm" src="{% static t.profile_pic.url %}" alt="{{ t.get_name }}" />
-          {% else %}
-          <span class="text-muted">No photo</span>
-          {% endif %}
-        </td>
-        <td class="text-center">
-          <div class="action-group">
-            <a class="btn btn-success btn-sm" href="{% url 'approve-teacher' t.id %}">
-              <i class="fas fa-check"></i> Approve
-            </a>
-            <a class="btn btn-danger btn-sm" href="{% url 'reject-teacher' t.id %}">
-              <i class="fas fa-times"></i> Reject
-            </a>
-          </div>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td class="text-center text-muted" colspan="9">No pending teacher approvals.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table-premium">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Staff ID</th>
+          <th>Faculty</th>
+          <th>Department</th>
+          <th>Designation</th>
+          <th>Official Email</th>
+          <th>Phone</th>
+          <th>Photo</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in teachers %}
+        <tr id="teacher-row-{{ t.id }}">
+          <td>{{ t.get_name }}</td>
+          <td>{{ t.staff_id|default:"-" }}</td>
+          <td>{{ t.faculty|default:"-" }}</td>
+          <td>{{ t.department|default:"-" }}</td>
+          <td>{{ t.get_designation_display }}</td>
+          <td>{{ t.official_email|default:"-" }}</td>
+          <td>{{ t.mobile }}</td>
+          <td>
+            {% if t.profile_pic %}
+            <img class="thumb-sm" src="{% static t.profile_pic.url %}" alt="{{ t.get_name }}" />
+            {% else %}
+            <span class="text-muted">No photo</span>
+            {% endif %}
+          </td>
+          <td class="text-center">
+            <div class="action-group">
+              <button class="btn-icon-soft success" 
+                      hx-post="{% url 'approve-teacher' t.id %}"
+                      hx-target="#teacher-row-{{ t.id }}"
+                      hx-swap="outerHTML"
+                      hx-confirm="Approve teacher {{ t.get_name }}?"
+                      title="Approve">
+                <i class="fas fa-check"></i>
+              </button>
+              <button class="btn-icon-soft danger" 
+                      hx-post="{% url 'reject-teacher' t.id %}"
+                      hx-target="#teacher-row-{{ t.id }}"
+                      hx-swap="outerHTML"
+                      hx-confirm="Reject and delete teacher {{ t.get_name }}?"
+                      title="Reject">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td class="text-center text-muted" colspan="9">No pending teacher approvals.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock content %}

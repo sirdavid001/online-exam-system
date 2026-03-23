@@ -56,4 +56,9 @@ urlpatterns = [
     path('update-question/<int:pk>', views.update_question_view, name='update-question'),
     path('delete-question/<int:pk>', views.delete_question_view, name='delete-question'),
     path('export-result-pdf/<int:pk>', views.export_result_pdf_view, name='export-result-pdf'),
+    
+    # V2.0 Exam Engine
+    path('take-exam/<int:pk>', views.take_exam_view, name='take-exam'),
+    path('submit-answer-htmx', views.submit_answer_htmx_view, name='submit-answer-htmx'),
+    path('proctor-event-htmx', views.proctor_event_htmx_view, name='proctor-event-htmx'),
 ]

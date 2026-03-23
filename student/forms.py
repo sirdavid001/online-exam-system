@@ -1,11 +1,8 @@
 import re
 from datetime import date
-
 from django import forms
 from django.contrib.auth.models import User
-
 from . import models
-
 
 class StudentUserForm(forms.ModelForm):
     confirm_password = forms.CharField(widget=forms.PasswordInput())
@@ -21,11 +18,9 @@ class StudentUserForm(forms.ModelForm):
         cleaned_data = super().clean()
         password = cleaned_data.get("password")
         confirm_password = cleaned_data.get("confirm_password")
-
         if password and confirm_password and password != confirm_password:
             raise forms.ValidationError("Passwords do not match.")
         return cleaned_data
-
 
 class StudentForm(forms.ModelForm):
     class Meta:
@@ -38,49 +33,25 @@ class StudentForm(forms.ModelForm):
             "programme",
             "current_level",
             "entry_year",
+            "registration_status",
+            "bio",
             "mobile",
             "address",
             "profile_pic",
         ]
-        labels = {
-            "matric_number": "Matriculation / Registration Number",
-            "institutional_email": "Institutional Student Email",
-            "mobile": "Official Phone Number",
-            "address": "Contact Address",
+        widgets = {
+            "bio": forms.Textarea(attrs={"rows": 3}),
+            "address": forms.Textarea(attrs={"rows": 2}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["matric_number"].required = True
-        self.fields["institutional_email"].required = True
-        self.fields["faculty"].required = True
-        self.fields["department"].required = True
-        self.fields["programme"].required = True
-        self.fields["current_level"].required = True
-        self.fields["entry_year"].required = True
-
-    def clean_matric_number(self):
-        matric_number = (self.cleaned_data.get("matric_number") or "").strip().upper()
-
-        if not re.match(r"^[A-Z0-9][A-Z0-9/-]{5,29}$", matric_number):
-            raise forms.ValidationError(
-                "Enter a valid matric/reg number (letters, numbers, slash or dash only)."
-            )
-
-        if not re.search(r"\d", matric_number):
-            raise forms.ValidationError("Matric/reg number must include digits.")
-
-        return matric_number
+        for field in self.fields:
+            if field not in ["profile_pic", "bio"]:
+                self.fields[field].required = True
 
     def clean_institutional_email(self):
-        institutional_email = (self.cleaned_data.get("institutional_email") or "").strip().lower()
-        if not institutional_email.endswith(".edu.ng"):
-            raise forms.ValidationError("Use an institutional email ending with .edu.ng.")
-        return institutional_email
-
-    def clean_entry_year(self):
-        entry_year = self.cleaned_data["entry_year"]
-        current_year = date.today().year
-        if entry_year > current_year + 1:
-            raise forms.ValidationError("Entry year cannot be in the far future.")
-        return entry_year
+        email = self.cleaned_data.get("institutional_email", "").lower()
+        if not email.endswith(".edu.ng"):
+            raise forms.ValidationError("Please use an institutional email ending in .edu.ng")
+        return email

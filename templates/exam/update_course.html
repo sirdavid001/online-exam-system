@@ -46,9 +46,9 @@
         {% render_field courseForm.instructions class="form-control" placeholder="Provide exam instructions shown to students before the exam starts." %}
       </div>
 
-      <div class="d-flex inline-actions">
-        <button type="submit" class="btn btn-primary btn-lg">Update Course</button>
-        <a href="{% url 'admin-view-course' %}" class="btn btn-secondary btn-lg">Cancel</a>
+      <div class="form-footer">
+        <button type="submit" class="btn-premium">Update Course</button>
+        <a href="{% url 'admin-view-course' %}" class="btn-icon-soft ml-2" title="Cancel">Cancel</a>
       </div>
     </form>
   </article>

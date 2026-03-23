@@ -12,7 +12,7 @@
   </div>
   {% if courses %}
   <div class="table-responsive">
-    <table class="table table-hover mb-0">
+    <table class="table-premium">
       <thead>
         <tr>
           <th>Course</th>
@@ -22,10 +22,10 @@
       <tbody>
         {% for t in courses %}
         <tr>
-          <td>{{ t.course_name }}</td>
+          <td class="font-weight-bold">{{ t.course_name }}</td>
           <td class="text-center">
-            <a class="btn btn-primary btn-sm" href="{% url 'check-marks' t.id %}">
-              <i class="fas fa-chart-bar"></i> View Results
+            <a class="btn-premium py-2 px-3" href="{% url 'check-marks' t.id %}">
+               View Detailed Results
             </a>
           </td>
         </tr>
@@ -34,12 +34,10 @@
     </table>
   </div>
   {% else %}
-  <div class="empty-state">
-    <div class="empty-icon"><i class="fas fa-book"></i></div>
-    <div class="empty-text">
-      <h4>No Exams Taken</h4>
-      <p>You haven't participated in any examinations yet. Go to 'Take Exam' to start!</p>
-    </div>
+  <div class="empty-state p-5 text-center">
+    <i class="fas fa-book fa-3x text-muted mb-3"></i>
+    <h4>No Exams Taken</h4>
+    <p class="text-muted">You haven't participated in any examinations yet. Go to 'Take Exam' to start!</p>
   </div>
   {% endif %}
 </div>

@@ -1,93 +1,250 @@
 {% extends 'student/studentbase.html' %}
-
 {% block content %}
-<section class="page-head reveal">
-  <h2>Student Dashboard</h2>
-  <p class="page-lead">Check available exams and keep track of your question coverage.</p>
-</section>
+<div class="dashboard-v2-container" x-data="{ activeTab: 'overview' }">
+    <!-- Portal Header: Personalized Greeting -->
+    <header class="portal-header-premium reveal">
+        <div class="user-welcome">
+            <h1 class="h2 text-glow">Welcome back, {{ request.user.first_name }}</h1>
+            <p class="text-secondary">Ready to excel in your next assessment?</p>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'student-exam' %}" class="btn-premium">
+                <i class="fas fa-play mr-2"></i> Start New Exam
+            </a>
+        </div>
+    </header>
 
-<section class="metric-grid">
-  <a class="metric-link reveal" href="/student/student-exam">
-<section class="metric-grid">
-  <a class="metric-link reveal" href="/student/student-exam">
-    <article class="metric-card bg-c-blue">
-      <h6>Available Exams</h6>
-      <div class="metric-value">
-        <span>{{ total_course }}</span>
-        <div class="metric-icon"><i class="fas fa-book"></i></div>
-      </div>
-    </article>
-  </a>
+    <!-- Interactive Metric Tiles -->
+    <div class="portal-grid-v2 mt-4">
+        <div class="portal-tile-v2 reveal" style="--card-index: 1">
+            <div class="tile-icon bg-soft-blue"><i class="fas fa-book-reader"></i></div>
+            <div class="tile-content">
+                <span class="tile-label">Assigned Exams</span>
+                <h3 class="tile-value">{{ total_course }}</h3>
+            </div>
+            <div class="tile-footer">Track your curriculum progress</div>
+        </div>
 
-  <a class="metric-link reveal" href="/student/student-marks">
-    <article class="metric-card bg-c-yellow">
-      <h6>Total Questions</h6>
-      <div class="metric-value">
-        <span>{{ total_question }}</span>
-        <div class="metric-icon"><i class="fas fa-question-circle"></i></div>
-      </div>
-    </article>
-  </a>
-</section>
+        <div class="portal-tile-v2 reveal" style="--card-index: 2">
+            <div class="tile-icon bg-soft-purple"><i class="fas fa-history"></i></div>
+            <div class="tile-content">
+                <span class="tile-label">Total Attempts</span>
+                <h3 class="tile-value">{{ recent_results|length }}</h3>
+            </div>
+            <div class="tile-footer">Consistent learning is key</div>
+        </div>
 
-<section class="table-card mt-4 reveal">
-  <div class="table-head">
-    <h6>Performance Trend (Recent Exams)</h6>
-  </div>
-  <div class="p-4" style="height: 300px">
-    <canvas id="studentPerformanceChart"></canvas>
-  </div>
-</section>
-
-<section class="table-card mt-4 reveal">
-  <div class="table-head">
-    <h6>Recent Exam Attempts</h6>
-  </div>
-  {% if recent_results %}
-  <div class="table-responsive">
-    <table class="table table-hover mb-0">
-      <thead>
-        <tr>
-          <th>Exam</th>
-          <th>Attempt</th>
-          <th>Score</th>
-          <th>Percentage</th>
-          <th>Status</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for result in recent_results %}
-        <tr>
-          <td>{{ result.exam.course_name }}</td>
-          <td>{{ result.attempt_number }}</td>
-          <td>{{ result.marks }} / {{ result.total_possible_marks }}</td>
-          <td>{{ result.percentage|floatformat:2 }}%</td>
-          <td>
-            {% if result.passed %}
-            <span class="badge badge-success">Passed</span>
-            {% else %}
-            <span class="badge badge-danger">Failed</span>
-            {% endif %}
-          </td>
-          <td>{{ result.date|date:"Y-m-d H:i" }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  {% else %}
-  <div class="empty-state">
-    <div class="empty-icon"><i class="fas fa-history"></i></div>
-    <div class="empty-text">
-      <h4>No Recent Activity</h4>
-      <p>You haven't attempted any exams yet. Start your journey today!</p>
+        <div class="portal-tile-v2 reveal" style="--card-index: 3">
+            <div class="tile-icon bg-soft-cyan"><i class="fas fa-award"></i></div>
+            <div class="tile-content">
+                <span class="tile-label">Avg. Performance</span>
+                <h3 class="tile-value">{{ performance_data_avg|default:"N/A" }}%</h3>
+            </div>
+            <div class="tile-footer">Aim for excellence</div>
+        </div>
     </div>
-  </div>
-  {% endif %}
-</section>
+
+    <!-- Main Content Area: Tabs & Analytics -->
+    <div class="dashboard-content-grid mt-5">
+        <div class="analytics-main reveal">
+            <div class="card-premium">
+                <div class="card-head">
+                    <h5>Performance Analytics</h5>
+                    <div class="card-controls">
+                        <button class="btn-icon"><i class="fas fa-sync-alt"></i></button>
+                    </div>
+                </div>
+                <div class="chart-container-large p-4">
+                    <canvas id="studentPerformanceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Activity Table -->
+            <div class="card-premium mt-4">
+                <div class="card-head">
+                    <h5>Recent Exam Activity</h5>
+                    <a href="{% url 'view-result' %}" class="btn-link">View All <i class="fas fa-chevron-right ml-1"></i></a>
+                </div>
+                <div class="table-container">
+                    {% if recent_results %}
+                    <table class="table-premium">
+                        <thead>
+                            <tr>
+                                <th>Assessment</th>
+                                <th>Date</th>
+                                <th>Score</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in recent_results %}
+                            <tr class="reveal" style="--card-index: {{ forloop.counter }}">
+                                <td class="font-weight-bold">{{ result.exam.course_name }}</td>
+                                <td class="text-secondary">{{ result.date|date:"M d, Y" }}</td>
+                                <td>{{ result.percentage|floatformat:1 }}%</td>
+                                <td>
+                                    {% if result.passed %}
+                                    <span class="badge-status success">PASSED</span>
+                                    {% else %}
+                                    <span class="badge-status danger">FAILED</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{% url 'export-result-pdf' result.id %}" class="btn-icon-soft">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="empty-state-v2">
+                        <i class="fas fa-clipboard-list"></i>
+                        <p>No activity yet. Your future achievements will appear here.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Widgets -->
+        <aside class="dashboard-sidebar-widgets reveal">
+            <div class="card-premium-sidebar">
+                <h6>Upcoming Deadlines</h6>
+                <div class="deadline-item">
+                    <div class="deadline-meta">
+                        <span class="d-course">CS101 Quiz</span>
+                        <span class="d-date">Due in 2 days</span>
+                    </div>
+                    <div class="deadline-indicator warning"></div>
+                </div>
+            </div>
+
+            <div class="card-premium-sidebar mt-3">
+                <h6>Your Badges</h6>
+                <div class="badges-row">
+                    <div class="badge-icon gold" title="First attempt success"><i class="fas fa-medal"></i></div>
+                    <div class="badge-icon silver" title="5 exams completed"><i class="fas fa-award"></i></div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</div>
 
 <script id="student-performance-data" type="application/json">
   {{ performance_data|safe }}
 </script>
+
+<style>
+/* V2.0 Midnight Luxury Dashboard Enhancements */
+.dashboard-v2-container {
+    max-width: 1300px;
+    margin: 2rem auto;
+}
+
+.portal-header-premium {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 2rem;
+}
+
+.portal-grid-v2 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.portal-tile-v2 {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.portal-tile-v2:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-primary);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.tile-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+}
+
+.bg-soft-blue { background: rgba(54, 162, 235, 0.1); color: #36a2eb; }
+.bg-soft-purple { background: rgba(153, 102, 255, 0.1); color: #9966ff; }
+.bg-soft-cyan { background: rgba(75, 192, 192, 0.1); color: #4bc0c0; }
+
+.card-premium {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+.card-head {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-premium {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-premium th {
+    padding: 1rem 2rem;
+    text-align: left;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+}
+
+.table-premium td {
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.badge-status {
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 800;
+}
+
+.badge-status.success { background: rgba(0, 255, 157, 0.1); color: #00ff9d; }
+.badge-status.danger { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; }
+
+.dashboard-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 2rem;
+}
+
+.card-premium-sidebar {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 1.5rem;
+}
+</style>
 {% endblock content %}

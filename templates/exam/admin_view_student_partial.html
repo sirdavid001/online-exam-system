@@ -1,0 +1,38 @@
+{% load static %}
+{% for t in students %}
+<tr id="student-row-{{ t.id }}">
+  <td>{{ t.get_name }}</td>
+  <td>{{ t.matric_number|default:"-" }}</td>
+  <td>{{ t.faculty|default:"-" }}</td>
+  <td>{{ t.department|default:"-" }}</td>
+  <td>{{ t.get_current_level_display }}</td>
+  <td>{{ t.institutional_email|default:"-" }}</td>
+  <td>{{ t.mobile }}</td>
+  <td>
+    {% if t.profile_pic %}
+    <img class="thumb-sm" src="{% static t.profile_pic.url %}" alt="{{ t.get_name }}" />
+    {% else %}
+    <span class="text-muted">No photo</span>
+    {% endif %}
+  </td>
+  <td class="text-center">
+    <div class="action-group">
+      <a class="btn-icon-soft" href="{% url 'update-student' t.id %}" title="Edit">
+        <i class="fas fa-edit"></i>
+      </a>
+      <button class="btn-icon-soft danger" 
+              hx-delete="{% url 'delete-student' t.id %}"
+              hx-confirm="Are you sure you want to delete student {{ t.get_name }}?"
+              hx-target="#student-row-{{ t.id }}"
+              hx-swap="outerHTML"
+              title="Delete">
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>
+  </td>
+</tr>
+{% empty %}
+<tr>
+  <td class="text-center text-muted" colspan="9">No students found.</td>
+</tr>
+{% endfor %}

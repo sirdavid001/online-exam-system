@@ -60,13 +60,25 @@ def is_teacher(user):
 @user_passes_test(is_teacher, login_url="teacherlogin")
 def teacher_dashboard_view(request):
     courses = QMODEL.Course.objects.all()
-    chart_labels = [c.course_name for c in courses]
-    chart_data = [QMODEL.Question.objects.filter(course=c).count() for c in courses]
+    categories = QMODEL.Category.objects.all()
+    
+    # Advanced analytics for teacher
+    total_attempts = QMODEL.Result.objects.count()
+    overall_pass_rate = 0
+    if total_attempts > 0:
+        passed_count = QMODEL.Result.objects.filter(passed=True).count()
+        overall_pass_rate = (passed_count / total_attempts) * 100
+
+    chart_labels = [c.course_name for c in courses[:10]] # Limit to top 10 for chart
+    chart_data = [QMODEL.Question.objects.filter(course=c).count() for c in courses[:10]]
 
     context = {
         "total_course": courses.count(),
+        "total_category": categories.count(),
         "total_question": QMODEL.Question.objects.all().count(),
         "total_student": SMODEL.Student.objects.all().count(),
+        "total_attempts": total_attempts,
+        "overall_pass_rate": round(overall_pass_rate, 1),
         "charts_data": json.dumps({
             "labels": chart_labels,
             "counts": chart_data

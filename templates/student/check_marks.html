@@ -12,7 +12,7 @@
   </div>
   {% if results %}
   <div class="table-responsive">
-    <table class="table table-hover mb-0">
+    <table class="table-premium">
       <thead>
         <tr>
           <th>Attempt</th>
@@ -29,7 +29,7 @@
       <tbody>
         {% for t in results %}
         <tr>
-          <td>{{ t.attempt_number }}</td>
+          <td class="font-weight-bold">#{{ t.attempt_number }}</td>
           <td>{{ t.marks }} / {{ t.total_possible_marks }}</td>
           <td>{{ t.correct_answers }}</td>
           <td>{{ t.wrong_answers }}</td>
@@ -37,15 +37,15 @@
           <td>{{ t.percentage }}%</td>
           <td>
             {% if t.passed %}
-            <span class="badge badge-success">Passed</span>
+            <span class="badge badge-success-soft">Passed</span>
             {% else %}
-            <span class="badge badge-danger">Not Passed</span>
+            <span class="badge badge-danger-soft">Not Passed</span>
             {% endif %}
           </td>
-          <td>{{ t.date|date:"Y-m-d H:i" }}</td>
+          <td>{{ t.date|date:"M d, Y" }}</td>
           <td class="text-center">
-            <a href="{% url 'export-result-pdf' t.id %}" class="btn btn-outline-brand btn-sm" title="Download PDF Report">
-              <i class="fas fa-file-pdf"></i> Download
+            <a href="{% url 'export-result-pdf' t.id %}" class="btn-premium py-2 px-3" title="Download PDF Report">
+              <i class="fas fa-file-pdf"></i>
             </a>
           </td>
         </tr>
@@ -54,12 +54,10 @@
     </table>
   </div>
   {% else %}
-  <div class="empty-state">
-    <div class="empty-icon"><i class="fas fa-history"></i></div>
-    <div class="empty-text">
-      <h4>No Attempts Found</h4>
-      <p>You haven't attempted this examination yet.</p>
-    </div>
+  <div class="empty-state p-5 text-center">
+    <i class="fas fa-history fa-3x text-muted mb-3"></i>
+    <h4>No Attempts Found</h4>
+    <p class="text-muted">You haven't attempted this examination yet.</p>
   </div>
   {% endif %}
 </div>
