@@ -59,14 +59,19 @@
             </div>
           </td>
           <td class="text-center">
-            <button class="btn-icon-soft danger" 
-                    hx-delete="{% url 'remove-question' c.id %}"
-                    hx-target="#question-row-{{ c.id }}"
-                    hx-swap="outerHTML"
-                    hx-confirm="Delete this question?"
-                    title="Delete">
-              <i class="fas fa-trash"></i>
-            </button>
+            <div class="action-group">
+              <a class="btn-icon-soft" href="{% url 'update-question' c.id %}" title="Edit Question">
+                <i class="fas fa-edit"></i>
+              </a>
+              <button class="btn-icon-soft danger" 
+                      hx-delete="{% url 'remove-question' c.id %}"
+                      hx-target="#question-row-{{ c.id }}"
+                      hx-swap="outerHTML"
+                      hx-confirm="Delete this question?"
+                      title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
           </td>
         </tr>
         {% endfor %}

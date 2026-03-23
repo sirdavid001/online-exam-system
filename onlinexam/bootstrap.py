@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.db import connection
+from django.db.migrations.executor import MigrationExecutor
 
 
 _bootstrap_lock = threading.Lock()
@@ -17,6 +18,12 @@ def _auth_user_exists():
             cursor.execute("SELECT to_regclass('public.auth_user')")
             return bool(cursor.fetchone()[0])
         return "auth_user" in connection.introspection.table_names(cursor)
+
+
+def _has_pending_migrations():
+    executor = MigrationExecutor(connection)
+    targets = executor.loader.graph.leaf_nodes()
+    return bool(executor.migration_plan(targets))
 
 
 def _admin_credentials():
@@ -90,7 +97,7 @@ def ensure_runtime_bootstrap():
         if _bootstrap_done:
             return
 
-        if running_on_vercel and not _auth_user_exists():
+        if running_on_vercel and _has_pending_migrations():
             call_command("migrate", interactive=False, run_syncdb=True, verbosity=0)
 
         if needs_admin and _auth_user_exists():

@@ -44,13 +44,16 @@ class QuestionForm(forms.ModelForm):
         to_field_name="id",
         required=False,
     )
+    question = forms.CharField(
+        widget=forms.Textarea(attrs={"rows": 4}),
+        label="Question",
+    )
 
     class Meta:
         model = models.Question
         fields = [
             "question_type",
             "marks",
-            "question_text",
             "difficulty",
             "image",
             "option1",
@@ -61,24 +64,67 @@ class QuestionForm(forms.ModelForm):
             "explanation",
         ]
         widgets = {
-            "question_text": forms.Textarea(attrs={"rows": 4}),
             "explanation": forms.Textarea(attrs={"rows": 3}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["question"].initial = self.instance.question_text
 
     def clean(self):
         cleaned_data = super().clean()
         q_type = cleaned_data.get("question_type")
-        answer = cleaned_data.get("answer")
+        answer = (cleaned_data.get("answer") or "").strip()
+        question_text = (cleaned_data.get("question") or "").strip()
+
+        if not question_text:
+            self.add_error("question", "Question text is required.")
+        cleaned_data["question_text"] = question_text
 
         if q_type == "MCQ":
-            if answer not in ["1", "2", "3", "4"]:
-                self.add_error("answer", "For MCQ, enter the correct option number (1-4).")
+            mcq_map = {
+                "1": "Option1",
+                "2": "Option2",
+                "3": "Option3",
+                "4": "Option4",
+                "option1": "Option1",
+                "option2": "Option2",
+                "option3": "Option3",
+                "option4": "Option4",
+            }
+            normalized_answer = mcq_map.get(answer.lower())
+            if not normalized_answer:
+                self.add_error("answer", "For MCQ, select Option 1-4.")
+            else:
+                cleaned_data["answer"] = normalized_answer
         elif q_type == "TRUE_FALSE":
-            if answer.lower() not in ["1", "2", "true", "false"]:
-                self.add_error("answer", "For True/False, enter 1 (True) or 2 (False).")
+            true_false_map = {
+                "1": "Option1",
+                "true": "Option1",
+                "option1": "Option1",
+                "2": "Option2",
+                "false": "Option2",
+                "option2": "Option2",
+            }
+            normalized_answer = true_false_map.get(answer.lower())
+            if not normalized_answer:
+                self.add_error("answer", "For True/False, choose True or False.")
+            else:
+                cleaned_data["answer"] = normalized_answer
             cleaned_data["option1"] = "True"
             cleaned_data["option2"] = "False"
             cleaned_data["option3"] = ""
             cleaned_data["option4"] = ""
-        
+        elif q_type == "SHORT_ANSWER":
+            if not answer:
+                self.add_error("answer", "Provide the expected short answer text.")
+
         return cleaned_data
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        instance.question_text = self.cleaned_data["question_text"]
+        if commit:
+            instance.save()
+            self.save_m2m()
+        return instance

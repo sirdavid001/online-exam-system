@@ -5,34 +5,23 @@
 <div class="container reveal">
   <article class="form-card">
     <div class="form-card-head">
-      <i class="fas fa-plus-circle text-success"></i>
-      <h3>Add New Question</h3>
+      <i class="fas fa-edit text-brand"></i>
+      <h3>Update Question</h3>
     </div>
-    <p class="text-muted">Create high-quality MCQ, True/False, or Short Answer items. Use LaTeX for professional mathematical equations.</p>
+    <p class="text-muted">Modify this assessment item. Ensure all LaTeX math remains correctly formatted.</p>
 
     <form method="POST" autocomplete="off" class="stack-form mt-4" data-question-form>
       {% csrf_token %}
 
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="courseID">Assign to Course</label>
-          {% render_field questionForm.courseID|attr:'required:true' class="form-control" %}
-        </div>
-        <div class="form-group">
-          <label for="question_type">Question Format</label>
-          {% render_field questionForm.question_type|attr:'required:true' class="form-control" data-type-selector="" %}
-        </div>
-      </div>
-
       <div class="form-group">
         <label for="id_question">Question Statement</label>
-        {% render_field questionForm.question|attr:'required:true' class="form-control" placeholder="Type your question here... e.g. Solve \(\int_0^1 x^2 dx\)" %}
+        {% render_field questionForm.question|attr:'required:true' class="form-control" placeholder="Type your question here..." %}
       </div>
 
       <div class="form-grid">
         <div class="form-group">
           <label for="marks">Award Marks</label>
-          {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="e.g. 5" %}
+          {% render_field questionForm.marks|attr:'required:true' class="form-control" %}
         </div>
 
         <div class="form-group">
@@ -45,20 +34,20 @@
         <h6 class="form-section-title">Answer Options</h6>
         <div class="form-grid">
           <div class="form-group" data-option-field="1">
-            <label for="option1">Option A (True if T/F)</label>
-            {% render_field questionForm.option1 class="form-control" placeholder="Primary choice..." %}
+            <label for="option1">Option A</label>
+            {% render_field questionForm.option1 class="form-control" %}
           </div>
           <div class="form-group" data-option-field="2">
-            <label for="option2">Option B (False if T/F)</label>
-            {% render_field questionForm.option2 class="form-control" placeholder="Secondary choice..." %}
+            <label for="option2">Option B</label>
+            {% render_field questionForm.option2 class="form-control" %}
           </div>
           <div class="form-group" data-option-field="3">
-            <label for="option3">Option C (Optional)</label>
-            {% render_field questionForm.option3 class="form-control" placeholder="Tertiary choice..." %}
+            <label for="option3">Option C</label>
+            {% render_field questionForm.option3 class="form-control" %}
           </div>
           <div class="form-group" data-option-field="4">
-            <label for="option4">Option D (Optional)</label>
-            {% render_field questionForm.option4 class="form-control" placeholder="Quaternary choice..." %}
+            <label for="option4">Option D</label>
+            {% render_field questionForm.option4 class="form-control" %}
           </div>
         </div>
       </div>
@@ -69,22 +58,18 @@
           <!-- Populated by JS -->
         </div>
         {% render_field questionForm.answer class="form-control" id="id_answer_field" type="hidden" %}
-        <div class="alert alert-info py-2 px-3 mt-2" style="font-size: 0.85rem">
-          <i class="fas fa-lightbulb mr-1"></i> 
-          <strong>Quick Tip:</strong> 
-          MCQ: select Option A-D. T/F: select True/False. Short Answer: type the precise text.
-        </div>
       </div>
 
       <div class="form-group">
         <label for="explanation">Comprehensive Solution (Optional)</label>
-        {% render_field questionForm.explanation class="form-control" placeholder="Explain the rationale to help students after the exam." %}
+        {% render_field questionForm.explanation class="form-control" %}
       </div>
 
       <div class="form-actions mt-4 pt-3 border-top">
-        <button type="submit" class="btn btn-success btn-lg">
-          <i class="fas fa-save mr-1"></i> Finalize & Save Question
+        <button type="submit" class="btn btn-premium py-2 px-5">
+          <i class="fas fa-check mr-2"></i> Update Question
         </button>
+        <a href="{% url 'see-question' question.course_id %}" class="btn-icon-soft ml-2">Cancel</a>
       </div>
     </form>
   </article>
@@ -92,15 +77,13 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const typeSelector = document.querySelector('[data-type-selector]');
+    const type = "{{ question.question_type }}";
     const optionsContainer = document.getElementById('options-container');
     const optionFields = document.querySelectorAll('[data-option-field]');
     const answerContainer = document.getElementById('answer-interactive-container');
     const actualAnswerInput = document.getElementById('id_answer_field');
 
     function updateForm() {
-      const type = typeSelector.value;
-      
       // Reset visibility
       optionsContainer.style.display = 'block';
       optionFields.forEach(f => f.style.display = 'block');
@@ -121,8 +104,6 @@
         });
         answerContainer.appendChild(select);
         select.addEventListener('change', () => actualAnswerInput.value = select.value);
-        actualAnswerInput.value = select.value;
-        actualAnswerInput.type = 'hidden';
       } else if (type === 'TRUE_FALSE') {
         optionFields.forEach(f => {
           const idx = f.getAttribute('data-option-field');
@@ -140,12 +121,6 @@
         });
         answerContainer.appendChild(select);
         select.addEventListener('change', () => actualAnswerInput.value = select.value);
-        actualAnswerInput.value = select.value;
-        actualAnswerInput.type = 'hidden';
-        
-        // Auto-fill T/F options
-        document.getElementsByName('option1')[0].value = 'True';
-        document.getElementsByName('option2')[0].value = 'False';
       } else if (type === 'SHORT_ANSWER') {
         optionsContainer.style.display = 'none';
         const input = document.createElement('input');
@@ -155,16 +130,11 @@
         input.value = (currentAnswer.startsWith('Option')) ? '' : currentAnswer;
         answerContainer.appendChild(input);
         input.addEventListener('input', () => actualAnswerInput.value = input.value);
-        actualAnswerInput.value = input.value;
-        actualAnswerInput.type = 'hidden';
       }
     }
 
-    typeSelector.addEventListener('change', updateForm);
     updateForm();
   });
 </script>
-  </article>
-</div>
 
 {% endblock content %}

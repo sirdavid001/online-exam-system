@@ -99,6 +99,20 @@ class Question(models.Model):
     class Meta:
         ordering = ["id"]
 
+    def __init__(self, *args, **kwargs):
+        legacy_question = kwargs.pop("question", None)
+        super().__init__(*args, **kwargs)
+        if legacy_question is not None and not self.question_text:
+            self.question_text = legacy_question
+
+    @property
+    def question(self):
+        return self.question_text
+
+    @question.setter
+    def question(self, value):
+        self.question_text = value
+
     def __str__(self):
         return f"{self.course.course_name} - {self.question_text[:50]}"
 

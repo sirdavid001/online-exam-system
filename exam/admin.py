@@ -64,7 +64,7 @@ class QuestionAdmin(admin.ModelAdmin):
     )
     list_filter = ("course", "difficulty", "marks")
     search_fields = (
-        "question",
+        "question_text",
         "option1",
         "option2",
         "option3",
@@ -76,7 +76,7 @@ class QuestionAdmin(admin.ModelAdmin):
     ordering = ("course", "id")
 
     def short_question(self, obj):
-        text = obj.question.strip()
+        text = obj.question_text.strip()
         return text if len(text) <= 90 else f"{text[:87]}..."
 
     short_question.short_description = "Question"
