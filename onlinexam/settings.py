@@ -16,8 +16,9 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-change-me")
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+# Treat Vercel as production even if DEBUG is accidentally set in the environment.
+RUNNING_ON_VERCEL = os.getenv("VERCEL") == "1" or bool(os.getenv("VERCEL_ENV"))
+DEBUG = os.getenv("DEBUG", "False").lower() == "true" and not RUNNING_ON_VERCEL
 
 # ALLOWED_HOSTS configuration
 ALLOWED_HOSTS = [
@@ -146,8 +147,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 if not DEBUG:
     STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-    WHITENOISE_MANIFEST_STRICT = False
-    WHITENOISE_USE_FINDERS = True
+    WHITENOISE_USE_FINDERS = False
 
 LOGIN_REDIRECT_URL = "/afterlogin"
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
