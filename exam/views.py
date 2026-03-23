@@ -20,6 +20,10 @@ from . import forms, models
 from .pdf_utils import render_result_pdf
 
 
+def health_check_view(request):
+    return HttpResponse("System is online.")
+
+
 def home_view(request):
     if request.user.is_authenticated:
         return HttpResponseRedirect("afterlogin")

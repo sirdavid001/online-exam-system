@@ -5,6 +5,7 @@ from django.urls import include, path
 from exam import views
 
 urlpatterns = [
+    path("health", views.health_check_view, name="health"),
     path('admin/', admin.site.urls),
     path('teacher/', include('teacher.urls')),
     path('student/', include('student.urls')),
