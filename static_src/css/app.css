@@ -462,15 +462,30 @@ form textarea {
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.03);
-  color: #fff;
+  color: var(--text-main) !important;
   padding: 0.85rem 1.1rem;
   font-size: 1rem;
   transition: all 0.3s ease;
 }
 
+@media (prefers-color-scheme: light) {
+  .stack-form .form-control,
+  form input {
+    background: rgba(15, 23, 42, 0.03) !important;
+    border-color: rgba(15, 23, 42, 0.1) !important;
+  }
+}
+
 .stack-form .form-control::placeholder,
 form input::placeholder {
   color: rgba(255, 255, 255, 0.3);
+}
+
+@media (prefers-color-scheme: light) {
+  .stack-form .form-control::placeholder,
+  form input::placeholder {
+    color: rgba(15, 23, 42, 0.4);
+  }
 }
 
 .stack-form .form-control:focus,
