@@ -70,6 +70,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "onlinexam.middleware.EnsureSchemaMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -127,8 +128,9 @@ if database_url:
             ssl_require=not DEBUG,
         )
     }
-    if not DEBUG:
-        DATABASES["default"]["OPTIONS"] = {"sslmode": "require"}
+    if not DEBUG and DATABASES["default"]["ENGINE"] == "django.db.backends.postgresql":
+        DATABASES["default"].setdefault("OPTIONS", {})
+        DATABASES["default"]["OPTIONS"]["sslmode"] = "require"
 else:
     DATABASES = {
         "default": {
