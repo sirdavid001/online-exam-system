@@ -7,6 +7,7 @@ from exam.models import Question
 
 
 EXPECTED_ORDER = [
+    "type",
     "question",
     "marks",
     "option1",
@@ -19,6 +20,7 @@ EXPECTED_ORDER = [
 ]
 
 HEADER_ALIASES = {
+    "type": ("type", "question_type", "kind"),
     "question": ("question", "question_text", "prompt"),
     "marks": ("marks", "mark", "score"),
     "option1": ("option1", "opt1", "a"),
@@ -54,6 +56,17 @@ DIFFICULTY_MAP = {
     "hard": "ADVANCED",
 }
 
+TYPE_MAP = {
+    "mcq": "MCQ",
+    "multiple choice": "MCQ",
+    "tf": "TRUE_FALSE",
+    "true/false": "TRUE_FALSE",
+    "true_false": "TRUE_FALSE",
+    "short": "SHORT_ANSWER",
+    "short_answer": "SHORT_ANSWER",
+    "text": "SHORT_ANSWER",
+}
+
 
 @dataclass
 class UploadOutcome:
@@ -76,7 +89,7 @@ def _normalize_header_map(headers: List[str]) -> Dict[str, str]:
                 resolved[canonical] = normalized[alias]
                 break
 
-    missing = [key for key in ("question", "marks", "option1", "option2", "option3", "option4", "answer") if key not in resolved]
+    missing = [key for key in ("question", "marks", "answer") if key not in resolved]
     if missing:
         raise QuestionUploadError(
             "Missing required columns: " + ", ".join(missing)
@@ -85,14 +98,26 @@ def _normalize_header_map(headers: List[str]) -> Dict[str, str]:
     return resolved
 
 
-def _normalize_answer(raw_answer: str, option_values: Tuple[str, str, str, str]) -> str:
-    token = (raw_answer or "").strip().lower()
-    if token in ANSWER_MAP:
-        return ANSWER_MAP[token]
+def _normalize_answer(raw_answer: str, option_values: Tuple[str, str, str, str], q_type: str = "MCQ") -> str:
+    token = (raw_answer or "").strip()
+    token_lower = token.lower()
+
+    if q_type == "SHORT_ANSWER":
+        return token
+
+    if q_type == "TRUE_FALSE":
+        if token_lower in ("true", "t", "yes", "1", "option1"):
+            return "Option1"
+        if token_lower in ("false", "f", "no", "0", "option2"):
+            return "Option2"
+        raise QuestionUploadError(f"Invalid T/F answer '{raw_answer}'. Use True or False.")
+
+    if token_lower in ANSWER_MAP:
+        return ANSWER_MAP[token_lower]
 
     options = [opt.strip().lower() for opt in option_values]
-    if token in options:
-        index = options.index(token) + 1
+    if token_lower in options:
+        index = options.index(token_lower) + 1
         return f"Option{index}"
 
     raise QuestionUploadError(
@@ -145,22 +170,25 @@ def parse_questions_upload(file_obj, course, has_header: bool = True) -> UploadO
         processed_rows += 1
         try:
             if header_mode:
+                raw_type = (row.get(header_map.get("type", ""), "") or "MCQ").strip()
                 raw_question = (row.get(header_map["question"], "") or "").strip()
                 raw_marks = (row.get(header_map["marks"], "") or "").strip()
-                option1 = (row.get(header_map["option1"], "") or "").strip()
-                option2 = (row.get(header_map["option2"], "") or "").strip()
-                option3 = (row.get(header_map["option3"], "") or "").strip()
-                option4 = (row.get(header_map["option4"], "") or "").strip()
+                option1 = (row.get(header_map.get("option1", ""), "") or "").strip()
+                option2 = (row.get(header_map.get("option2", ""), "") or "").strip()
+                option3 = (row.get(header_map.get("option3", ""), "") or "").strip()
+                option4 = (row.get(header_map.get("option4", ""), "") or "").strip()
                 raw_answer = (row.get(header_map["answer"], "") or "").strip()
                 raw_difficulty = (row.get(header_map.get("difficulty", ""), "") or "").strip()
                 explanation = (row.get(header_map.get("explanation", ""), "") or "").strip()
             else:
                 values = [str(value).strip() for value in row]
                 values += [""] * (len(EXPECTED_ORDER) - len(values))
-                raw_question, raw_marks, option1, option2, option3, option4, raw_answer, raw_difficulty, explanation = values[: len(EXPECTED_ORDER)]
+                raw_type, raw_question, raw_marks, option1, option2, option3, option4, raw_answer, raw_difficulty, explanation = values[: len(EXPECTED_ORDER)]
 
             if not raw_question:
                 raise QuestionUploadError("Question text is required.")
+
+            q_type = TYPE_MAP.get(raw_type.lower(), "MCQ")
 
             try:
                 marks = int(raw_marks)
@@ -170,15 +198,20 @@ def parse_questions_upload(file_obj, course, has_header: bool = True) -> UploadO
             if marks <= 0:
                 raise QuestionUploadError("Marks must be greater than 0.")
 
-            if not all([option1, option2, option3, option4]):
-                raise QuestionUploadError("All four options are required.")
+            # Validate options based on type
+            if q_type == "MCQ":
+                if not all([option1, option2, option3, option4]):
+                    raise QuestionUploadError("Multiple choice questions require all 4 options.")
+            elif q_type == "TRUE_FALSE":
+                option1, option2, option3, option4 = "True", "False", "", ""
 
-            answer = _normalize_answer(raw_answer, (option1, option2, option3, option4))
+            answer = _normalize_answer(raw_answer, (option1, option2, option3, option4), q_type)
             difficulty = _normalize_difficulty(raw_difficulty)
 
             questions.append(
                 Question(
                     course=course,
+                    question_type=q_type,
                     marks=marks,
                     question=raw_question,
                     option1=option1,

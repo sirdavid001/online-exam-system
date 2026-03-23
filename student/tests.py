@@ -1,3 +1,4 @@
+import json
 from decimal import Decimal
 
 from django.contrib.auth.models import Group, User
@@ -180,3 +181,22 @@ class ExamScoringTests(TestCase):
 
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse("student-exam"))
+
+    def test_ajax_save_answer_persists_in_session(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(
+            reverse("ajax-save-answer"),
+            data=json.dumps({
+                "course_id": self.course.id,
+                "question_id": self.question_1.id,
+                "option": "Option3"
+            }),
+            content_type="application/json"
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["status"], "success")
+
+        session_key = f"exam_{self.course.id}_saved_answers"
+        self.assertEqual(self.client.session[session_key][str(self.question_1.id)], "Option3")

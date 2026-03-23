@@ -87,6 +87,30 @@
   </article>
 </section>
 
+<section class="form-grid mt-4 reveal">
+  <article class="table-card">
+    <div class="table-head">
+      <h6>Pass/Fail Distribution</h6>
+    </div>
+    <div class="p-4" style="height: 300px">
+      <canvas id="passFailChart"></canvas>
+    </div>
+  </article>
+
+  <article class="table-card">
+    <div class="table-head">
+      <h6>Top Courses Pass Rate (%)</h6>
+    </div>
+    <div class="p-4" style="height: 300px">
+      <canvas id="topCoursesChart"></canvas>
+    </div>
+  </article>
+</section>
+
+<script id="admin-charts-data" type="application/json">
+  {{ charts_data|safe }}
+</script>
+
 <section class="table-card mt-3 reveal">
   <div class="table-head">
     <h6>Export Data</h6>

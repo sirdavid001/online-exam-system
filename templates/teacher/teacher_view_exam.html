@@ -34,7 +34,7 @@
         <td>{{ t.max_attempts }}</td>
         <td>{{ t.negative_mark_per_wrong }}</td>
         <td class="text-center">
-          <a class="btn btn-danger btn-sm" href="{% url 'delete-exam' t.id %}">
+          <a class="btn btn-danger btn-sm" href="{% url 'delete-exam' t.id %}" data-confirm="Are you sure you want to delete this course?">
             <i class="fas fa-trash"></i> Delete
           </a>
         </td>

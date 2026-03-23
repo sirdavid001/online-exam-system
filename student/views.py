@@ -1,3 +1,4 @@
+import json
 import random
 from datetime import timedelta
 from decimal import Decimal, ROUND_HALF_UP
@@ -5,7 +6,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import Group
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
@@ -14,13 +15,29 @@ from exam import models as QMODEL
 from . import forms, models
 
 
-def _exam_session_key(course_id, field):
-    return f"exam_{course_id}_{field}"
+def is_student(user):
+    return user.groups.filter(name="STUDENT").exists()
 
 
-def _clear_exam_session(request, course_id):
-    request.session.pop(_exam_session_key(course_id, "question_ids"), None)
-    request.session.pop(_exam_session_key(course_id, "started_at"), None)
+@login_required(login_url="studentlogin")
+@user_passes_test(is_student, login_url="studentlogin")
+def ajax_save_answer_view(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            course_id = data.get("course_id")
+            question_id = data.get("question_id")
+            selected_ans = data.get("option")
+
+            if course_id and question_id:
+                session_key = _exam_session_key(course_id, "saved_answers")
+                saved_answers = request.session.get(session_key, {})
+                saved_answers[str(question_id)] = selected_ans
+                request.session[session_key] = saved_answers
+                return JsonResponse({"status": "success"})
+        except Exception:
+            pass
+    return JsonResponse({"status": "error"}, status=400)
 
 
 # for showing signup/login button for student
@@ -58,16 +75,34 @@ def student_signup_view(request):
     )
 
 
-def is_student(user):
-    return user.groups.filter(name="STUDENT").exists()
+def _exam_session_key(course_id, field):
+    return f"exam_{course_id}_{field}"
+
+
+def _clear_exam_session(request, course_id):
+    request.session.pop(_exam_session_key(course_id, "question_ids"), None)
+    request.session.pop(_exam_session_key(course_id, "started_at"), None)
+    request.session.pop(_exam_session_key(course_id, "saved_answers"), None)
+
+
 
 
 @login_required(login_url="studentlogin")
 @user_passes_test(is_student, login_url="studentlogin")
 def student_dashboard_view(request):
+    student = get_object_or_404(models.Student, user_id=request.user.id)
+    recent_results = QMODEL.Result.objects.filter(student=student).order_by("-date")[:10]
+
+    # Prepare data for performance chart (ordered by date ascending for the chart)
+    perf_results = list(reversed(recent_results))
+    chart_labels = [r.exam.course_name for r in perf_results]
+    chart_data = [float(r.percentage) for r in perf_results]
+
     context = {
         "total_course": QMODEL.Course.objects.all().count(),
         "total_question": QMODEL.Question.objects.all().count(),
+        "recent_results": recent_results,
+        "performance_data": json.dumps({"labels": chart_labels, "series": chart_data}),
     }
     return render(request, "student/student_dashboard.html", context=context)
 
@@ -127,11 +162,16 @@ def start_exam_view(request, pk):
     request.session[_exam_session_key(course.id, "question_ids")] = question_ids
     request.session[_exam_session_key(course.id, "started_at")] = timezone.now().isoformat()
 
+    # Load previously saved answers if any
+    saved_answers = request.session.get(_exam_session_key(course.id, "saved_answers"), {})
+
     context = {
         "course": course,
         "questions": questions,
         "duration_seconds": course.duration_minutes * 60,
         "attempt_number": attempts_taken + 1,
+        "saved_answers": saved_answers,
+        "saved_answers_json": json.dumps(saved_answers),
     }
     return render(request, "student/start_exam.html", context)
 
@@ -186,12 +226,23 @@ def calculate_marks_view(request):
     unanswered = 0
 
     for question in questions:
-        selected_ans = request.POST.get(f"question_{question.id}")
-        if selected_ans not in {"Option1", "Option2", "Option3", "Option4"}:
+        selected_ans = request.POST.get(f"question_{question.id}", "").strip()
+
+        if not selected_ans:
             unanswered += 1
             continue
 
-        if selected_ans == question.answer:
+        is_correct = False
+        if question.question_type in ["MCQ", "TRUE_FALSE"]:
+            # Standard MCQ/TF handles answers as Option1, Option2, etc.
+            if selected_ans == question.answer:
+                is_correct = True
+        elif question.question_type == "SHORT_ANSWER":
+            # Case-insensitive comparison for short answers
+            if selected_ans.lower() == question.answer.lower():
+                is_correct = True
+
+        if is_correct:
             correct_answers += 1
             raw_marks += Decimal(question.marks)
         else:

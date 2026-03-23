@@ -7,12 +7,18 @@
     <h2>Update Question</h2>
     <p>Edit content, difficulty, options, and answer key. Equation format remains supported with LaTeX.</p>
 
-    <form method="POST" autocomplete="off" class="stack-form">
+    <form method="POST" autocomplete="off" class="stack-form" data-question-form>
       {% csrf_token %}
 
-      <div class="form-group">
-        <label for="question">Course</label>
-        {% render_field questionForm.courseID|attr:'required:true' class="form-control" %}
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="courseID">Course</label>
+          {% render_field questionForm.courseID|attr:'required:true' class="form-control" %}
+        </div>
+        <div class="form-group">
+          <label for="question_type">Question Type</label>
+          {% render_field questionForm.question_type|attr:'required:true' class="form-control" data-type-selector="" %}
+        </div>
       </div>
 
       <div class="form-group">
@@ -22,7 +28,7 @@
 
       <div class="form-grid">
         <div class="form-group">
-          <label for="question_number">Marks</label>
+          <label for="marks">Marks</label>
           {% render_field questionForm.marks|attr:'required:true' class="form-control" placeholder="Example: 5" %}
         </div>
 
@@ -32,28 +38,36 @@
         </div>
       </div>
 
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="option1">Option 1</label>
-          {% render_field questionForm.option1|attr:'required:true' class="form-control" %}
-        </div>
-        <div class="form-group">
-          <label for="option2">Option 2</label>
-          {% render_field questionForm.option2|attr:'required:true' class="form-control" %}
-        </div>
-        <div class="form-group">
-          <label for="option3">Option 3</label>
-          {% render_field questionForm.option3|attr:'required:true' class="form-control" %}
-        </div>
-        <div class="form-group">
-          <label for="option4">Option 4</label>
-          {% render_field questionForm.option4|attr:'required:true' class="form-control" %}
+      <div id="options-container">
+        <div class="form-grid">
+          <div class="form-group" data-option-field="1">
+            <label for="option1">Option 1 (True if T/F)</label>
+            {% render_field questionForm.option1 class="form-control" %}
+          </div>
+          <div class="form-group" data-option-field="2">
+            <label for="option2">Option 2 (False if T/F)</label>
+            {% render_field questionForm.option2 class="form-control" %}
+          </div>
+          <div class="form-group" data-option-field="3">
+            <label for="option3">Option 3</label>
+            {% render_field questionForm.option3 class="form-control" %}
+          </div>
+          <div class="form-group" data-option-field="4">
+            <label for="option4">Option 4</label>
+            {% render_field questionForm.option4 class="form-control" %}
+          </div>
         </div>
       </div>
 
       <div class="form-group">
         <label for="answer">Correct Answer</label>
-        {% render_field questionForm.answer|attr:'required:true' class="form-control" %}
+        <div id="answer-selector-container">
+          <!-- Will be populated by JS -->
+          {% render_field questionForm.answer|attr:'required:true' class="form-control" id="id_answer_field" %}
+        </div>
+        <small class="form-text text-muted" id="answer-help">
+          MCQ: select Option1-4. T/F: select Option1 (True) or Option2 (False). Short Answer: type the text.
+        </small>
       </div>
 
       <div class="form-group">
@@ -66,6 +80,79 @@
         <a href="{% url 'view-question' question.course_id %}" class="btn btn-secondary btn-lg">Cancel</a>
       </div>
     </form>
+  </article>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const typeSelector = document.querySelector('[data-type-selector]');
+    const optionsContainer = document.getElementById('options-container');
+    const optionFields = document.querySelectorAll('[data-option-field]');
+    const answerContainer = document.getElementById('answer-selector-container');
+    const actualAnswerInput = document.getElementById('id_answer_field');
+
+    function updateForm() {
+      const type = typeSelector.value;
+      
+      // Reset visibility
+      optionsContainer.style.display = 'block';
+      optionFields.forEach(f => f.style.display = 'block');
+      
+      const currentAnswer = actualAnswerInput.value;
+      answerContainer.innerHTML = '';
+
+      if (type === 'MCQ') {
+        const select = document.createElement('select');
+        select.className = 'form-control';
+        select.required = true;
+        ['Option1', 'Option2', 'Option3', 'Option4'].forEach(opt => {
+          const o = document.createElement('option');
+          o.value = opt;
+          o.textContent = opt.replace('Option', 'Option ');
+          if (currentAnswer === opt) o.selected = true;
+          select.appendChild(o);
+        });
+        answerContainer.appendChild(select);
+        select.addEventListener('change', () => actualAnswerInput.value = select.value);
+        actualAnswerInput.value = select.value;
+        actualAnswerInput.type = 'hidden';
+      } else if (type === 'TRUE_FALSE') {
+        optionFields.forEach(f => {
+          const idx = f.getAttribute('data-option-field');
+          if (idx > 2) f.style.display = 'none';
+        });
+        const select = document.createElement('select');
+        select.className = 'form-control';
+        select.required = true;
+        [{v:'Option1', t:'True'}, {v:'Option2', t:'False'}].forEach(opt => {
+          const o = document.createElement('option');
+          o.value = opt.v;
+          o.textContent = opt.t;
+          if (currentAnswer === opt.v) o.selected = true;
+          select.appendChild(o);
+        });
+        answerContainer.appendChild(select);
+        select.addEventListener('change', () => actualAnswerInput.value = select.value);
+        actualAnswerInput.value = select.value;
+        actualAnswerInput.type = 'hidden';
+      } else if (type === 'SHORT_ANSWER') {
+        optionsContainer.style.display = 'none';
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'form-control';
+        input.required = true;
+        input.value = (currentAnswer.startsWith('Option')) ? '' : currentAnswer;
+        answerContainer.appendChild(input);
+        input.addEventListener('input', () => actualAnswerInput.value = input.value);
+        actualAnswerInput.value = input.value;
+        actualAnswerInput.type = 'hidden';
+      }
+    }
+
+    typeSelector.addEventListener('change', updateForm);
+    updateForm();
+  });
+</script>
   </article>
 </div>
 

@@ -1,3 +1,5 @@
+import json
+import random
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import Group
@@ -55,10 +57,18 @@ def is_teacher(user):
 @login_required(login_url="teacherlogin")
 @user_passes_test(is_teacher, login_url="teacherlogin")
 def teacher_dashboard_view(request):
+    courses = QMODEL.Course.objects.all()
+    chart_labels = [c.course_name for c in courses]
+    chart_data = [QMODEL.Question.objects.filter(course=c).count() for c in courses]
+
     context = {
-        "total_course": QMODEL.Course.objects.all().count(),
+        "total_course": courses.count(),
         "total_question": QMODEL.Question.objects.all().count(),
         "total_student": SMODEL.Student.objects.all().count(),
+        "charts_data": json.dumps({
+            "labels": chart_labels,
+            "counts": chart_data
+        })
     }
     return render(request, "teacher/teacher_dashboard.html", context=context)
 
@@ -168,7 +178,7 @@ def teacher_upload_questions_view(request):
 
     context = {
         "uploadForm": uploadForm,
-        "sample_columns": "question,marks,option1,option2,option3,option4,answer,difficulty,explanation",
+        "sample_columns": "type,question,marks,option1,option2,option3,option4,answer,difficulty,explanation",
     }
     return render(request, "teacher/teacher_upload_questions.html", context)
 

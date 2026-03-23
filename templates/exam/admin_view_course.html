@@ -41,7 +41,7 @@
             <a class="btn btn-secondary btn-sm" href="{% url 'view-question' t.id %}">
               <i class="fas fa-list"></i> Questions
             </a>
-            <a class="btn btn-danger btn-sm" href="{% url 'delete-course' t.id %}">
+            <a class="btn btn-danger btn-sm" href="{% url 'delete-course' t.id %}" data-confirm="Are you sure you want to delete this course?">
               <i class="fas fa-trash"></i> Delete
             </a>
           </div>

@@ -1,4 +1,5 @@
 import csv
+import json
 
 from django.conf import settings
 from django.contrib import messages
@@ -117,6 +118,13 @@ def admin_dashboard_view(request):
         "pending_teacher": TMODEL.Teacher.objects.filter(status=False).count(),
         "top_courses": top_courses,
         "at_risk_students": at_risk_students,
+        "charts_data": json.dumps({
+            "pass_fail": [pass_attempts, failed_attempts],
+            "top_courses": {
+                "labels": [c.course_name for c in top_courses],
+                "rates": [float(round((c.pass_count * 100 / c.attempt_count), 2)) if c.attempt_count else 0 for c in top_courses]
+            }
+        })
     }
     return render(request, "exam/admin_dashboard.html", context=context)
 

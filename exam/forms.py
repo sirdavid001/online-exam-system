@@ -51,16 +51,33 @@ class CourseForm(forms.ModelForm):
 
 
 class QuestionForm(forms.ModelForm):
-    # Show course names in dropdown via __str__.
+    ANSWER_CHOICES = (
+        ("Option1", "Option 1"),
+        ("Option2", "Option 2"),
+        ("Option3", "Option 3"),
+        ("Option4", "Option 4"),
+    )
+
+    TF_ANSWER_CHOICES = (
+        ("Option1", "True"),
+        ("Option2", "False"),
+    )
+
     courseID = forms.ModelChoiceField(
         queryset=models.Course.objects.all().order_by("course_name"),
         empty_label="Select Course",
         to_field_name="id",
+        required=False,
     )
+
+    # Use a flexible answer field in the form as well.
+    # We will override this in __init__ or just handle it in clean()
+    answer = forms.CharField(max_length=200, help_text="For MCQ/TF, select the option. For Short Answer, enter the exact text.")
 
     class Meta:
         model = models.Question
         fields = [
+            "question_type",
             "marks",
             "question",
             "option1",
@@ -75,3 +92,33 @@ class QuestionForm(forms.ModelForm):
             "question": forms.Textarea(attrs={"rows": 4}),
             "explanation": forms.Textarea(attrs={"rows": 3}),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        q_type = cleaned_data.get("question_type")
+        answer = cleaned_data.get("answer")
+
+        if q_type == "MCQ":
+            valid_options = ["Option1", "Option2", "Option3", "Option4"]
+            if answer not in valid_options:
+                self.add_error("answer", "Please select a valid option for Multiple Choice Questions.")
+        elif q_type == "TRUE_FALSE":
+            valid_options = ["Option1", "Option2"]
+            if answer not in valid_options:
+                self.add_error("answer", "Please select True or False.")
+            # Clear unused options
+            cleaned_data["option3"] = ""
+            cleaned_data["option4"] = ""
+            # Ensure options are set correctly
+            cleaned_data["option1"] = "True"
+            cleaned_data["option2"] = "False"
+        elif q_type == "SHORT_ANSWER":
+            if not answer:
+                self.add_error("answer", "Please provide the correct answer for the short answer question.")
+            # Options are not needed for short answer
+            cleaned_data["option1"] = ""
+            cleaned_data["option2"] = ""
+            cleaned_data["option3"] = ""
+            cleaned_data["option4"] = ""
+
+        return cleaned_data

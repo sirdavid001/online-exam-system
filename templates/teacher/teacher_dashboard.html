@@ -31,4 +31,17 @@
     </div>
   </article>
 </section>
+
+<section class="table-card mt-4 reveal">
+  <div class="table-head">
+    <h6>Question Distribution by Course</h6>
+  </div>
+  <div class="p-4" style="height: 350px">
+    <canvas id="teacherQuestionChart"></canvas>
+  </div>
+</section>
+
+<script id="teacher-charts-data" type="application/json">
+  {{ charts_data|safe }}
+</script>
 {% endblock content %}

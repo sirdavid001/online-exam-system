@@ -55,14 +55,25 @@ class Question(models.Model):
         ("Option4", "Option 4"),
     )
 
+    TYPE_CHOICES = (
+        ("MCQ", "Multiple Choice Question"),
+        ("TRUE_FALSE", "True/False"),
+        ("SHORT_ANSWER", "Short Answer"),
+    )
+
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    question_type = models.CharField(
+        max_length=20,
+        choices=TYPE_CHOICES,
+        default="MCQ",
+    )
     marks = models.PositiveIntegerField(default=1)
     question = models.TextField()
     option1 = models.CharField(max_length=500)
     option2 = models.CharField(max_length=500)
-    option3 = models.CharField(max_length=500)
-    option4 = models.CharField(max_length=500)
-    answer = models.CharField(max_length=200, choices=ANSWER_CHOICES)
+    option3 = models.CharField(max_length=500, blank=True, null=True)
+    option4 = models.CharField(max_length=500, blank=True, null=True)
+    answer = models.CharField(max_length=200)
     explanation = models.TextField(blank=True, default="")
     difficulty = models.CharField(
         max_length=20,

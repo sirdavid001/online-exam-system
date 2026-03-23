@@ -14,6 +14,7 @@
     <thead>
       <tr>
         <th>Question</th>
+        <th>Type</th>
         <th>Difficulty</th>
         <th>Marks</th>
         <th>Explanation</th>
@@ -23,7 +24,27 @@
     <tbody>
       {% for c in questions %}
       <tr>
-        <td>{{ c.question|linebreaksbr }}</td>
+        <td>
+          {{ c.question|linebreaksbr }}
+          <div class="mt-2">
+            <small class="text-muted">
+              <strong>Answer:</strong> 
+              {% if c.question_type == 'MCQ' %}
+                {{ c.answer }}: 
+                {% if c.answer == 'Option1' %}{{ c.option1 }}
+                {% elif c.answer == 'Option2' %}{{ c.option2 }}
+                {% elif c.answer == 'Option3' %}{{ c.option3 }}
+                {% elif c.answer == 'Option4' %}{{ c.option4 }}
+                {% endif %}
+              {% elif c.question_type == 'TRUE_FALSE' %}
+                {{ c.answer }}: {% if c.answer == 'Option1' %}True{% else %}False{% endif %}
+              {% else %}
+                {{ c.answer }}
+              {% endif %}
+            </small>
+          </div>
+        </td>
+        <td><span class="badge badge-info">{{ c.get_question_type_display }}</span></td>
         <td>{{ c.get_difficulty_display }}</td>
         <td>{{ c.marks }}</td>
         <td>
@@ -38,7 +59,7 @@
             <a class="btn btn-primary btn-sm" href="{% url 'update-question' c.id %}">
               <i class="fas fa-edit"></i> Edit
             </a>
-            <a class="btn btn-danger btn-sm" href="{% url 'delete-question' c.id %}?next={{ request.path|urlencode }}">
+            <a class="btn btn-danger btn-sm" href="{% url 'delete-question' c.id %}?next={{ request.path|urlencode }}" data-confirm="Are you sure you want to delete this question?">
               <i class="fas fa-trash"></i> Delete
             </a>
           </div>
