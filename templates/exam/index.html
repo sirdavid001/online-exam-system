@@ -22,39 +22,36 @@
     </div>
   </article>
 
-  <div class="hero-grid">
-    <article class="hero-card reveal reveal-delay-1">
-      <div class="card-icon"><i class="fas fa-graduation-cap"></i></div>
-      <div class="hero-card-info">
+  <div class="portal-grid">
+    <a href="/student/studentclick" class="portal-tile tile-student reveal reveal-delay-1">
+      <div class="tile-icon"><i class="fas fa-graduation-cap"></i></div>
+      <div class="tile-content">
         <h3>Student Hub</h3>
         <p>Access exams and check your result analytics instantly.</p>
-        <div class="mt-3">
-            <a href="/student/studentclick" class="btn btn-primary btn-sm">Student Access</a>
-        </div>
+        <span class="tile-link">Go to Portal <i class="fas fa-arrow-right"></i></span>
       </div>
-    </article>
+      <div class="tile-glow"></div>
+    </a>
 
-    <article class="hero-card reveal reveal-delay-2">
-      <div class="card-icon"><i class="fas fa-chalkboard-teacher"></i></div>
-      <div class="hero-card-info">
+    <a href="/teacher/teacherclick" class="portal-tile tile-teacher reveal reveal-delay-2">
+      <div class="tile-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+      <div class="tile-content">
         <h3>Teacher Suite</h3>
         <p>Draft courses and monitor student performance with ease.</p>
-        <div class="mt-3">
-            <a href="/teacher/teacherclick" class="btn btn-primary btn-sm">Teacher Access</a>
-        </div>
+        <span class="tile-link">Go to Portal <i class="fas fa-arrow-right"></i></span>
       </div>
-    </article>
+      <div class="tile-glow"></div>
+    </a>
 
-    <article class="hero-card reveal reveal-delay-3">
-      <div class="card-icon"><i class="fas fa-user-shield"></i></div>
-      <div class="hero-card-info">
+    <a href="/adminclick" class="portal-tile tile-admin reveal reveal-delay-3">
+      <div class="tile-icon"><i class="fas fa-user-shield"></i></div>
+      <div class="tile-content">
         <h3>Admin Panel</h3>
         <p>Full system integrity and user management controls.</p>
-        <div class="mt-3">
-            <a href="/adminclick" class="btn btn-primary btn-sm">Admin Portal</a>
-        </div>
+        <span class="tile-link">Go to Portal <i class="fas fa-arrow-right"></i></span>
       </div>
-    </article>
+      <div class="tile-glow"></div>
+    </a>
   </div>
 </section>
 {% endblock %}

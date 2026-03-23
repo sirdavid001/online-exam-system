@@ -14,50 +14,50 @@
 /* Light Mode (Default) */
 @media (prefers-color-scheme: light) {
   :root {
-    --bg-main: #f8fafc;
-    --bg-muted: #f1f5f9;
-    --surface: rgba(255, 255, 255, 0.7);
-    --surface-strong: #ffffff;
-    --surface-raised: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(241, 245, 249, 0.8));
+    --bg-main: #f8fafc !important;
+    --bg-muted: #f1f5f9 !important;
+    --surface: rgba(255, 255, 255, 0.7) !important;
+    --surface-strong: #ffffff !important;
+    --surface-raised: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(241, 245, 249, 0.8)) !important;
     
-    --text-main: #0f172a;
-    --text: #1e293b;
-    --text-muted: #64748b;
+    --text-main: #0f172a !important;
+    --text: #1e293b !important;
+    --text-muted: #64748b !important;
     
-    --line-soft: rgba(15, 23, 42, 0.08);
-    --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.08);
-    --shadow-premium: 0 20px 50px rgba(15, 23, 42, 0.12);
+    --line-soft: rgba(15, 23, 42, 0.08) !important;
+    --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.08) !important;
+    --shadow-premium: 0 20px 50px rgba(15, 23, 42, 0.12) !important;
     
-    --glass-border: 1px solid rgba(15, 23, 42, 0.08);
-    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: 1px solid rgba(15, 23, 42, 0.08) !important;
+    --glass-bg: rgba(255, 255, 255, 0.75) !important;
     
-    --glow-opacity: 0.4;
-    --bg-dot: rgba(15, 23, 42, 0.1);
+    --glow-opacity: 0.4 !important;
+    --bg-dot: rgba(15, 23, 42, 0.1) !important;
   }
 }
 
 /* Dark Mode */
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-main: #020617;
-    --bg-muted: #0f172a;
-    --surface: rgba(30, 41, 59, 0.7);
-    --surface-strong: #1e293b;
-    --surface-raised: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+    --bg-main: #020617 !important;
+    --bg-muted: #0f172a !important;
+    --surface: rgba(30, 41, 59, 0.7) !important;
+    --surface-strong: #1e293b !important;
+    --surface-raised: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9)) !important;
     
-    --text-main: #f8fafc;
-    --text: #f8fafc;
-    --text-muted: #94a3b8;
+    --text-main: #f8fafc !important;
+    --text: #f8fafc !important;
+    --text-muted: #94a3b8 !important;
     
-    --line-soft: rgba(248, 250, 252, 0.1);
-    --shadow-soft: 0 20px 45px rgba(0, 0, 0, 0.3);
-    --shadow-premium: 0 26px 64px rgba(0, 0, 0, 0.5);
+    --line-soft: rgba(248, 250, 252, 0.1) !important;
+    --shadow-soft: 0 20px 45px rgba(0, 0, 0, 0.3) !important;
+    --shadow-premium: 0 26px 64px rgba(0, 0, 0, 0.5) !important;
     
-    --glass-border: 1px solid rgba(248, 250, 252, 0.1);
-    --glass-bg: rgba(15, 23, 42, 0.65);
+    --glass-border: 1px solid rgba(248, 250, 252, 0.1) !important;
+    --glass-bg: rgba(15, 23, 42, 0.65) !important;
     
-    --glow-opacity: 1;
-    --bg-dot: rgba(255, 255, 255, 1);
+    --glow-opacity: 1 !important;
+    --bg-dot: rgba(255, 255, 255, 1) !important;
   }
 }
 
@@ -312,83 +312,119 @@ img {
   line-height: 1.7;
 }
 
-.hero-grid {
+/* Online Exam System - Theme System v1.2 - Portal Tile Update */
+.portal-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.25rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 1rem;
 }
 
-@media (max-width: 1024px) and (min-width: 768px) {
-  .hero-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .hero-card:last-child {
-    grid-column: span 2;
-  }
-}
-
-@media (max-width: 768px) {
-  .hero-card {
-    flex-direction: column;
-    text-align: center;
-    align-items: center;
-    padding: 2rem 1.5rem;
-  }
-
-  .hero-card:hover {
-    transform: translateY(-8px);
-  }
-
-  .card-icon {
-    margin-bottom: 0.5rem;
+@media (max-width: 1100px) {
+  .portal-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
   }
 }
 
-.hero-card {
-  padding: 2.25rem;
-  border: var(--glass-border);
+.portal-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 2.5rem;
   background: var(--surface-raised);
-  border-radius: 24px;
+  border: var(--glass-border);
+  border-radius: 28px;
+  text-decoration: none !important;
+  color: inherit !important;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(12px);
-  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-  display: flex;
-  gap: 1.5rem;
-  align-items: flex-start;
 }
 
-.hero-card:hover {
-  transform: translateX(12px);
-  border-color: var(--brand);
-  background: var(--surface-strong);
-  box-shadow: var(--shadow-premium);
+.portal-tile:hover {
+  transform: translateY(-8px);
+  border-color: var(--tile-accent);
+  box-shadow: 0 20px 40px var(--tile-glow);
 }
 
-.card-icon {
-  width: 64px;
-  height: 64px;
-  flex-shrink: 0;
-  background: var(--brand-soft);
-  color: var(--brand);
-  border-radius: 16px;
+.tile-icon {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.75rem;
-  box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.2);
+  font-size: 2rem;
+  border-radius: 18px;
+  background: var(--tile-soft);
+  color: var(--tile-accent);
+  transition: all 0.5s ease;
 }
 
-.hero-card-info h3 {
-  font-size: 1.35rem;
-  margin-bottom: 0.5rem;
-  color: var(--text-main);
-  -webkit-text-fill-color: initial;
+.portal-tile:hover .tile-icon {
+  transform: scale(1.1) rotate(-5deg);
+  background: var(--tile-accent);
+  color: #fff;
 }
 
-.hero-card-info p {
-  margin: 0;
-  font-size: 0.95rem;
+.tile-content h3 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  color: var(--text-main) !important;
+  -webkit-text-fill-color: initial !important;
+}
+
+.tile-content p {
+  font-size: 1rem;
+  line-height: 1.6;
   color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.tile-link {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--tile-accent);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.portal-tile:hover .tile-link {
+  opacity: 1;
+  gap: 0.8rem;
+}
+
+/* Localized Accents */
+.tile-student {
+  --tile-accent: #10b981; /* Emerald */
+  --tile-soft: rgba(16, 185, 129, 0.1);
+  --tile-glow: rgba(16, 185, 129, 0.15);
+}
+
+.tile-teacher {
+  --tile-accent: #6366f1; /* Indigo */
+  --tile-soft: rgba(99, 102, 241, 0.1);
+  --tile-glow: rgba(99, 102, 241, 0.15);
+}
+
+.tile-admin {
+  --tile-accent: #64748b; /* Slate */
+  --tile-soft: rgba(100, 116, 139, 0.1);
+  --tile-glow: rgba(100, 116, 139, 0.15);
+}
+
+@media (prefers-color-scheme: light) {
+  .portal-tile {
+    background: #fff;
+  }
 }
 
 .eyebrow {
