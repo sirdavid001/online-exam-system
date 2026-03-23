@@ -5,5 +5,4 @@ gunicorn
 whitenoise
 dj-database-url
 python-dotenv
-xhtml2pdf
-
+reportlab

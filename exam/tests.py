@@ -177,6 +177,104 @@ class AdminExportTests(TestCase):
         self.assertIn("Algorithms", courses_content)
 
 
+class ResultPdfExportTests(TestCase):
+    def setUp(self):
+        self.admin_user = User.objects.create_user(
+            username="pdf_admin",
+            password="pass12345",
+            is_staff=True,
+        )
+        self.student_user = User.objects.create_user(
+            username="pdf_student",
+            first_name="Ada",
+            last_name="Okeke",
+            password="pass12345",
+        )
+        self.other_student_user = User.objects.create_user(
+            username="other_student",
+            first_name="Tobi",
+            last_name="Adewale",
+            password="pass12345",
+        )
+
+        student_group, _ = Group.objects.get_or_create(name="STUDENT")
+        student_group.user_set.add(self.student_user, self.other_student_user)
+
+        self.student = Student.objects.create(
+            user=self.student_user,
+            matric_number="UNN/2025/20001",
+            institutional_email="ada.result@unn.edu.ng",
+            faculty="Faculty of Engineering",
+            department="Computer Engineering",
+            programme="B.Eng Computer Engineering",
+            current_level="300",
+            entry_year=2023,
+            mobile="08031234567",
+            address="Nsukka Campus",
+        )
+        Student.objects.create(
+            user=self.other_student_user,
+            matric_number="UNN/2025/20002",
+            institutional_email="tobi.result@unn.edu.ng",
+            faculty="Faculty of Engineering",
+            department="Computer Engineering",
+            programme="B.Eng Computer Engineering",
+            current_level="300",
+            entry_year=2023,
+            mobile="08032223344",
+            address="Nsukka Campus",
+        )
+
+        self.course = Course.objects.create(
+            course_name="Computer Networks",
+            question_number=10,
+            total_marks=50,
+            duration_minutes=60,
+            pass_mark=50,
+            max_attempts=3,
+        )
+        self.result = Result.objects.create(
+            student=self.student,
+            exam=self.course,
+            attempt_number=1,
+            marks=Decimal("42.00"),
+            total_possible_marks=50,
+            total_questions=10,
+            correct_answers=8,
+            wrong_answers=2,
+            unanswered=0,
+            percentage=Decimal("84.00"),
+            passed=True,
+        )
+
+    def test_result_owner_can_export_pdf(self):
+        self.client.force_login(self.student_user)
+
+        response = self.client.get(reverse("export-result-pdf", args=[self.result.id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("application/pdf", response["Content-Type"])
+        self.assertIn(".pdf", response["Content-Disposition"])
+        self.assertTrue(response.content.startswith(b"%PDF"))
+
+    def test_other_student_cannot_export_someone_elses_pdf(self):
+        self.client.force_login(self.other_student_user)
+
+        response = self.client.get(reverse("export-result-pdf", args=[self.result.id]))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, "/")
+
+    def test_admin_can_export_student_pdf(self):
+        self.client.force_login(self.admin_user)
+
+        response = self.client.get(reverse("export-result-pdf", args=[self.result.id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("application/pdf", response["Content-Type"])
+        self.assertTrue(response.content.startswith(b"%PDF"))
+
+
 class AdminManagementTests(TestCase):
     def setUp(self):
         self.admin_user = User.objects.create_user(
