@@ -38,16 +38,16 @@
     </ul>
 
     {% if active_session %}
-    <a href="{% url 'start-exam' course.id %}" class="btn btn-warning btn-lg">
-      <i class="fas fa-redo"></i> Resume Active Exam
+    <a href="{% url 'start-exam' course.id %}" class="btn-premium warning py-3 px-5">
+      <i class="fas fa-redo mr-2"></i> Resume Active Exam
     </a>
     {% elif remaining_attempts > 0 %}
-    <a href="{% url 'start-exam' course.id %}" class="btn btn-primary btn-lg">
-      <i class="fas fa-play"></i> Start Exam
+    <a href="{% url 'start-exam' course.id %}" class="btn-premium py-3 px-5">
+      <i class="fas fa-play mr-2"></i> Start Exam
     </a>
     {% else %}
-    <button class="btn btn-secondary btn-lg" type="button" disabled>
-      <i class="fas fa-lock"></i> Attempt Limit Reached
+    <button class="btn-premium py-3 px-5" style="opacity: 0.5; cursor: not-allowed" disabled>
+      <i class="fas fa-lock mr-2"></i> Attempt Limit Reached
     </button>
     {% endif %}
   </article>

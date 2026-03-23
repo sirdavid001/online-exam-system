@@ -4,13 +4,16 @@
 
 {% block content %}
 <section class="auth-shell">
-  <article class="waiting-card">
-    <h1>Hello {{ request.user.first_name }}</h1>
-    <p>
-      Your teacher account is waiting for administrator approval.
-      You will get access immediately after your account is activated.
+  <article class="empty-state-v2 p-5">
+    <div class="empty-icon bg-soft-purple mb-4"><i class="fas fa-user-clock"></i></div>
+    <h1 class="h3 text-glow">Registration Received</h1>
+    <p class="text-secondary mb-4">
+      Hello {{ request.user.first_name }}. Your teacher account is currently pending administrator verification. 
+      You will receive full access to the Teacher Hub as soon as your credentials are approved.
     </p>
-    <a class="btn btn-danger" href="/logout">Logout</a>
+    <a class="btn-premium py-2 px-4" href="/logout">
+      <i class="fas fa-sign-out-alt mr-2"></i> Logout
+    </a>
   </article>
 </section>
 {% endblock %}

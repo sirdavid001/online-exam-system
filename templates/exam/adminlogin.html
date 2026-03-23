@@ -12,14 +12,14 @@
     <form method="post" class="stack-form">
       {% csrf_token %}
       <div class="form-group">
-        <label for="id_username">Username</label>
+        <label for="id_username">Portal Username</label>
         {% render_field form.username class="form-control" autocomplete="off" placeholder="Enter admin username" %}
       </div>
       <div class="form-group">
-        <label for="id_password">Password</label>
+        <label for="id_password">Secure Password</label>
         {% render_field form.password class="form-control" autocomplete="off" placeholder="Enter password" %}
       </div>
-      <button type="submit" class="btn btn-brand btn-lg">Sign In as Admin</button>
+      <button type="submit" class="btn-premium w-100 py-3">Sign In as Administrator</button>
       <div class="form-footer">
         <p>Login as <a href="/student/studentlogin">Student</a> or <a href="/teacher/teacherlogin">Teacher</a></p>
       </div>
