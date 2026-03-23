@@ -133,6 +133,10 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [STATIC_DIR]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
+if not DEBUG:
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    WHITENOISE_USE_FINDERS = True
+
 LOGIN_REDIRECT_URL = "/afterlogin"
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
