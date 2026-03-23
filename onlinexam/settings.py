@@ -101,8 +101,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "onlinexam.wsgi.application"
 
+
+def _get_database_url():
+    for env_name in (
+        "DATABASE_URL",
+        "POSTGRES_URL",
+        "POSTGRES_URL_NON_POOLING",
+        "DATABASE_URL_UNPOOLED",
+    ):
+        value = os.getenv(env_name)
+        if value:
+            return value
+    return None
+
+
 # Database
-database_url = os.getenv("DATABASE_URL")
+database_url = _get_database_url()
 if database_url:
     DATABASES = {
         "default": dj_database_url.parse(
