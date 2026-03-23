@@ -148,7 +148,7 @@ STATICFILES_DIRS = [STATIC_DIR]
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 if not DEBUG:
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
     WHITENOISE_USE_FINDERS = True
     WHITENOISE_MANIFEST_STRICT = False
 
