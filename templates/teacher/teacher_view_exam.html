@@ -10,41 +10,49 @@
   <div class="table-head">
     <h6>Available Courses</h6>
   </div>
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Course</th>
-        <th>Questions</th>
-        <th>Total Marks</th>
-        <th>Duration</th>
-        <th>Pass Mark</th>
-        <th>Attempts</th>
-        <th>Negative</th>
-        <th class="text-center">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for t in courses %}
-      <tr>
-        <td>{{ t.course_name }}</td>
-        <td>{{ t.question_number }}</td>
-        <td>{{ t.total_marks }}</td>
-        <td>{{ t.duration_minutes }} mins</td>
-        <td>{{ t.pass_mark }}%</td>
-        <td>{{ t.max_attempts }}</td>
-        <td>{{ t.negative_mark_per_wrong }}</td>
-        <td class="text-center">
-          <a class="btn btn-danger btn-sm" href="{% url 'delete-exam' t.id %}" data-confirm="Are you sure you want to delete this course?">
-            <i class="fas fa-trash"></i> Delete
-          </a>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td class="text-center text-muted" colspan="8">No courses found.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  {% if courses %}
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Course</th>
+          <th>Questions</th>
+          <th>Total Marks</th>
+          <th>Duration</th>
+          <th>Pass Mark</th>
+          <th>Attempts</th>
+          <th>Negative</th>
+          <th class="text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in courses %}
+        <tr>
+          <td>{{ t.course_name }}</td>
+          <td>{{ t.question_number }}</td>
+          <td>{{ t.total_marks }}</td>
+          <td>{{ t.duration_minutes }} mins</td>
+          <td>{{ t.pass_mark }}%</td>
+          <td>{{ t.max_attempts }}</td>
+          <td>{{ t.negative_mark_per_wrong }}</td>
+          <td class="text-center">
+            <a class="btn btn-danger btn-sm" href="{% url 'delete-exam' t.id %}" data-confirm="Are you sure you want to delete this course?">
+              <i class="fas fa-trash"></i> Delete
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon"><i class="fas fa-book-open"></i></div>
+    <div class="empty-text">
+      <h4>No Courses Available</h4>
+      <p>There are no courses active yet. Please create one to get started.</p>
+    </div>
+  </div>
+  {% endif %}
 </div>
 {% endblock content %}

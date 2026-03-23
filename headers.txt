@@ -1,0 +1,7 @@
+HTTP/1.1 200 OK
+Date: Mon, 23 Mar 2026 14:39:32 GMT
+Server: WSGIServer/0.2 CPython/3.14.2
+Content-Type: text/css
+Content-Disposition: inline; filename="app.css"
+Last-Modified: Mon, 23 Mar 2026 11:47:16 GMT
+

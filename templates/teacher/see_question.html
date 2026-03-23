@@ -10,62 +10,70 @@
   <div class="table-head">
     <h6>Available Questions</h6>
   </div>
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Question</th>
-        <th>Type</th>
-        <th>Difficulty</th>
-        <th>Marks</th>
-        <th>Explanation</th>
-        <th class="text-center">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for c in questions %}
-      <tr>
-        <td>
-          {{ c.question|linebreaksbr }}
-          <div class="mt-2">
-            <small class="text-muted">
-              <strong>Answer:</strong> 
-              {% if c.question_type == 'MCQ' %}
-                {{ c.answer }}: 
-                {% if c.answer == 'Option1' %}{{ c.option1 }}
-                {% elif c.answer == 'Option2' %}{{ c.option2 }}
-                {% elif c.answer == 'Option3' %}{{ c.option3 }}
-                {% elif c.answer == 'Option4' %}{{ c.option4 }}
+  {% if questions %}
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Question</th>
+          <th>Type</th>
+          <th>Difficulty</th>
+          <th>Marks</th>
+          <th>Explanation</th>
+          <th class="text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in questions %}
+        <tr>
+          <td>
+            {{ c.question|linebreaksbr }}
+            <div class="mt-2">
+              <small class="text-muted">
+                <strong>Answer:</strong> 
+                {% if c.question_type == 'MCQ' %}
+                  {{ c.answer }}: 
+                  {% if c.answer == 'Option1' %}{{ c.option1 }}
+                  {% elif c.answer == 'Option2' %}{{ c.option2 }}
+                  {% elif c.answer == 'Option3' %}{{ c.option3 }}
+                  {% elif c.answer == 'Option4' %}{{ c.option4 }}
+                  {% endif %}
+                {% elif c.question_type == 'TRUE_FALSE' %}
+                  {{ c.answer }}: {% if c.answer == 'Option1' %}True{% else %}False{% endif %}
+                {% else %}
+                  {{ c.answer }}
                 {% endif %}
-              {% elif c.question_type == 'TRUE_FALSE' %}
-                {{ c.answer }}: {% if c.answer == 'Option1' %}True{% else %}False{% endif %}
-              {% else %}
-                {{ c.answer }}
-              {% endif %}
-            </small>
-          </div>
-        </td>
-        <td><span class="badge badge-info">{{ c.get_question_type_display }}</span></td>
-        <td>{{ c.get_difficulty_display }}</td>
-        <td>{{ c.marks }}</td>
-        <td>
-          {% if c.explanation %}
-          {{ c.explanation|linebreaksbr }}
-          {% else %}
-          <span class="text-muted">Not provided</span>
-          {% endif %}
-        </td>
-        <td class="text-center">
-          <a class="btn btn-danger btn-sm" href="{% url 'remove-question' c.id %}" data-confirm="Are you sure you want to delete this question?">
-            <i class="fas fa-trash"></i> Delete
-          </a>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td class="text-center text-muted" colspan="5">No questions found for this course.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+              </small>
+            </div>
+          </td>
+          <td><span class="badge badge-info">{{ c.get_question_type_display }}</span></td>
+          <td>{{ c.get_difficulty_display }}</td>
+          <td>{{ c.marks }}</td>
+          <td>
+            {% if c.explanation %}
+            {{ c.explanation|linebreaksbr }}
+            {% else %}
+            <span class="text-muted">Not provided</span>
+            {% endif %}
+          </td>
+          <td class="text-center">
+            <a class="btn btn-danger btn-sm" href="{% url 'remove-question' c.id %}" data-confirm="Are you sure you want to delete this question?">
+              <i class="fas fa-trash"></i> Delete
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon"><i class="fas fa-folder-open"></i></div>
+    <div class="empty-text">
+      <h4>No Questions Added</h4>
+      <p>There are currently no questions for this course. Start building your question bank!</p>
+    </div>
+  </div>
+  {% endif %}
 </div>
 {% endblock content %}
