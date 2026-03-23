@@ -1,5 +1,15 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": "django",
-  "buildCommand": "python manage.py collectstatic --noinput"
+  "buildCommand": "python manage.py collectstatic --noinput",
+  "functions": {
+    "api/index.py": {
+      "includeFiles": "{templates/**,static_src/**,staticfiles/**,exam/**,student/**,teacher/**,onlinexam/**}"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index.py"
+    }
+  ]
 }
