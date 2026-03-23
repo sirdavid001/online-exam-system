@@ -2,6 +2,7 @@ import os
 
 import dj_database_url
 from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -107,6 +108,7 @@ def _get_database_url():
         "DATABASE_URL",
         "POSTGRES_URL",
         "POSTGRES_URL_NON_POOLING",
+        "POSTGRES_PRISMA_URL",
         "DATABASE_URL_UNPOOLED",
     ):
         value = os.getenv(env_name)
@@ -134,6 +136,12 @@ else:
             "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
         }
     }
+
+if RUNNING_ON_VERCEL and not database_url:
+    raise ImproperlyConfigured(
+        "A PostgreSQL connection string is required on Vercel. "
+        "Set DATABASE_URL or POSTGRES_URL in the Production environment."
+    )
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

@@ -127,7 +127,7 @@ def admin_dashboard_view(request):
             "pass_fail": [pass_attempts, failed_attempts],
             "top_courses": {
                 "labels": [c.course_name for c in top_courses],
-                "rates": [float(round((c.pass_count * 100 / c.attempt_count), 2)) if c.attempt_count else 0 for c in top_courses]
+                "rates": [float(round((c.pass_count * 100 / c.attempt_count), 2)) if c.attempt_count and c.attempt_count > 0 else 0 for c in top_courses]
             }
         })
     }
