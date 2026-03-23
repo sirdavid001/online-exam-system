@@ -41,6 +41,7 @@
   <div class="table-head">
     <h6>Recent Exam Attempts</h6>
   </div>
+  {% if recent_results %}
   <div class="table-responsive">
     <table class="table table-hover mb-0">
       <thead>
@@ -69,14 +70,19 @@
           </td>
           <td>{{ result.date|date:"Y-m-d H:i" }}</td>
         </tr>
-        {% empty %}
-        <tr>
-          <td colspan="6" class="text-muted text-center">No exam attempts yet.</td>
-        </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon"><i class="fas fa-history"></i></div>
+    <div class="empty-text">
+      <h4>No Recent Activity</h4>
+      <p>You haven't attempted any exams yet. Start your journey today!</p>
+    </div>
+  </div>
+  {% endif %}
 </section>
 
 <script id="student-performance-data" type="application/json">

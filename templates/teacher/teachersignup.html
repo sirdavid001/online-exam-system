@@ -79,6 +79,11 @@
           {% render_field userForm.password|attr:'required:true' class="form-control" placeholder="Password" %}
           {{ userForm.password.errors }}
         </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password</label>
+          {% render_field userForm.confirm_password|attr:'required:true' class="form-control" placeholder="Confirm Password" %}
+          {{ userForm.confirm_password.errors }}
+        </div>
 
         <div class="form-group span-2">
           <label for="profile_pic">Profile Picture</label>

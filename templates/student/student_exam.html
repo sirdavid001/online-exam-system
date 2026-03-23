@@ -10,35 +10,43 @@
   <div class="table-head">
     <h6>Exam Courses</h6>
   </div>
-  <table class="table table-hover">
-    <thead>
-      <tr>
-        <th>Exam Name</th>
-        <th>Duration</th>
-        <th>Pass Mark</th>
-        <th>Max Attempts</th>
-        <th class="text-center">Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for t in courses %}
-      <tr>
-        <td>{{ t.course_name }}</td>
-        <td>{{ t.duration_minutes }} mins</td>
-        <td>{{ t.pass_mark }}%</td>
-        <td>{{ t.max_attempts }}</td>
-        <td class="text-center">
-          <a class="btn btn-primary btn-sm" href="{% url 'take-exam' t.id %}">
-            <i class="fas fa-play-circle"></i> Take Exam
-          </a>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td class="text-center text-muted" colspan="5">No exams are available right now.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  {% if courses %}
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr>
+          <th>Exam Name</th>
+          <th>Duration</th>
+          <th>Pass Mark</th>
+          <th>Max Attempts</th>
+          <th class="text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in courses %}
+        <tr>
+          <td>{{ t.course_name }}</td>
+          <td>{{ t.duration_minutes }} mins</td>
+          <td>{{ t.pass_mark }}%</td>
+          <td>{{ t.max_attempts }}</td>
+          <td class="text-center">
+            <a class="btn btn-primary btn-sm" href="{% url 'take-exam' t.id %}">
+              <i class="fas fa-play-circle"></i> Take Exam
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon"><i class="fas fa-clipboard-list"></i></div>
+    <div class="empty-text">
+      <h4>No Exams Available</h4>
+      <p>There are no active examinations at this time. Please check back later.</p>
+    </div>
+  </div>
+  {% endif %}
 </div>
 {% endblock content %}
