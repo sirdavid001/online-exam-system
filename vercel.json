@@ -1,6 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "python manage.py collectstatic --noinput",
+  "github": {
+    "autoAlias": true
+  },
   "builds": [
     {
       "src": "app.py",
